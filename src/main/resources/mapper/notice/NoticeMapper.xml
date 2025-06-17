@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.cavia.trader.module.notice.mapper.NoticeMapper">
+    <insert id="saveNotice" parameterType="io.cavia.trader.module.notice.dto.NoticeDto">
+        insert into notices (
+        title,
+        content,
+        created_at,
+        updated_at,
+        pinned
+        )
+        values(
+        #{title},
+        #{content},
+        #{createdAt},
+        #{updatedAt},
+        #{pinned}
+        )
+    </insert>
+</mapper>
