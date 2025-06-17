@@ -34,7 +34,7 @@ public class NoticeController {
         if (noticeDto.getContent() == null || noticeDto.getContent().isBlank()) {
             throw new IllegalArgumentException("내용은 비워둘 수 없습니다");
         }
-        noticeDto.setCreatedat(new Timestamp(System.currentTimeMillis()));
+        noticeDto.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         int result = noticeServiceImple.saveNotice(noticeDto);
         if (result != 1) {
             throw new NoticeSaveFailedException("공지사항 저장이 실패했습니다");
