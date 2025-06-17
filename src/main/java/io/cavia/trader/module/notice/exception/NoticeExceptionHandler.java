@@ -1,4 +1,4 @@
-package io.cavia.trader.module.notice.excetion;
+package io.cavia.trader.module.notice.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,20 +16,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice(basePackages = "io.cavia.trader.module.notice")
 public class NoticeExceptionHandler {
-
-    @ExceptionHandler(InvalidNoticeTitleException.class)
-    public ResponseEntity<String> handleInvalidNoticeTitle(InvalidNoticeTitleException e) {
-        log.warn("title 입력 오류", e);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("title 입력 오류:" + e.getMessage());
-    }
-
-    @ExceptionHandler(InvalidNoticeContentException.class)
-    public ResponseEntity<String> handleInvalidNoticeContent(InvalidNoticeContentException e) {
-        log.warn("content 입력 오류", e);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("content 입력 오류:" + e.getMessage());
-    }
 
     @ExceptionHandler(NoticeSaveFailedException.class)
     public ResponseEntity<String> handleNoticeSaveFailed(NoticeSaveFailedException e) {
