@@ -14,9 +14,10 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-public class NoticeService {
+public class NoticeServiceImple implements NoticeService {
     private final NoticeMapper noticeMapper;
 
+    @Override
     public int saveNotice(NoticeDto dto) {
         int result = noticeMapper.saveNotice(dto);
         return result;
