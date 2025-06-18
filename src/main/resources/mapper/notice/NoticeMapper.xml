@@ -19,4 +19,34 @@
         #{pinned}
         )
     </insert>
+    <select id="noticeListAll" resultType="io.cavia.trader.module.notice.dto.NoticeDto">
+        select *
+        from notices
+    </select>
+    <select id="existsById" parameterType="int" resultType="int">
+        select count(*)
+        from notices
+        where id = #{id}
+    </select>
+    <delete id="deleteNotice" parameterType="io.cavia.trader.module.notice.dto.NoticeDto">
+        delete
+        from notices
+        where id = #{id}
+    </delete>
+    <update id="updateNotice" parameterType="io.cavia.trader.module.notice.dto.NoticeDto">
+        update
+        <set>
+            <if test="title != null">
+                title=#{title},
+            </if>
+            <if test="content != null">
+                content=#{content},
+            </if>
+            updated_at=${updatedAt},
+            <if test="pinned != null">
+                pinned=#{pinned},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
 </mapper>
