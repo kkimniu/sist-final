@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 공지사항 서비스계층
@@ -27,7 +28,7 @@ public class NoticeServiceImple implements NoticeService {
 
     @Override
     public boolean existsById(int id) {
-        int result = noticeMapper.existsById(id);
+        int result = noticeMapper.countById(id);
         if(result<=0){
             return false;
         }
@@ -42,8 +43,17 @@ public class NoticeServiceImple implements NoticeService {
     }
 
     @Override
-    public int updateNotice(NoticeDto dto) {
-        int result = noticeMapper.updateNotice(dto);
+    public int updateNotice(Map map) {
+        int result = 0;
+        if(map.get("pinned") != null){
+            if(map.get("title") != null || map.get("content") != null){
+                result = noticeMapper.updateNotice(map);
+            }else{
+                result = noticeMapper.updateOnlyPinned(map);
+            }
+        }else{
+            result = noticeMapper.updateTitleAndContent(map);
+        }
         return result;
     }
 
