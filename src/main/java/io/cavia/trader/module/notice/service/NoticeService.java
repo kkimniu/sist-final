@@ -8,8 +8,14 @@ import java.util.Map;
 public interface NoticeService {
 
     public int saveNotice(NoticeDto dto);
+
     public boolean existsById(int id);
+
     public int deleteNotice(int id);
+
     public int updateNotice(Map map);
-    public List<NoticeDto> noticeListAll();
+
+    public int patchNotice(Map map);
+
+    public List<NoticeDto> findAll();
 }
