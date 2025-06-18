@@ -19,8 +19,14 @@
         #{pinned}
         )
     </insert>
-    <select id="noticeListAll" resultType="io.cavia.trader.module.notice.dto.NoticeDto">
-        select *
+    <select id="findAll" resultType="io.cavia.trader.module.notice.dto.NoticeDto">
+        select
+        id,
+        title,
+        content,
+        created_at as createdAt,
+        updated_at as updatedAt,
+        pinned
         from notices
     </select>
     <select id="countById" parameterType="int" resultType="int">
