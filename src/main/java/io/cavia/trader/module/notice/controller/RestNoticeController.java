@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("api/notices")
 @RequiredArgsConstructor
-public class NoticeController {
+public class RestNoticeController {
 
     private final NoticeServiceImple noticeServiceImple;
 
@@ -159,6 +160,8 @@ public class NoticeController {
         return ResponseEntity.status(200).body("공지사항 부분 수정 완료");
     }
     
-//    @GetMapping("noticeList")
-//    public ResponseEntity<String>
+    @GetMapping
+    public ResponseEntity<List<NoticeDto>> getAllNotices(){
+        return  ResponseEntity.status(200).body(noticeServiceImple.findAll());
+    }
 }
