@@ -4,6 +4,7 @@ import io.cavia.trader.module.notice.dto.NoticeDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 공지사항의 Mapper계층
@@ -12,8 +13,10 @@ import java.util.List;
 @Mapper
 public interface NoticeMapper {
     public int saveNotice(NoticeDto dto);
-    public int existsById(int id);
+    public int countById(int id);
     public List<NoticeDto> noticeListAll();
     public int deleteNotice(int id);
-    public int updateNotice(NoticeDto dto);
+    public int updateNotice(Map map);
+    public int updateOnlyPinned(Map map);
+    public int updateTitleAndContent(Map map);
 }
