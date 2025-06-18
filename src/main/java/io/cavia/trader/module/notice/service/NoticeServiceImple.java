@@ -5,6 +5,8 @@ import io.cavia.trader.module.notice.mapper.NoticeMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * 공지사항 서비스계층
  *
@@ -22,4 +24,33 @@ public class NoticeServiceImple implements NoticeService {
         int result = noticeMapper.saveNotice(dto);
         return result;
     }
+
+    @Override
+    public boolean existsById(int id) {
+        int result = noticeMapper.existsById(id);
+        if(result<=0){
+            return false;
+        }
+        return true;
+    }
+
+
+    @Override
+    public int deleteNotice(int id) {
+        int result = noticeMapper.deleteNotice(id);
+        return result;
+    }
+
+    @Override
+    public int updateNotice(NoticeDto dto) {
+        int result = noticeMapper.updateNotice(dto);
+        return result;
+    }
+
+    @Override
+    public List<NoticeDto> noticeListAll() {
+        List<NoticeDto> list = noticeMapper.noticeListAll();
+        return list;
+    }
+
 }
