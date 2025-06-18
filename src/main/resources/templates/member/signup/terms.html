@@ -14,14 +14,18 @@
         </a>
     </div>
 
-    <form action="/signup/terms" method="post">
+    <form th:action="@{/signup/terms}" th:object="${signupForm}" method="post">
 
         <div class="terms-group">
             <h3>이용약관</h3>
             <textarea name="terms_of_service" readonly rows="8" style="resize: none;" th:text="${termsOfServiceContent}"></textarea>
             <div>
-                <input type="checkbox" id="agreeTerms1" name="agreeTerms1" value="true" required>
-                <label for="agreeTerms1">이용약관에 동의합니다. (필수)</label>
+                <input type="checkbox" id="termsOfServiceAgreed" name="termsOfServiceAgreed"
+                       th:field="*{termsOfServiceAgreed}" required >
+                <label for="termsOfServiceAgreed">이용약관에 동의합니다. (필수)</label>
+            </div>
+            <div th:if="${#fields.hasErrors('termsOfServiceAgreed')}" style="color:red;">
+                <p th:text="${#fields.errors('termsOfServiceAgreed')[0]}"></p>
             </div>
         </div>
 
@@ -29,8 +33,12 @@
             <h3>개인정보 처리방침</h3>
             <textarea name="privacy_policy" readonly rows="8" style="resize: none;" th:text="${privacyPolicyContent}"></textarea>
             <div>
-                <input type="checkbox" id="agreeTerms2" name="agreeTerms2" value="true" required>
-                <label for="agreeTerms2">개인정보 처리방침에 동의합니다. (필수)</label>
+                <input type="checkbox" id="privacyPolicyAgreed" name="privacyPolicyAgreed"
+                       th:field="*{privacyPolicyAgreed}" required >
+                <label for="privacyPolicyAgreed">개인정보 처리방침에 동의합니다. (필수)</label>
+            </div>
+            <div th:if="${#fields.hasErrors('privacyPolicyAgreed')}" style="color:red;">
+                <p th:text="${#fields.errors('privacyPolicyAgreed')[0]}"></p>
             </div>
         </div>
 
