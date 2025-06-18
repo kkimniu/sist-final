@@ -14,7 +14,7 @@ import java.util.Map;
 public interface NoticeMapper {
     public int saveNotice(NoticeDto dto);
     public int countById(int id);
-    public List<NoticeDto> noticeListAll();
+    public List<NoticeDto> findAll();
     public int deleteNotice(int id);
     public int updateNotice(Map map);
     public int updateOnlyPinned(Map map);
