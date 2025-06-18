@@ -17,10 +17,22 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice(basePackages = "io.cavia.trader.module.notice")
 public class NoticeExceptionHandler {
 
-    @ExceptionHandler(NoticeSaveFailedException.class)
-    public ResponseEntity<String> handleNoticeSaveFailed(NoticeSaveFailedException e) {
-        log.error("공지사항 저장 실패", e);
+    @ExceptionHandler(NoticeOperationFailedException.class)
+    public ResponseEntity<String> handleNoticeOperationFailed(NoticeOperationFailedException e) {
+        log.error("공지사항 작업 실패", e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("공지사항 저장 실패:" + e.getMessage());
+                .body("공지사항 작업 실패:" + e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidNoticeRequestException.class)
+    public ResponseEntity<String> handleInvalidNoticeRequest(InvalidNoticeRequestException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleNotFoundException(NotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(e.getMessage());
     }
 }
