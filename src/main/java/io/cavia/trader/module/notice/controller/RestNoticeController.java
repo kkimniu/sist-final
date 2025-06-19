@@ -159,9 +159,14 @@ public class RestNoticeController {
         }
         return ResponseEntity.status(200).body("공지사항 부분 수정 완료");
     }
-    
+
     @GetMapping
-    public ResponseEntity<List<NoticeDto>> getAllNotices(){
-        return  ResponseEntity.status(200).body(noticeServiceImple.findAll());
+    public ResponseEntity<List<NoticeDto>> getAllNotices() {
+        return ResponseEntity.status(200).body(noticeServiceImple.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<NoticeDto> getNotices(@PathVariable int id) {
+        return ResponseEntity.status(200).body(noticeServiceImple.findById(id));
     }
 }
