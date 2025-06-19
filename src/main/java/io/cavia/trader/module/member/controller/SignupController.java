@@ -53,5 +53,62 @@ public class SignupController {
         return "redirect:/signup/verify";
     }
 
+    @GetMapping("/verify")
+    public String showAuthKeyForm() {
+        return "member/signup/verify";
+    }
 
+    @PostMapping("/verify")
+    public String processAuthKey(@ModelAttribute("signupForm")
+                                 @Validated(SignupForm.ValidationGroups.EmailGroup.class) SignupForm signupForm,
+                                 BindingResult bindingResult) {
+        System.out.println("signupForm = " + signupForm);
+        if (bindingResult.hasErrors()) {
+            return "member/signup/verify";
+        }
+        //TODO: 이메일 인증키 검증하고 분기.
+        return "redirect:/signup/nickname";
+    }
+
+    @GetMapping("/nickname")
+    public String showNicknameForm() {
+        return "member/signup/nickname";
+    }
+
+    @PostMapping("/nickname")
+    public String processNickname(@ModelAttribute("signupForm")
+                                  @Validated(SignupForm.ValidationGroups.NicknameGroup.class) SignupForm signupForm,
+                                  BindingResult bindingResult) {
+        System.out.println("signupForm = " + signupForm);
+        if (bindingResult.hasErrors()) {
+            return "member/signup/nickname";
+        }
+        //TODO: 닉네임 검증하고 분기.
+        return "redirect:/signup/password";
+    }
+
+    @GetMapping("/password")
+    public String showPasswordForm() {
+        return "member/signup/password";
+    }
+
+    @PostMapping("/password")
+    public String processPassword(@ModelAttribute("signupForm")
+                                  @Validated(SignupForm.ValidationGroups.PasswordGroup.class) SignupForm signupForm,
+                                  BindingResult bindingResult) {
+        if (signupForm.getPassword() != null && signupForm.getPasswordConfirm() != null
+                && !signupForm.getPassword().equals(signupForm.getPasswordConfirm())) {
+            bindingResult.reject("password.mismatch", "비밀번호가 일치하지 않습니다");
+        }
+        if (bindingResult.hasErrors()) {
+            return "member/signup/password";
+        }
+        //TODO: 패스워드 검증하고 분기.
+        return "redirect:/signup/welcome";
+    }
+
+    @GetMapping("/welcome")
+    public String showWelcomePage() {
+        return "member/signup/welcome";
+    }
 }

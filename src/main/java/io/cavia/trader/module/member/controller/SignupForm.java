@@ -1,9 +1,6 @@
 package io.cavia.trader.module.member.controller;
 
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,8 +31,6 @@ public class SignupForm {
         }
     }
 
-    // --- Fields ---
-
     /**
      * 약관 동의 필드
      * 이 필드들이 true가 되어야만 유효성 검사를 통과합니다.
@@ -53,4 +48,30 @@ public class SignupForm {
     @Size(max = 254, message = "이메일은 254자 이하로 입력해주세요.", groups = ValidationGroups.EmailGroup.class)
     private String email;
 
+    /**
+     * 이메일 인증키 필드
+     */
+    @NotEmpty(message = "인증키를 입력해주세요.", groups = ValidationGroups.AuthKeyGroup.class)
+    @Pattern(regexp = "^\\d{6}$", message = "인증번호는 6자리 숫자입니다.", groups = ValidationGroups.EmailGroup.class)
+    private String authKey;
+
+    /**
+     * 닉네임 필드
+     */
+    @NotEmpty(message = "닉네임을 입력해주세요.", groups = ValidationGroups.NicknameGroup.class)
+    @Pattern(regexp = "^[가-힣a-zA-Z0-9]{1,16}$", message = "닉네임은 1자 이상 16자 이하로 입력해주세요.", groups = ValidationGroups.NicknameGroup.class)
+    private String nickname;
+
+    /**
+     * 비밀번호 필드
+     */
+    @NotEmpty(message = "비밀번호를 입력해주세요.", groups = ValidationGroups.PasswordGroup.class)
+    @Size(min = 8, max = 64, message = "비밀번호는 8자 이상 64자 이하로 입력해주세요", groups = ValidationGroups.PasswordGroup.class)
+    private String password;
+
+    /**
+     * 비밀번호 확인 필드
+     */
+    @NotEmpty(message = "비밀번호를 다시 한번 입력해주세요.", groups = ValidationGroups.PasswordGroup.class)
+    private String passwordConfirm;
 }
