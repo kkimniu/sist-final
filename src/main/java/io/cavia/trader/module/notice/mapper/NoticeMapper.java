@@ -15,8 +15,12 @@ public interface NoticeMapper {
     public int saveNotice(NoticeDto dto);
     public int countById(int id);
     public List<NoticeDto> findAll();
+    public NoticeDto findById(int id);
     public int deleteNotice(int id);
     public int updateNotice(Map map);
     public int updateOnlyPinned(Map map);
     public int updateTitleAndContent(Map map);
+    public List<NoticeDto> findPinned();
+    public List<NoticeDto> noticeList(int limit , int offset);
+    public int noticeCount();
 }
