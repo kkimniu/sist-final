@@ -29,6 +29,44 @@
         pinned
         from notices
     </select>
+    <select id="findById" resultType="io.cavia.trader.module.notice.dto.NoticeDto">
+        select
+        id,
+        title,
+        content,
+        created_at as createdAt,
+        updated_at as updatedAt,
+        pinned
+        from notices
+        where id = #{id}
+    </select>
+    <select id="findPinned" resultType="io.cavia.trader.module.notice.dto.NoticeDto">
+        select
+        id,
+        title,
+        content,
+        created_at as createdAt,
+        updated_at as updatedAt,
+        pinned
+        from notices
+        where pinned = true;
+    </select>
+    <select id="noticeList" resultType="io.cavia.trader.module.notice.dto.NoticeDto">
+        select
+        id,
+        title,
+        content,
+        created_at as createdAt,
+        updated_at as updatedAt,
+        pinned
+        from notices
+        order by pinned DESC, created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    <select id="noticeCount" parameterType="int" resultType="int">
+        select count(*)
+        from notices
+    </select>
     <select id="countById" parameterType="int" resultType="int">
         select count(*)
         from notices
