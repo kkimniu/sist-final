@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layouts"
+      layout:decorate="layouts/layout">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <div>
+        <h2 th:text="${dto.title}">제목</h2>
+    </div>
+    <div>
+        <p th:text="${dto.content}">본문</p>
+    </div>
+    <div>
+        <a th:href="@{/notices/noticeList(cp=${cp})}">
+            <button type="button">목록</button>
+        </a>
+    </div>
+</div>
+</body>
+</html>
