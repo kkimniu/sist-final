@@ -60,7 +60,7 @@ public class SignupController {
 
     @PostMapping("/verify")
     public String processAuthKey(@ModelAttribute("signupForm")
-                                 @Validated(SignupForm.ValidationGroups.EmailGroup.class) SignupForm signupForm,
+                                 @Validated(SignupForm.ValidationGroups.AuthKeyGroup.class) SignupForm signupForm,
                                  BindingResult bindingResult) {
         System.out.println("signupForm = " + signupForm);
         if (bindingResult.hasErrors()) {
