@@ -52,7 +52,7 @@ public class SignupForm {
      * 이메일 인증키 필드
      */
     @NotEmpty(message = "인증키를 입력해주세요.", groups = ValidationGroups.AuthKeyGroup.class)
-    @Pattern(regexp = "^\\d{6}$", message = "인증번호는 6자리 숫자입니다.", groups = ValidationGroups.EmailGroup.class)
+    @Pattern(regexp = "^\\d{6}$", message = "인증번호는 6자리 숫자입니다.", groups = ValidationGroups.AuthKeyGroup.class)
     private String authKey;
 
     /**
