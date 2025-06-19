@@ -18,19 +18,20 @@
         <h2>이메일 인증</h2>
     </div>
     <div class="signup-content">
-        <p>이메일로 인증을 해주세요.</p>
+        <p>본인의 이메일 주소를 입력해주세요. 인증 메일이 발송됩니다.</p>
     </div>
 
     <form th:action="@{/signup/email}" th:object="${signupForm}" method="post">
 
-        <input type="email" id="email" name="email" maxlength="254" placeholder="yourname@example.com" required>
+        <input type="email" id="email" name="email" maxlength="254"
+               th:field="*{email}" placeholder="yourname@example.com" required>
 
         <div th:if="${#fields.hasErrors('email')}" style="color:red;">
             <p th:text="${#fields.errors('email')[0]}"></p>
         </div>
 
         <div class="submit-area">
-            <button type="submit">계속</button>
+            <button type="submit">인증 메일 보내기</button>
         </div>
 
     </form>
