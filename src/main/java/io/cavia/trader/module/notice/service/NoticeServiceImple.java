@@ -69,4 +69,30 @@ public class NoticeServiceImple implements NoticeService {
         return list;
     }
 
+    @Override
+    public NoticeDto findById(int id) {
+        NoticeDto dto = noticeMapper.findById(id);
+        return dto;
+    }
+
+    @Override
+    public List<NoticeDto> findPinned() {
+        List<NoticeDto> list = noticeMapper.findPinned();
+        return list;
+    }
+
+    @Override
+    public List<NoticeDto> noticeList(int cp, int ls) {
+        int offset = (cp - 1) * ls;
+        int limit = ls;
+        List<NoticeDto> list = noticeMapper.noticeList(limit, offset);
+        return list;
+    }
+
+    @Override
+    public int noticeCount() {
+        int result = noticeMapper.noticeCount();
+        return result;
+    }
+
 }
