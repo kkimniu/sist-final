@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입 - 약관 동의</title>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="logo-area">
+        <a href="/">
+            <img src="/images/logo.png" alt="서비스 로고">
+        </a>
+    </div>
+
+    <form th:action="@{/signup/terms}" th:object="${signupForm}" method="post">
+
+        <div class="terms-group">
+            <h3>이용약관</h3>
+            <textarea name="terms_of_service" readonly rows="8" style="resize: none;" th:text="${termsOfServiceContent}"></textarea>
+            <div>
+                <input type="checkbox" id="termsOfServiceAgreed" name="termsOfServiceAgreed"
+                       th:field="*{termsOfServiceAgreed}" required >
+                <label for="termsOfServiceAgreed">이용약관에 동의합니다. (필수)</label>
+            </div>
+            <div th:if="${#fields.hasErrors('termsOfServiceAgreed')}" style="color:red;">
+                <p th:text="${#fields.errors('termsOfServiceAgreed')[0]}"></p>
+            </div>
+        </div>
+
+        <div class="terms-group">
+            <h3>개인정보 처리방침</h3>
+            <textarea name="privacy_policy" readonly rows="8" style="resize: none;" th:text="${privacyPolicyContent}"></textarea>
+            <div>
+                <input type="checkbox" id="privacyPolicyAgreed" name="privacyPolicyAgreed"
+                       th:field="*{privacyPolicyAgreed}" required >
+                <label for="privacyPolicyAgreed">개인정보 처리방침에 동의합니다. (필수)</label>
+            </div>
+            <div th:if="${#fields.hasErrors('privacyPolicyAgreed')}" style="color:red;">
+                <p th:text="${#fields.errors('privacyPolicyAgreed')[0]}"></p>
+            </div>
+        </div>
+
+        <div class="submit-area">
+            <button type="submit">계속</button>
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>

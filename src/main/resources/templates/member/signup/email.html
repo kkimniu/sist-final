@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입 - 이메일 인증</title>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="logo-area">
+        <a href="/">
+            <img src="/images/logo.png" alt="서비스 로고">
+        </a>
+    </div>
+
+    <div class="signup-title">
+        <h2>이메일 인증</h2>
+    </div>
+    <div class="signup-content">
+        <p>본인의 이메일 주소를 입력해주세요. 인증 메일이 발송됩니다.</p>
+    </div>
+
+    <form th:action="@{/signup/email}" th:object="${signupForm}" method="post">
+
+        <input type="email" id="email" name="email" maxlength="254"
+               th:field="*{email}" placeholder="yourname@example.com" required>
+
+        <div th:if="${#fields.hasErrors('email')}" style="color:red;">
+            <p th:text="${#fields.errors('email')[0]}"></p>
+        </div>
+
+        <div class="submit-area">
+            <button type="submit">인증 메일 보내기</button>
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>

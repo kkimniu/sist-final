@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>환영합니다!</title>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="logo-area">
+        <a href="/">
+            <img src="/images/logo.png" alt="서비스 로고">
+        </a>
+    </div>
+
+    <div class="signup-title">
+        <h2>환영합니다!</h2>
+    </div>
+    <div class="signup-content">
+        <p>짝짝짝! <b><span th:text="${signupForm.nickname}"></span></b>님의 회원가입이 완료되었습니다.</p>
+    </div>
+
+    <div>
+        <a th:href="@{/login}">로그인 하기</a>
+    </div>
+
+</div>
+
+</body>
+</html>
