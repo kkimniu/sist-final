@@ -6,7 +6,7 @@ import io.cavia.trader.module.notice.dto.NoticeDto;
 import io.cavia.trader.module.notice.exception.InvalidNoticeRequestException;
 import io.cavia.trader.module.notice.exception.NotFoundException;
 import io.cavia.trader.module.notice.exception.NoticeOperationFailedException;
-import io.cavia.trader.module.notice.service.NoticeServiceImple;
+import io.cavia.trader.module.notice.service.NoticeService;
 import jakarta.servlet.ServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RestNoticeController {
 
-    private final NoticeServiceImple noticeServiceImple;
+    private final NoticeService noticeService;
     private final ObjectMapper mapper;
 
     @PostMapping
@@ -42,7 +42,7 @@ public class RestNoticeController {
             throw new InvalidNoticeRequestException("내용은 비워둘 수 없습니다");
         }
         noticeDto.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-        int result = noticeServiceImple.saveNotice(noticeDto);
+        int result = noticeService.saveNotice(noticeDto);
         if (result != 1) {
             throw new NoticeOperationFailedException("공지사항 저장이 실패했습니다");
         }
@@ -54,11 +54,11 @@ public class RestNoticeController {
         if (id == 0) {
             throw new InvalidNoticeRequestException("유효하지 않는 ID 입니다");
         }
-        boolean exists = noticeServiceImple.existsById(id);
+        boolean exists = noticeService.existsById(id);
         if (!exists) {
             throw new NotFoundException("해당 아이디는 존재하지않습니다.");
         }
-        int result = noticeServiceImple.deleteNotice(id);
+        int result = noticeService.deleteNotice(id);
         if (result != 1) {
             throw new NoticeOperationFailedException("공지사항 삭제를 실패했습니다");
         }
@@ -71,7 +71,7 @@ public class RestNoticeController {
         if (id == 0) {
             throw new InvalidNoticeRequestException("유효하지 않는 ID 입니다");
         }
-        boolean exists = noticeServiceImple.existsById(id);
+        boolean exists = noticeService.existsById(id);
         if (!exists) {
             throw new NotFoundException("해당 아이디는 존재하지않습니다");
         }
@@ -106,7 +106,7 @@ public class RestNoticeController {
         map.put("content", noticeDto.getContent());
         map.put("pinned", noticeDto.isPinned());
         map.put("updatedAt", new Timestamp(System.currentTimeMillis()));
-        int result = noticeServiceImple.updateNotice(map);
+        int result = noticeService.updateNotice(map);
         if (result != 1) {
             throw new NoticeOperationFailedException("공지사항 수정을 실패했습니다");
         }
@@ -118,7 +118,7 @@ public class RestNoticeController {
         if (id == 0) {
             throw new InvalidNoticeRequestException("유효하지 않는 ID 입니다");
         }
-        boolean exists = noticeServiceImple.existsById(id);
+        boolean exists = noticeService.existsById(id);
         if (!exists) {
             throw new NotFoundException("해당 아이디는 존재하지않습니다");
         }
@@ -152,7 +152,7 @@ public class RestNoticeController {
             map.put("pinned", noticeDto.isPinned());
         }
         map.put("updatedAt", new Timestamp(System.currentTimeMillis()));
-        int result = noticeServiceImple.patchNotice(map);
+        int result = noticeService.patchNotice(map);
         if (result != 1) {
             throw new NoticeOperationFailedException("공지사항 수정을 실패했습니다");
         }
@@ -161,11 +161,11 @@ public class RestNoticeController {
 
     @GetMapping
     public ResponseEntity<List<NoticeDto>> getAllNotices() {
-        return ResponseEntity.status(200).body(noticeServiceImple.findAll());
+        return ResponseEntity.status(200).body(noticeService.findAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<NoticeDto> getNotices(@PathVariable int id) {
-        return ResponseEntity.status(200).body(noticeServiceImple.findById(id));
+        return ResponseEntity.status(200).body(noticeService.findById(id));
     }
 }
