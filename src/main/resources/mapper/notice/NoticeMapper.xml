@@ -19,4 +19,97 @@
         #{pinned}
         )
     </insert>
+    <select id="findAll" resultType="io.cavia.trader.module.notice.dto.NoticeDto">
+        select
+        id,
+        title,
+        content,
+        created_at as createdAt,
+        updated_at as updatedAt,
+        pinned
+        from notices
+    </select>
+    <select id="findById" resultType="io.cavia.trader.module.notice.dto.NoticeDto">
+        select
+        id,
+        title,
+        content,
+        created_at as createdAt,
+        updated_at as updatedAt,
+        pinned
+        from notices
+        where id = #{id}
+    </select>
+    <select id="findPinned" resultType="io.cavia.trader.module.notice.dto.NoticeDto">
+        select
+        id,
+        title,
+        content,
+        created_at as createdAt,
+        updated_at as updatedAt,
+        pinned
+        from notices
+        where pinned = true;
+    </select>
+    <select id="noticeList" resultType="io.cavia.trader.module.notice.dto.NoticeDto">
+        select
+        id,
+        title,
+        content,
+        created_at as createdAt,
+        updated_at as updatedAt,
+        pinned
+        from notices
+        order by pinned DESC, created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    <select id="noticeCount" parameterType="int" resultType="int">
+        select count(*)
+        from notices
+    </select>
+    <select id="countById" parameterType="int" resultType="int">
+        select count(*)
+        from notices
+        where id = #{id}
+    </select>
+    <delete id="deleteNotice" parameterType="io.cavia.trader.module.notice.dto.NoticeDto">
+        delete
+        from notices
+        where id = #{id}
+    </delete>
+    <update id="updateNotice" parameterType="map">
+        update notices
+        <set>
+            <if test="title != null">
+                title=#{title},
+            </if>
+            <if test="content != null">
+                content=#{content},
+            </if>
+            updated_at=#{updatedAt},
+            pinned=#{pinned},
+        </set>
+        where id=#{id}
+    </update>
+    <update id="updateOnlyPinned" parameterType="map">
+        update notices
+        <set>
+            updated_at=#{updatedAt},
+            pinned=#{pinned},
+        </set>
+        where id=#{id}
+    </update>
+    <update id="updateTitleAndContent" parameterType="map">
+        update notices
+        <set>
+            <if test="title != null">
+                title=#{title},
+            </if>
+            <if test="content != null">
+                content=#{content},
+            </if>
+            updated_at=#{updatedAt},
+        </set>
+        where id=#{id}
+    </update>
 </mapper>

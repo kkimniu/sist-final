@@ -5,6 +5,9 @@ import io.cavia.trader.module.notice.mapper.NoticeMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * 공지사항 서비스계층
  *
@@ -22,4 +25,74 @@ public class NoticeServiceImple implements NoticeService {
         int result = noticeMapper.saveNotice(dto);
         return result;
     }
+
+    @Override
+    public boolean existsById(int id) {
+        int result = noticeMapper.countById(id);
+        if (result <= 0) {
+            return false;
+        }
+        return true;
+    }
+
+
+    @Override
+    public int deleteNotice(int id) {
+        int result = noticeMapper.deleteNotice(id);
+        return result;
+    }
+
+    @Override
+    public int updateNotice(Map map) {
+        int result = noticeMapper.updateNotice(map);
+        return result;
+    }
+
+    @Override
+    public int patchNotice(Map map) {
+        int result = 0;
+        if (map.get("pinned") != null) {
+            if (map.get("title") != null || map.get("content") != null) {
+                result = noticeMapper.updateNotice(map);
+            } else {
+                result = noticeMapper.updateOnlyPinned(map);
+            }
+        } else {
+            result = noticeMapper.updateTitleAndContent(map);
+        }
+        return result;
+    }
+
+    @Override
+    public List<NoticeDto> findAll() {
+        List<NoticeDto> list = noticeMapper.findAll();
+        return list;
+    }
+
+    @Override
+    public NoticeDto findById(int id) {
+        NoticeDto dto = noticeMapper.findById(id);
+        return dto;
+    }
+
+    @Override
+    public List<NoticeDto> findPinned() {
+        List<NoticeDto> list = noticeMapper.findPinned();
+        return list;
+    }
+
+    @Override
+    public List<NoticeDto> noticeList(int cp, int ls) {
+        int offset = (cp - 1) * ls;
+        int limit = ls;
+        List<NoticeDto> list = noticeMapper.noticeList(limit, offset);
+        return list;
+    }
+
+    @Override
+    public int noticeCount() {
+        int result = noticeMapper.noticeCount();
+        return result;
+    }
+
 }
