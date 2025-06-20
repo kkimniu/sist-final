@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 public class RestNoticeController {
 
     private final NoticeServiceImple noticeServiceImple;
+    private final ObjectMapper mapper;
 
     @PostMapping
     public ResponseEntity<String> saveNotice(@RequestBody NoticeDto noticeDto) {
@@ -79,7 +80,6 @@ public class RestNoticeController {
         String json = request.getReader().lines().collect(Collectors.joining());
 
         //파싱
-        ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(json);
 
         //매핑
@@ -128,7 +128,6 @@ public class RestNoticeController {
         String json = request.getReader().lines().collect(Collectors.joining());
 
         //파싱
-        ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(json);
 
         //매핑
