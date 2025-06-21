@@ -5,13 +5,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class Quotes {
+public class QuotesOutput {
 
     // 고유번호
     private Long id;

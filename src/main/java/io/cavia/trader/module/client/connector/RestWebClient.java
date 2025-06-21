@@ -1,4 +1,4 @@
-package io.cavia.trader.module.client;
+package io.cavia.trader.module.client.connector;
 
 public interface RestWebClient {
 }
