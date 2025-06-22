@@ -1,5 +1,7 @@
 package io.cavia.trader.module.member.controller;
 
+import io.cavia.trader.module.member.service.SignupService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -9,7 +11,10 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/signup")
 @SessionAttributes("signupForm") //signupForm 이라는 객체가 모델에 들어갈 때 세션에도 복제함
+@RequiredArgsConstructor
 public class SignupController {
+
+    private final SignupService signupService;
 
     //  요청이 들어오면 제일 먼저 실행되는 메서드. 빈 signupForm 객체가 모델에 있음을 보장함. 만약 다른 메서드 파라미터에
 //  @ModelAttribute 로 signupForm을 먼저 세션에서 찾으면 이 메서드는 실행되지 않음.
@@ -50,6 +55,7 @@ public class SignupController {
         }
 
         //TODO: 이메일 주소를 검증하고 인증키가 포함된 이메일 전송하는 서비스 메서드 넣어야함
+        signupService.sendVerificationEmail(signupForm.getEmail());
         return "redirect:/signup/verify";
     }
 
@@ -66,8 +72,11 @@ public class SignupController {
         if (bindingResult.hasErrors()) {
             return "member/signup/verify";
         }
+        if (signupForm.getAuthKey().equals("921115")) {
+            return "redirect:/signup/nickname";
+        }
         //TODO: 이메일 인증키 검증하고 분기.
-        return "redirect:/signup/nickname";
+        return "member/signup/verify";
     }
 
     @GetMapping("/nickname")
