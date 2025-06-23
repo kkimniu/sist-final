@@ -2,6 +2,7 @@ package io.cavia.trader.module.member.controller;
 
 import io.cavia.trader.module.member.service.SignupService;
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,7 +33,7 @@ public class SignupController {
     @PostMapping("/terms")
     public String processTerms(@ModelAttribute("signupForm")
                                @Validated(SignupForm.ValidationGroups.TermsGroup.class) SignupForm signupForm,
-                               BindingResult bindingResult, Model model) {
+                               BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "member/signup/terms";
         }
@@ -53,9 +54,14 @@ public class SignupController {
         if (bindingResult.hasErrors()) {
             return "member/signup/email";
         }
-
-        //TODO: 이메일 주소를 검증하고 인증키가 포함된 이메일 전송하는 서비스 메서드 넣어야함
-        signupService.sendVerificationEmail(signupForm.getEmail());
+        try {
+            signupService.validateDuplicateEmail(signupForm.getEmail());
+            //TODO: 이메일 전송 몇초 걸리고, 걸리는 동안 뷰 전환이 없어서, 발송 버튼을 계속 누를 수 있고 이메일도 계속 감.
+            signupService.sendVerificationEmail(signupForm.getEmail());
+        } catch (RuntimeException e) {
+            bindingResult.rejectValue("email", "runtimeError", e.getMessage());
+            return "member/signup/email";
+        }
         return "redirect:/signup/verify";
     }
 
@@ -72,11 +78,13 @@ public class SignupController {
         if (bindingResult.hasErrors()) {
             return "member/signup/verify";
         }
-        if (signupForm.getAuthKey().equals("921115")) {
-            return "redirect:/signup/nickname";
+        try {
+            signupService.verifyAuthKey(signupForm.getEmail(), signupForm.getAuthKey());
+        } catch (RuntimeException e) {
+            bindingResult.rejectValue("authKey", "runtimeError", e.getMessage());
+            return "member/signup/verify";
         }
-        //TODO: 이메일 인증키 검증하고 분기.
-        return "member/signup/verify";
+        return "redirect:/signup/nickname";
     }
 
     @GetMapping("/nickname")
@@ -92,7 +100,12 @@ public class SignupController {
         if (bindingResult.hasErrors()) {
             return "member/signup/nickname";
         }
-        //TODO: 닉네임 검증하고 분기.
+        try {
+            signupService.validateDuplicateNickname(signupForm.getNickname());
+        } catch (RuntimeException e) {
+            bindingResult.rejectValue("nickname", "runtimeError", e.getMessage());
+            return "member/signup/nickname";
+        }
         return "redirect:/signup/password";
     }
 
@@ -105,14 +118,21 @@ public class SignupController {
     public String processPassword(@ModelAttribute("signupForm")
                                   @Validated(SignupForm.ValidationGroups.PasswordGroup.class) SignupForm signupForm,
                                   BindingResult bindingResult) {
+        System.out.println("signupForm = " + signupForm);
+
         if (signupForm.getPassword() != null && signupForm.getPasswordConfirm() != null
                 && !signupForm.getPassword().equals(signupForm.getPasswordConfirm())) {
-            bindingResult.reject("password.mismatch", "비밀번호가 일치하지 않습니다");
+            bindingResult.rejectValue("passwordConfirm", "password.mismatch", "비밀번호가 일치하지 않습니다");
         }
         if (bindingResult.hasErrors()) {
             return "member/signup/password";
         }
-        //TODO: 패스워드 검증하고 분기.
+        try {
+            System.out.println(signupForm);
+            signupService.join(signupForm);
+        } catch (RuntimeException e) {
+            bindingResult.rejectValue("passwordConfirm", "runtimeError", e.getMessage());
+        }
         return "redirect:/signup/welcome";
     }
 

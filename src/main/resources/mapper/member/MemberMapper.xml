@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    namespace는 이 XML 파일과 연결될 MemberMapper 인터페이스의 전체 경로와
+    정확히 일치해야 합니다.
+-->
+<mapper namespace="io.cavia.trader.module.member.repository.MemberMapper">
+
+    <!--
+        회원 정보를 저장하는 INSERT 쿼리입니다.
+        - id: MemberMapper 인터페이스의 'save' 메서드와 연결됩니다.
+        - useGeneratedKeys="true": DB에서 자동으로 생성된 키(Auto Increment)를 사용하도록 설정합니다.
+        - keyProperty="id": 생성된 키 값을 파라미터로 받은 Member 객체의 'id' 필드에 다시 채워 넣습니다.
+    -->
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO members (
+        email,
+        password,
+        nickname,
+        cash,
+        total_score,
+        created_at
+        )
+        VALUES (
+        #{email},
+        #{password},
+        #{nickname},
+        #{cash},
+        #{totalScore},
+        #{createdAt}
+        )
+    </insert>
+
+    <!--
+        이메일 주소로 회원을 조회하는 SELECT 쿼리입니다.
+        - resultType: 쿼리 결과 한 행을 어떤 Java 객체에 담을지 지정합니다.
+          DB 컬럼의 snake_case(total_score)는 객체 필드의 camelCase(totalScore)로 자동 매핑됩니다.
+    -->
+    <select id="findByEmail" resultType="io.cavia.trader.module.member.entity.Member">
+        SELECT
+        id,
+        email,
+        password,
+        nickname,
+        cash,
+        total_score,
+        created_at,
+        nickname_updated_at,
+        password_updated_at
+        FROM
+        members
+        WHERE
+        email = #{email}
+    </select>
+
+    <!--
+        이메일 중복 여부를 확인하는 SELECT 쿼리입니다.
+        - resultType="boolean": 쿼리 결과(0 또는 1)를 Java의 boolean 타입으로 변환해줍니다.
+        - SELECT EXISTS(...): 불필요한 데이터를 가져오지 않고 존재 유무만 확인하는 가장 효율적인 방법입니다.
+    -->
+    <select id="existsByEmail" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM members WHERE email = #{email})
+    </select>
+
+    <!-- 닉네임 중복 여부를 확인하는 SELECT 쿼리입니다. -->
+    <select id="existsByNickname" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM members WHERE nickname = #{nickname})
+    </select>
+
+</mapper>

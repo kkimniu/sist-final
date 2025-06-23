@@ -42,6 +42,12 @@ public class SmtpEmailService implements EmailService {
         }
     }
 
+    /**
+     * 사용자의 이메일 인증을 위해 인증키가 포함된 이메일을 발송합니다.
+     *
+     * @param to      메일 받을 주소
+     * @param authKey 사용자에게 전달할 이메일 인증을 위한 인증키
+     */
     @Override
     public void sendAuthEmail(String to, String authKey) {
         Context context = new Context();
