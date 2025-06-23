@@ -16,21 +16,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RestWebClientImpl implements RestWebClient {
 
-    private final WebClient.Builder webClientBuilder;
-    private WebClient webClient;
-
-    public void setBaseUri(String baseUri) {
-            this.webClient = webClientBuilder
-                    .baseUrl(baseUri)
-                    .build();
-    }
+    private final WebClient webClient;
 
     public Mono<StocksDTO> getStocks() {
         /**
          * 현재 DB에 저장된 모든 종목 리스트를 가진 Mono객체를 반환합니다.
          */
         try {
-            setBaseUri("https://121.162.225.102:8081/cavia_homenet");
             return webClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/stocks")
@@ -49,7 +41,6 @@ public class RestWebClientImpl implements RestWebClient {
          * 현재 DB에 저장된 체결 집계 데이터 중 인자로 주입된 stockId를 가지고 있는 Row의 집합을 가진 Mono객체를 반환합니다.
          */
         try {
-            setBaseUri("https://121.162.225.102:8081/cavia_homenet");
             // 요청 보내고, 성공하면 응답 바디를 가져올 준비를 하고, 실패하면 예외를 던짐
             return webClient.get()
                     .uri(uriBuilder -> uriBuilder
@@ -69,7 +60,6 @@ public class RestWebClientImpl implements RestWebClient {
          * 현재 DB에 저장된 호가 집계 데이터 중 인자로 주입된 stockId를 가지고 있는 Row의 집합을 가진 Mono객체를 반환합니다.
          */
         try {
-            setBaseUri("https://121.162.225.102:8081/cavia_homenet");
             // 요청 보내고, 성공하면 응답 바디를 가져올 준비를 하고, 실패하면 예외를 던짐
             return webClient.get()
                     .uri(uriBuilder -> uriBuilder
