@@ -1,5 +1,6 @@
 package io.cavia.trader.module.client.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ public class QuotesOutput {
     private Long id;
 
     // 종목 id
+    @JsonProperty("stock_id")
     private Integer stockId;
 
     // 매도호가 1~10
@@ -43,35 +45,58 @@ public class QuotesOutput {
     private Integer bidp10;
 
     // 각 호가별 잔량 (매도)
+    @JsonProperty("askp_rsqn1")
     private Long askpRsqn1;
+    @JsonProperty("askp_rsqn2")
     private Long askpRsqn2;
+    @JsonProperty("askp_rsqn3")
     private Long askpRsqn3;
+    @JsonProperty("askp_rsqn4")
     private Long askpRsqn4;
+    @JsonProperty("askp_rsqn5")
     private Long askpRsqn5;
+    @JsonProperty("askp_rsqn6")
     private Long askpRsqn6;
+    @JsonProperty("askp_rsqn7")
     private Long askpRsqn7;
+    @JsonProperty("askp_rsqn8")
     private Long askpRsqn8;
+    @JsonProperty("askp_rsqn9")
     private Long askpRsqn9;
+    @JsonProperty("askp_rsqn10")
     private Long askpRsqn10;
 
     // 각 호가별 잔량 (매수)
+    @JsonProperty("bidp_rsqn1")
     private Long bidpRsqn1;
+    @JsonProperty("bidp_rsqn2")
     private Long bidpRsqn2;
+    @JsonProperty("bidp_rsqn3")
     private Long bidpRsqn3;
+    @JsonProperty("bidp_rsqn4")
     private Long bidpRsqn4;
+    @JsonProperty("bidp_rsqn5")
     private Long bidpRsqn5;
+    @JsonProperty("bidp_rsqn6")
     private Long bidpRsqn6;
+    @JsonProperty("bidp_rsqn7")
     private Long bidpRsqn7;
+    @JsonProperty("bidp_rsqn8")
     private Long bidpRsqn8;
+    @JsonProperty("bidp_rsqn9")
     private Long bidpRsqn9;
+    @JsonProperty("bidp_rsqn10")
     private Long bidpRsqn10;
 
     // 총 매도호가 잔량 증감
+    @JsonProperty("total_askp_rsqn_icdc")
     private Integer totalAskpRsqnIcdc;
 
     // 총 매수호가 잔량 증감
+    @JsonProperty("total_bidp_rsqn_icdc")
     private Integer totalBidpRsqnIcdc;
 
     // 생성 시간
+    @JsonProperty("created_at")
     private Timestamp createdAt;
 }
