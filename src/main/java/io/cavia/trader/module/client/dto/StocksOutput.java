@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class StocksOutput {
 
     // 고유번호
@@ -23,5 +25,5 @@ public class StocksOutput {
 
     // 생성 시간
     @JsonProperty("created_at")
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 }
