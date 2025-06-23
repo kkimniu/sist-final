@@ -1,0 +1,57 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layouts"
+      layout:decorate="layouts/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script th:inline="javascript">
+        var ws;
+        function conn() {
+            var nickname = document.fm.nickname.value;
+            if(nickname==''){
+                window.alert("닉네임을 입력하셔야합니다.");
+                return;
+            }
+            ws = new WebSocket("ws://:8081/chat/chat?nickname="+nickname);
+            ws.onmessage = onMsg;
+        }
+        function cl() {
+            ws.close();
+        }
+        function show() {
+            var msg = document.fm.msg.value;
+            document.fm.msg.value = '';
+            document.fm.msg.focus();
+            ws.send(msg);
+        }
+        function onMsg(event) {
+            var data = event.data;
+            document.fm.chatList.value += data + '\n';
+        }
+    </script>
+</head>
+<style>
+    #chatBox {
+        width: 400px;
+        height: 200px;
+        border: 1px solid #ccc;
+        overflow-y: scroll;
+        padding: 5px;
+        margin-bottom: 10px;
+    }
+    #chatBox img {
+        max-height: 100px;
+    }
+</style>
+<body>
+<h1>스프링 간단 채팅</h1>
+<form name="fm">
+    <textarea rows="10" cols="55" name="chatList"></textarea>
+    <div id="chatBox"></div>
+    <br> 닉네임:<input type="text" name="nickname" size="8">
+    <input type="text" name="msg"> <input type="button" value="전송" onclick="show()"><br>
+    <input type="button" value="입장하기" onclick="conn()">
+    <input type="button" value="퇴장하기" onclick="cl()">
+</form>
+</body>
+</html>
