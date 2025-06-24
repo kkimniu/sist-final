@@ -18,16 +18,19 @@ public class SignupForm {
         public interface TermsGroup {
         }
 
-        public interface EmailGroup extends TermsGroup{
+        public interface EmailGroup {
         }
 
-        public interface AuthKeyGroup extends EmailGroup{
+        public interface AuthKeyGroup {
         }
 
-        public interface NicknameGroup extends AuthKeyGroup{
+        public interface NicknameGroup {
         }
 
-        public interface PasswordGroup extends NicknameGroup{
+        public interface PasswordGroup {
+        }
+
+        public interface SignupGroup extends TermsGroup, EmailGroup, AuthKeyGroup, NicknameGroup, PasswordGroup {
         }
     }
 

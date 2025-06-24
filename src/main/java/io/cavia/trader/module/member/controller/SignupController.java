@@ -23,8 +23,14 @@ public class SignupController {
         return new SignupForm();
     }
 
+    @GetMapping
+    public String moveToSignupProcess() {
+        return "redirect:/signup/terms";
+    }
+
     @GetMapping("/terms")
     public String showTermsForm() {
+
         //TODO: 약관 파일을 불러와 넣어줘야함
         return "member/signup/terms";
     }
@@ -122,7 +128,7 @@ public class SignupController {
      */
     @PostMapping("/password")
     public String processPassword(@ModelAttribute("signupForm")
-                                  @Validated(SignupForm.ValidationGroups.PasswordGroup.class) SignupForm signupForm,
+                                  @Validated(SignupForm.ValidationGroups.SignupGroup.class) SignupForm signupForm,
                                   BindingResult bindingResult) {
 
         if (signupForm.getPassword() != null && signupForm.getPasswordConfirm() != null
