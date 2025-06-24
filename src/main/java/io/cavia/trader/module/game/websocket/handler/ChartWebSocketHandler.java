@@ -1,7 +1,6 @@
 package io.cavia.trader.module.game.websocket.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.cavia.trader.module.client.dto.TradesOutput;
 import io.cavia.trader.module.game.dto.Game;
 import io.cavia.trader.module.game.service.GameManagerImpl;
 import lombok.RequiredArgsConstructor;
@@ -9,9 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Component
 @RequiredArgsConstructor
@@ -28,13 +25,13 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
 
         try {
-            List<Long> stockBaseTime = new ArrayList<Long>();
-            stockBaseTime.add(game.getTrades()
-                    .get(0)
-                    .getCreatedAt()
-                    .atZone(ZoneId.systemDefault())
-                    .toInstant()
-                    .toEpochMilli()
+            AtomicLong stockBaseTime = new AtomicLong(
+                    game.getTrades()
+                            .get(0)
+                            .getCreatedAt()
+                            .atZone(ZoneId.systemDefault())
+                            .toInstant()
+                            .toEpochMilli()
             );
 
             Thread thread1 = new Thread(() -> {
@@ -47,15 +44,15 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                 .toInstant()
                                 .toEpochMilli();
 
-                        long timeDifference = relTime - stockBaseTime.get(0);
-                        stockBaseTime.set(0, relTime);
+                        long timeDifference = relTime - stockBaseTime.get();
+                        stockBaseTime.set(relTime);
                         Thread.sleep(timeDifference);
 
 
                         String tradesJson = objectMapper.writeValueAsString(trades);
                         // 메시지 전송 부분 동기화
                         synchronized (session) {
-                            if(session.isOpen()) session.sendMessage(new TextMessage(tradesJson));
+                            if (session.isOpen()) session.sendMessage(new TextMessage(tradesJson));
                         }
                     } catch (Exception e2) {
                         e2.printStackTrace();
@@ -63,14 +60,15 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                 });
             });
 
-            List<Long> orderBaseTime = new ArrayList<Long>();
-            orderBaseTime.add(game.getQuotes()
-                    .get(0)
-                    .getCreatedAt()
-                    .atZone(ZoneId.systemDefault())
-                    .toInstant()
-                    .toEpochMilli()
+            AtomicLong orderBaseTime = new AtomicLong(
+                    game.getQuotes()
+                            .get(0)
+                            .getCreatedAt()
+                            .atZone(ZoneId.systemDefault())
+                            .toInstant()
+                            .toEpochMilli()
             );
+
 
             Thread thread2 = new Thread(() -> {
                 game.getQuotes().forEach(quotes -> {
@@ -82,8 +80,8 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                 .toInstant()
                                 .toEpochMilli();
 
-                        long timeDifference = relTime - orderBaseTime.get(0);
-                        orderBaseTime.set(0, relTime);
+                        long timeDifference = relTime - orderBaseTime.get();
+                        orderBaseTime.set(relTime);
                         Thread.sleep(timeDifference);
 
 
@@ -91,7 +89,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                         // 메시지 전송 부분 동기화
                         synchronized (session) {
-                            if(session.isOpen()) session.sendMessage(new TextMessage(quotesJson));
+                            if (session.isOpen()) session.sendMessage(new TextMessage(quotesJson));
                         }
 
                     } catch (Exception e2) {
