@@ -23,10 +23,10 @@ public class GameManagerImpl implements GameManager {
 
         if (!games.isEmpty()) {
             // 현재시간 - 세션시작 시간을 분 단위로 치환한 값
-            int MinutesBetween = gameAdministrationService.getMinutesBetween(games.peekFirst());
+            int minutesBetween = gameAdministrationService.getMinutesBetween(games.peekFirst());
 
             // 세션의 생명 주기가 끝났으면 선입 세션 삭제
-            if (MinutesBetween >= GAME_LIFE_CYCLE) {
+            if (minutesBetween >= GAME_LIFE_CYCLE) {
                 // TODO 게임 세션 삭제 전 DB 저장 필요
                 games.removeFirst();
                 System.out.println("Game Session Closed, Games size: " + games.size());

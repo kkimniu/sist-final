@@ -26,7 +26,9 @@ public class GameAdministrationServiceImpl implements GameAdministrationService 
         Game game = new Game();
 
         game.setStockId(stocks
-                .get((int) (Math.floor(Math.random() * (stocks.size() - 1))))
+                .get(
+                        (int)(Math.random() * stocks.size())
+                )
                 .getId()
         );
 
@@ -60,7 +62,7 @@ public class GameAdministrationServiceImpl implements GameAdministrationService 
     public int getMinutesBetween(Game game) {
 
         // 현재 시간과 게임 시작 시간의 차이
-        int MinutesBetween = (int) (
+        int minutesBetween = (int) (
                 LocalDateTime.now()
                         .atZone(ZoneId.systemDefault())
                         .toInstant()
@@ -71,13 +73,13 @@ public class GameAdministrationServiceImpl implements GameAdministrationService 
                         .toEpochMilli());
 
         // 시간이 0이면 바로 리턴
-        if (MinutesBetween == 0) return MinutesBetween;
+        if (minutesBetween == 0) return minutesBetween;
 
         // 밀리세컨드 단위 오차 제거
-        MinutesBetween = MinutesBetween % (1000 * 60) == 0 ?
-                MinutesBetween / (1000 * 60)
-                : MinutesBetween / (1000 * 60) + 1;
+        minutesBetween = minutesBetween % (1000 * 60) == 0 ?
+                minutesBetween / (1000 * 60)
+                : minutesBetween / (1000 * 60) + 1;
 
-        return MinutesBetween;
+        return minutesBetween;
     }
 }
