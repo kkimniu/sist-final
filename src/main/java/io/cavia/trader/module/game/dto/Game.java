@@ -1,4 +1,4 @@
-package io.cavia.trader.module.game.service.dto;
+package io.cavia.trader.module.game.dto;
 
 import io.cavia.trader.module.client.dto.QuotesOutput;
 import io.cavia.trader.module.client.dto.TradesOutput;
