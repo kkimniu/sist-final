@@ -25,6 +25,8 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
         // 해당 게임 세션에 할당된 집계 데이터를 순차적으로 웹소켓으로 전송
         // TODO 중간에 난입한 유저일 경우 집계테이블에서 이미 지난 부분을 집합으로 먼저 전송하고 나머지 집계테이블을 보내야함
+        // TODO 각각의 웹소켓 연결 콜백이 순차 실행 주기 사이에 세션 생성 스레드풀이 겹쳐셔 실행 되면
+        //  한 유저가 가진 두개 의 세션이 각각 다른 게임에 포함 될 가능성이 있음 이 부분 동기화 하는 로직이 필요함
         try {
             AtomicLong stockBaseTime = new AtomicLong(
                     game.getTrades()
