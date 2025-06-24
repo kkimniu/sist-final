@@ -22,7 +22,7 @@ public class Game {
     private int stockId;
     private List<QuotesOutput> quotes;
     private List<TradesOutput> trades;
-    private Map<Integer, Session> chartSessions;
-    private Map<Integer, Session> chatSessions;
+    private Map<String, Session> chartSessions;
+    private Map<String, Session> chatSessions;
     private LocalDateTime startedAt;
 }
