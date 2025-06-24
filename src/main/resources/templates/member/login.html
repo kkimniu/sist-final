@@ -1,10 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>로그인</title>
 </head>
 <body>
-$END$
+
+<div class="container">
+
+    <div class="logo-area">
+        <a href="/">
+            <img src="/images/logo.png" alt="서비스 로고">
+        </a>
+    </div>
+
+    <div class="login-title">
+        <h2>로그인</h2>
+    </div>
+    <div class="login-content">
+        <p></p>
+    </div>
+
+    <form th:action="@{/login}" method="post">
+        <div>
+            <input type="email" id="email" name="email" placeholder="이메일을 입력하세요" required/>
+
+            <div th:if="${#fields.hasErrors('email')}" style="color:red;">
+                <p th:text="${#fields.errors('email')[0]}"></p>
+            </div>
+        </div>
+
+        <div>
+            <input type="password" id="password" name="password" required/>
+
+            <div th:if="${#fields.hasErrors('password')}" style="color:red;">
+                <p th:text="${#fields.errors('password')[0]}"></p>
+            </div>
+        </div>
+
+        <div th:if="${#fields.hasGlobalErrors()}" style="color:red;">
+            <p th:text="${#fields.globalErrors()[0]}"></p>
+        </div>
+
+        <div class="submit-area">
+            <button type="submit">로그인</button>
+        </div>
+
+        <div>
+            <a th:href="@{/signup}">회원 등록하기</a>
+        </div>
+        <div>
+            <a th:href="@{/reset-password}">비밀번호를 잊으셨나요?</a>
+        </div>
+
+    </form>
+
+</div>
+
 </body>
 </html>
