@@ -1,8 +1,9 @@
 package io.cavia.trader.module.member.service;
 
-import io.cavia.trader.module.member.controller.SignupForm;
+import io.cavia.trader.module.member.dto.LoginRequestDto;
+import io.cavia.trader.module.member.dto.SignupForm;
 
-public interface SignupService {
+public interface MemberService {
     void sendVerificationEmail(String email);
 
     void verifyAuthKey(String email, String authKey);
@@ -12,4 +13,6 @@ public interface SignupService {
     void validateDuplicateNickname(String nickname);
 
     void join(SignupForm signupForm);
+
+    String login(LoginRequestDto requestDto);
 }

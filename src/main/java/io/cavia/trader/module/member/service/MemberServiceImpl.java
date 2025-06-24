@@ -1,24 +1,29 @@
 package io.cavia.trader.module.member.service;
 
 import io.cavia.trader.common.email.EmailService;
-import io.cavia.trader.module.member.controller.SignupForm;
+import io.cavia.trader.module.jwt.JwtUtil;
+import io.cavia.trader.module.member.dto.LoginRequestDto;
+import io.cavia.trader.module.member.dto.SignupForm;
 import io.cavia.trader.module.member.entity.EmailVerification;
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.repository.EmailVerificationRepository;
 import io.cavia.trader.module.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class SignupServiceImpl implements SignupService {
+public class MemberServiceImpl implements MemberService {
 
     private final EmailService emailService;
     private final EmailVerificationRepository emailVerificationRepository;
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;//TODO: SecurityConfig 에서 빈으로 등록해야함
+    private final JwtUtil jwtUtil;
 
     @Value("${member.default.cash}")
     private Long memberDefaultCash;
@@ -75,5 +80,31 @@ public class SignupServiceImpl implements SignupService {
         verifyAuthKey(signupForm.getEmail(), signupForm.getAuthKey());
         memberRepository.save(member);
         System.out.println("회원가입 완료시 member = " + member);
+    }
+
+    /**
+     * 로그인 비즈니스 로G직
+     *
+     * @param requestDto 로그인 요청 정보
+     * @return 생성된 JWT
+     */
+    public String login(LoginRequestDto requestDto) {
+        String username = requestDto.getUsername();
+        String password = requestDto.getPassword();
+
+        // 1. 사용자 확인
+        // .orElseThrow() : Optional 객체가 비어있을 경우 예외를 던짐
+        Member member = memberRepository.findByEmail(username).orElseThrow(
+                () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
+        );
+
+        // 2. 비밀번호 확인
+        // passwordEncoder.matches(평문, 암호화된 비밀번호)
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // 3. JWT 생성 및 반환
+        return jwtUtil.createToken(member.getEmail());
     }
 }

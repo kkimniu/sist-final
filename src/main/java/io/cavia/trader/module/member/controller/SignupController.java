@@ -1,6 +1,7 @@
 package io.cavia.trader.module.member.controller;
 
-import io.cavia.trader.module.member.service.SignupService;
+import io.cavia.trader.module.member.dto.SignupForm;
+import io.cavia.trader.module.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.support.SessionStatus;
 @RequiredArgsConstructor
 public class SignupController {
 
-    private final SignupService signupService;
+    private final MemberService memberService;
 
     //  요청이 들어오면 제일 먼저 실행되는 메서드. 빈 signupForm 객체가 모델에 있음을 보장함. 만약 다른 메서드 파라미터에
 //  @ModelAttribute 로 signupForm을 먼저 세션에서 찾으면 이 메서드는 실행되지 않음.
@@ -60,9 +61,9 @@ public class SignupController {
             return "member/signup/email";
         }
         try {
-            signupService.validateDuplicateEmail(signupForm.getEmail());
+            memberService.validateDuplicateEmail(signupForm.getEmail());
             //TODO: 이메일 전송 몇초 걸리고, 걸리는 동안 뷰 전환이 없어서, 발송 버튼을 계속 누를 수 있고 이메일도 계속 감.
-            signupService.sendVerificationEmail(signupForm.getEmail());
+            memberService.sendVerificationEmail(signupForm.getEmail());
         } catch (RuntimeException e) {
             bindingResult.rejectValue("email", "runtimeError", e.getMessage());
             return "member/signup/email";
@@ -84,7 +85,7 @@ public class SignupController {
             return "member/signup/verify";
         }
         try {
-            signupService.verifyAuthKey(signupForm.getEmail(), signupForm.getAuthKey());
+            memberService.verifyAuthKey(signupForm.getEmail(), signupForm.getAuthKey());
         } catch (RuntimeException e) {
             bindingResult.rejectValue("authKey", "runtimeError", e.getMessage());
             return "member/signup/verify";
@@ -106,7 +107,7 @@ public class SignupController {
             return "member/signup/nickname";
         }
         try {
-            signupService.validateDuplicateNickname(signupForm.getNickname());
+            memberService.validateDuplicateNickname(signupForm.getNickname());
         } catch (RuntimeException e) {
             bindingResult.rejectValue("nickname", "runtimeError", e.getMessage());
             return "member/signup/nickname";
@@ -140,7 +141,7 @@ public class SignupController {
         }
         try {
             System.out.println("회원가입 시도시 signupForm = " + signupForm);
-            signupService.join(signupForm);
+            memberService.join(signupForm);
         } catch (RuntimeException e) {
             bindingResult.rejectValue("passwordConfirm", "runtimeError", e.getMessage());
             e.printStackTrace();
