@@ -19,11 +19,12 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        // 유저가 연결되었을 때, 가장 젊은 게임 세션에 연결
         Game game = gameManager.games.getLast();
-
         game.getChartSessions().put(session.getId(), session);
 
-
+        // 해당 게임 세션에 할당된 집계 데이터를 순차적으로 웹소켓으로 전송
+        // TODO 중간에 난입한 유저일 경우 집계테이블에서 이미 지난 부분을 집합으로 먼저 전송하고 나머지 집계테이블을 보내야함
         try {
             AtomicLong stockBaseTime = new AtomicLong(
                     game.getTrades()
@@ -117,10 +118,10 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
-
+    // 유저가 웹소켓 연결을 종료하면 유저가 속한 세션을 찾아서 삭제
         for (Game game : gameManager.games) {
             if (game.getChartSessions().containsKey(session.getId())) {
-                game.getChartSessions().remove(session.getId());
+                    game.getChartSessions().remove(session.getId());
                 break;
             }
         }
