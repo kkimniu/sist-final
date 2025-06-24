@@ -56,6 +56,10 @@ public class SignupServiceImpl implements SignupService {
         }
     }
 
+    public void validateTermsAgreement() {
+
+    }
+
     @Override
     public void join(SignupForm signupForm) {
 
@@ -66,8 +70,10 @@ public class SignupServiceImpl implements SignupService {
                 .cash(memberDefaultCash)
                 .build();
 
-        validateDuplicateEmail(signupForm.getEmail());
         validateDuplicateNickname(signupForm.getNickname());
+        validateDuplicateEmail(signupForm.getEmail());
+        verifyAuthKey(signupForm.getEmail(), signupForm.getAuthKey());
         memberRepository.save(member);
+        System.out.println("회원가입 완료시 member = " + member);
     }
 }

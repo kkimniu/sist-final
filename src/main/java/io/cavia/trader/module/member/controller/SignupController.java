@@ -2,12 +2,11 @@ package io.cavia.trader.module.member.controller;
 
 import io.cavia.trader.module.member.service.SignupService;
 import lombok.RequiredArgsConstructor;
-import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
 
 @Controller
 @RequestMapping("/signup")
@@ -114,30 +113,39 @@ public class SignupController {
         return "member/signup/password";
     }
 
+    /**
+     * 입력한 비밀번호를 검증하고, 전체 폼 클래스를 다시 검증함. 검증 통과하면 회원가입 시도
+     *
+     * @param signupForm    세션에 있는 폼 클래스, 사용자가 입력한 정보들이 세션에 저장되어 있음
+     * @param bindingResult 폼 클래스 검증 결과
+     * @return 다음 페이지 뷰
+     */
     @PostMapping("/password")
     public String processPassword(@ModelAttribute("signupForm")
                                   @Validated(SignupForm.ValidationGroups.PasswordGroup.class) SignupForm signupForm,
                                   BindingResult bindingResult) {
-        System.out.println("signupForm = " + signupForm);
 
         if (signupForm.getPassword() != null && signupForm.getPasswordConfirm() != null
                 && !signupForm.getPassword().equals(signupForm.getPasswordConfirm())) {
-            bindingResult.rejectValue("passwordConfirm", "password.mismatch", "비밀번호가 일치하지 않습니다");
+            bindingResult.rejectValue("passwordConfirm", "password.mismatch", "비밀번호가 일치하지 않습니다.");
         }
         if (bindingResult.hasErrors()) {
             return "member/signup/password";
         }
         try {
-            System.out.println(signupForm);
+            System.out.println("회원가입 시도시 signupForm = " + signupForm);
             signupService.join(signupForm);
         } catch (RuntimeException e) {
             bindingResult.rejectValue("passwordConfirm", "runtimeError", e.getMessage());
+            e.printStackTrace();
+            return "member/signup/password";
         }
         return "redirect:/signup/welcome";
     }
 
     @GetMapping("/welcome")
-    public String showWelcomePage() {
+    public String showWelcomePage(SessionStatus sessionStatus) {
+        sessionStatus.setComplete();
         return "member/signup/welcome";
     }
 }
