@@ -56,6 +56,6 @@ public class SmtpEmailService implements EmailService {
         // 템플릿을 사용하여 HTML 본문 생성
         String htmlBody = templateEngine.process("email/auth-email", context);
 
-        sendEmail(to, "[Trader.id] 이메일 인증", htmlBody);
+        sendEmail(to, "[TRADER.IO] 이메일 인증", htmlBody);
     }
 }
