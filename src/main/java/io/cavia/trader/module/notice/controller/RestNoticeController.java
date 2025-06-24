@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
 /**
  * 공지사항 저장하는 컨트롤러 만듬 예외처리는 컨트롤러에서햇음
  * 이유는 이전에 선생님도 컨트롤러에서 예외처리했어서 따라함
- * noticeDto.setCreate_at(new Timestamp(System.currentTimeMillis()));
- * 이유는 컴럼값이 Timestamp로 되어잇어서 거기에 맞추고 싶어서 사용함
  * 따로 java에서 자장한 이유는 컬럼에 자동으로 저장하지않기 때문에
  */
 @RestController
@@ -41,7 +39,7 @@ public class RestNoticeController {
         if (noticeDto.getContent() == null || noticeDto.getContent().isBlank()) {
             throw new InvalidNoticeRequestException("내용은 비워둘 수 없습니다");
         }
-        noticeDto.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        noticeDto.setCreatedAt(LocalDateTime.now());
         int result = noticeService.saveNotice(noticeDto);
         if (result != 1) {
             throw new NoticeOperationFailedException("공지사항 저장이 실패했습니다");
@@ -105,7 +103,7 @@ public class RestNoticeController {
         map.put("title", noticeDto.getTitle());
         map.put("content", noticeDto.getContent());
         map.put("pinned", noticeDto.isPinned());
-        map.put("updatedAt", new Timestamp(System.currentTimeMillis()));
+        map.put("updatedAt", LocalDateTime.now());
         int result = noticeService.updateNotice(map);
         if (result != 1) {
             throw new NoticeOperationFailedException("공지사항 수정을 실패했습니다");
@@ -151,7 +149,7 @@ public class RestNoticeController {
         if (booleanPinned) {
             map.put("pinned", noticeDto.isPinned());
         }
-        map.put("updatedAt", new Timestamp(System.currentTimeMillis()));
+        map.put("updatedAt", LocalDateTime.now());
         int result = noticeService.patchNotice(map);
         if (result != 1) {
             throw new NoticeOperationFailedException("공지사항 수정을 실패했습니다");

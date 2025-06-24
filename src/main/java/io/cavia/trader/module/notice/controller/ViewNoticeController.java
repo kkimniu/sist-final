@@ -2,7 +2,7 @@ package io.cavia.trader.module.notice.controller;
 
 import io.cavia.trader.module.notice.dto.NoticeDto;
 import io.cavia.trader.module.notice.page.PagingUtil;
-import io.cavia.trader.module.notice.service.NoticeServiceImple;
+import io.cavia.trader.module.notice.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,14 +18,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ViewNoticeController {
 
-    private final NoticeServiceImple noticeServiceImple;
+    private final NoticeService noticeService;
 
     @GetMapping("/noticeList")
     public String noticeList(@RequestParam(value = "cp", defaultValue = "1") int cp, Model model) {
         int listSize = 30;
         int pageSize = 5;
-        int countNotice = noticeServiceImple.noticeCount();
-        List<NoticeDto> list = noticeServiceImple.noticeList(cp, listSize);
+        int countNotice = noticeService.noticeCount();
+        List<NoticeDto> list = noticeService.noticeList(cp, listSize);
         Map<String, Object> paging = PagingUtil.makePaging("notices/noticeList", countNotice, listSize, pageSize, cp);
 
         model.addAttribute("lists", list);
@@ -35,7 +35,7 @@ public class ViewNoticeController {
 
     @GetMapping("/noticeDetail")
     public String noticeDetail(@RequestParam(value = "id") int id,@RequestParam(value = "cp" , defaultValue = "1") int cp, Model model) {
-        NoticeDto dto = noticeServiceImple.findById(id);
+        NoticeDto dto = noticeService.findById(id);
         model.addAttribute("dto", dto);
         model.addAttribute("cp" , cp);
         return "notices/noticeDetail";
