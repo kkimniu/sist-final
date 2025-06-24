@@ -2,7 +2,7 @@ package io.cavia.trader.module.game.websocket.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cavia.trader.module.game.dto.Game;
-import io.cavia.trader.module.game.service.GameManagerImpl;
+import io.cavia.trader.module.game.service.GameManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
@@ -14,13 +14,13 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequiredArgsConstructor
 public class ChartWebSocketHandler implements WebSocketHandler {
 
-    private final GameManagerImpl gameManager;
+    private final GameManager gameManager;
     private final ObjectMapper objectMapper;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         // 유저가 연결되었을 때, 가장 젊은 게임 세션에 연결
-        Game game = gameManager.games.getLast();
+        Game game = gameManager.getGames().getLast();
         game.getChartSessions().put(session.getId(), session);
 
         // 해당 게임 세션에 할당된 집계 데이터를 순차적으로 웹소켓으로 전송
@@ -121,7 +121,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
     // 유저가 웹소켓 연결을 종료하면 유저가 속한 세션을 찾아서 삭제
-        for (Game game : gameManager.games) {
+        for (Game game : gameManager.getGames()) {
             if (game.getChartSessions().containsKey(session.getId())) {
                     game.getChartSessions().remove(session.getId());
                 break;

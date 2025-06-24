@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayDeque;
+import java.util.Deque;
 
 @Component
 @RequiredArgsConstructor
@@ -15,7 +16,7 @@ public class GameManagerImpl implements GameManager {
 
     private final GameAdministrationService gameAdministrationService;
     private final int GAME_LIFE_CYCLE = 30;
-    public ArrayDeque<Game> games = new ArrayDeque<>();
+    public Deque<Game> games = new ArrayDeque<>();
 
     @Scheduled(cron = "0 0/10 * * * *")
     @Override
@@ -36,6 +37,11 @@ public class GameManagerImpl implements GameManager {
         // 게임 세션 1개 생성
         games.add(gameAdministrationService.createGame());
         System.out.println("Game Session Created, Games size: " + games.size());
+    }
+
+    @Override
+    public Deque<Game> getGames() {
+        return this.games;
     }
 
 }
