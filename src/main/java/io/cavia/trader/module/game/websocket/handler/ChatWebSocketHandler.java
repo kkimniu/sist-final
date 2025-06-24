@@ -1,4 +1,4 @@
-package io.cavia.trader.module.game.chat.handler;
+package io.cavia.trader.module.game.websocket.handler;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;

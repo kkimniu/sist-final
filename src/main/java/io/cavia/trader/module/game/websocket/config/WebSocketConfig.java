@@ -1,6 +1,6 @@
-package io.cavia.trader.common.config;
+package io.cavia.trader.module.game.websocket.config;
 
-import io.cavia.trader.module.game.chat.handler.ChatWebSocketHandler;
+import io.cavia.trader.module.game.websocket.handler.ChatWebSocketHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
