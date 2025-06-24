@@ -20,7 +20,7 @@ public class WebClientConfig {
         // 대용량 문자열을 디코딩 하기 위해 WebClient의 응답 버퍼 사이즈 10mb로 설정
         return webClientBuilder
                 .exchangeStrategies(ExchangeStrategies.builder()
-                        .codecs(configurer -> configur
+                        .codecs(configurer -> configurer
                                 .defaultCodecs()
                                 .maxInMemorySize(10 * 1024 * 1024)
                         )
