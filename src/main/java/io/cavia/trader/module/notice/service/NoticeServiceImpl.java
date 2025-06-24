@@ -17,7 +17,7 @@ import java.util.Map;
  */
 @Service
 @RequiredArgsConstructor
-public class NoticeServiceImple implements NoticeService {
+public class NoticeServiceImpl implements NoticeService {
     private final NoticeMapper noticeMapper;
 
     @Override
