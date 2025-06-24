@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  * @NoArgsConstructor
@@ -22,8 +20,8 @@ public class NoticeDto {
     private int id;
     private String title;
     private String content;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private boolean pinned;
 
     public int getId() {
@@ -51,20 +49,20 @@ public class NoticeDto {
     }
 
     @JsonProperty("created_at")
-    public Timestamp getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
     @JsonProperty("updated_at")
-    public Timestamp getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Timestamp updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
