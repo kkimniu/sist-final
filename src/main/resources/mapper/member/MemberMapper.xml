@@ -90,4 +90,15 @@
         SELECT EXISTS(SELECT 1 FROM members WHERE nickname = #{nickname})
     </select>
 
+    <!--nickname을 수정하는 UPDATE 쿼리입니다.-->
+    <update id="updateNickname">
+        UPDATE members
+        <set>
+            nickname = #{nickname},
+            nickname_updated_at = #{nicknameUpdatedAt}
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
 </mapper>
