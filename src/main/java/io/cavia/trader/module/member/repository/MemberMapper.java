@@ -38,6 +38,11 @@ public interface MemberMapper {
     int updateNickname(@Param("id") Long id, @Param("nickname") String nickname, @Param("nicknameUpdatedAt") LocalDateTime nicknameUpdatedAt);
 
     /**
+     * 비밀번호를 수정합니다.
+     */
+    int updatePassword(@Param("id") int id, @Param("password") String password, @Param("passwordUpdatedAt") LocalDateTime passwordUpdatedAt);
+
+    /**
      * 이메일이 이미 있는지 조회합니다.
      *
      * @param email 조회할 이메일
@@ -53,4 +58,8 @@ public interface MemberMapper {
      */
     boolean existsByNickname(String nickname);
 
+    /**
+     * 비밀번호가 있는지 조회.
+     */
+    boolean existsByIdAndPassword(int id, String password);
 }
