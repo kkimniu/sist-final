@@ -20,6 +20,7 @@
         email,
         password,
         nickname,
+        role,
         cash,
         total_score,
         created_at
@@ -28,6 +29,7 @@
         #{email},
         #{password},
         #{nickname},
+        #{role},
         #{cash},
         #{totalScore},
         #{createdAt}
@@ -45,6 +47,7 @@
         email,
         password,
         nickname,
+        role,
         cash,
         total_score,
         created_at,

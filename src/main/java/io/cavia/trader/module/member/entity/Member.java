@@ -33,6 +33,11 @@ public class Member {
     private String nickname;
 
     /**
+     * 회원의 권한 (USER or ADMIN, 기본값: USER)
+     */
+    @Builder.Default
+    private MemberRoleEnum role = MemberRoleEnum.USER;
+    /**
      * 보유 캐시 (기본값: 0)
      */
     @Builder.Default
