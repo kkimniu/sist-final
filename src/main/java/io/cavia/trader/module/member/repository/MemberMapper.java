@@ -24,6 +24,13 @@ public interface MemberMapper {
     Optional<Member> findByEmail(String email);
 
     /**
+     * id로 회원을 조회합니다.
+     *
+     * @return 조회된 회원 객체 (없을 경우 Optional.empty())
+     */
+    Optional<Member> findById(Long id);
+
+    /**
      * 이메일이 이미 있는지 조회합니다.
      *
      * @param email 조회할 이메일

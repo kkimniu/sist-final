@@ -57,6 +57,26 @@
     </select>
 
     <!--
+        id로 회원을 조회하는 SELECT 쿼리입니다.
+    -->
+    <select id="findById" resultType="io.cavia.trader.module.member.entity.Member">
+        SELECT
+        id,
+        email,
+        password,
+        nickname,
+        cash,
+        total_score,
+        created_at,
+        nickname_updated_at,
+        password_updated_at
+        FROM
+        members
+        WHERE
+        id = #{id}
+    </select>
+
+    <!--
         이메일 중복 여부를 확인하는 SELECT 쿼리입니다.
         - resultType="boolean": 쿼리 결과(0 또는 1)를 Java의 boolean 타입으로 변환해줍니다.
         - SELECT EXISTS(...): 불필요한 데이터를 가져오지 않고 존재 유무만 확인하는 가장 효율적인 방법입니다.
