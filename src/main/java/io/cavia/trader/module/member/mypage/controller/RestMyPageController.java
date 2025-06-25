@@ -36,6 +36,12 @@ public class RestMyPageController {
         return  ResponseEntity.status(200).body("중복없음");
     }
 
+    @GetMapping("/password-verification")
+    public ResponseEntity<String> getcheckPassword(@RequestParam int id,@RequestParam String nickname){
+        mypageService.validateDuplicatePassword(id,nickname);
+        return  ResponseEntity.status(200).body("비밀번호 맞음");
+    }
+
     @PatchMapping("/nickname")
     public ResponseEntity<String> updateNickname(@RequestBody NicknameUpdateRequestDto nicknameUpdateRequestDto) {
         mypageService.changeNickname(nicknameUpdateRequestDto.getId(),nicknameUpdateRequestDto.getNickname(),LocalDateTime.now());
