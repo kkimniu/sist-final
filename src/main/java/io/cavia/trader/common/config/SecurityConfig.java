@@ -48,7 +48,12 @@ public class SecurityConfig {
         // 요청에 대한 접근 권한 설정
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
-                        .requestMatchers("/api/member/**").permitAll() // '/api/member/'로 시작하는 모든 요청은 허용
+                        .requestMatchers(
+                                "/",
+                                "/signup",
+                                "/signup/**",
+                                "/login").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
         );
 

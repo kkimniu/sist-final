@@ -21,25 +21,13 @@
         <p></p>
     </div>
 
-    <form th:action="@{/login}" method="post">
+    <form id="login-form">
         <div>
-            <input type="email" id="email" name="email" placeholder="이메일을 입력하세요" required/>
-
-            <div th:if="${#fields.hasErrors('email')}" style="color:red;">
-                <p th:text="${#fields.errors('email')[0]}"></p>
-            </div>
+            <input type="email" id="username" name="username" placeholder="이메일을 입력하세요" required/>
         </div>
 
         <div>
-            <input type="password" id="password" name="password" required/>
-
-            <div th:if="${#fields.hasErrors('password')}" style="color:red;">
-                <p th:text="${#fields.errors('password')[0]}"></p>
-            </div>
-        </div>
-
-        <div th:if="${#fields.hasGlobalErrors()}" style="color:red;">
-            <p th:text="${#fields.globalErrors()[0]}"></p>
+            <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" required/>
         </div>
 
         <div class="submit-area">
@@ -56,6 +44,66 @@
     </form>
 
 </div>
+
+<script>
+    // id가 'login-form'인 form 요소의 'submit' 이벤트를 감지하는 리스너를 추가합니다.
+    document.getElementById('login-form').addEventListener('submit', function(event) {
+        // form의 기본 제출 동작(페이지 새로고침)을 막습니다.
+        event.preventDefault();
+
+        // username과 password 입력 필드에서 값을 가져옵니다.
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        // 서버로 보낼 데이터를 Javascript 객체 형태로 만듭니다.
+        const loginData = {
+            username: username,
+            password: password
+        };
+
+        // fetch API를 사용해 로그인 API를 호출합니다.
+        fetch('/login', {
+            method: 'POST', // HTTP 요청 메서드
+            headers: {
+                'Content-Type': 'application/json', // 요청 본문의 데이터 타입
+            },
+            body: JSON.stringify(loginData) // Javascript 객체를 JSON 문자열로 변환
+        })
+        .then(response => {
+            // 서버로부터 받은 응답(response)을 처리합니다.
+            if (response.ok) { // HTTP 상태 코드가 200-299일 경우 (성공)
+                // 성공했다면 응답 객체 자체를 다음 .then()으로 넘깁니다.
+                return response;
+            } else {
+                // HTTP 상태 코드가 4xx, 5xx 등 에러일 경우
+                // 응답 본문에 담긴 에러 메시지를 읽어와서 Promise를 거부(reject)합니다.
+                return response.text().then(text => {
+                    throw new Error(text || "로그인에 실패했습니다.");
+                });
+            }
+        })
+        .then(response => {
+            // 위에서 성공적으로 응답 객체를 받았을 때 실행됩니다.
+            // 응답 헤더에서 'Authorization' 토큰을 가져옵니다.
+            const bearerToken = response.headers.get('Authorization');
+            if (bearerToken) {
+                const token = bearerToken.split(' ')[1]; // 'Bearer ' 접두사 제거
+                // 브라우저의 로컬 스토리지에 JWT를 저장합니다.
+                localStorage.setItem('jwt-token', token);
+                alert('로그인에 성공했습니다!');
+                // 메인 페이지로 이동합니다.
+                window.location.href = '/';
+            }
+        })
+        .catch(error => {
+            // fetch 과정에서 네트워크 에러가 발생했거나, 위에서 우리가 직접 throw한 에러를 여기서 잡습니다.
+            console.error('로그인 처리 중 에러 발생:', error);
+            // 에러 객체의 메시지를 사용자에게 보여줍니다.
+            alert(error.message);
+        });
+    });
+</script>
+
 
 </body>
 </html>

@@ -38,6 +38,7 @@ public class LoginController {
             // JwtUtil에 상수로 정의해둔 헤더 키와 접두사를 사용
             response.setHeader(JwtUtil.AUTHORIZATION_HEADER, JwtUtil.BEARER_PREFIX + token);
 
+            System.out.println(JwtUtil.AUTHORIZATION_HEADER + " : " + JwtUtil.BEARER_PREFIX + token);
             return ResponseEntity.ok("로그인 성공");
 
         } catch (IllegalArgumentException e) {
