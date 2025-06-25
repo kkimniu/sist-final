@@ -99,6 +99,9 @@
     let stickRefX = marginLeft + LayoutWidth;
     let stickRefY = marginTop + LayoutHeight / 2;
 
+    let candleRefX = marginLeft + LayoutWidth;
+    let candleRefY = marginTop + LayoutHeight / 2;
+
     const guideLineLengthY = 8;
     const guideLineLengthX = 5;
 
@@ -288,7 +291,7 @@
         priceChartWriterCtx.stroke();
 
         //console.log("valuePixels: " + valuePixels + " highPointPixels: " + highPointPixels + " lowPointPixels: " + lowPointPixels);
-        //console.log("stickRefX: " + RefX + ", stickRefY: " + RefY + ", width: " + width + ", value: " + value + ", highpoint: " + highPoint + ", lowpoint: " + lowPoint + ", tickSize: " + tickSize + ", viewRate: " + viewRate);
+        console.log("stickRefX: " + RefX + ", stickRefY: " + RefY + ", width: " + width + ", value: " + value + ", highpoint: " + highPoint + ", lowpoint: " + lowPoint + ", tickSize: " + tickSize + ", viewRate: " + viewRate);
     }
 
     function drowStick(RefX, RefY, width, value) {
@@ -304,14 +307,15 @@
         tradeVolumeChartWriterCtx.fill();
 
 
-        //console.log("stickRefX: " + RefX + ", stickRefY: " + RefY + ", width: " + width + ", value: " + value);
+        console.log("stickRefX: " + RefX + ", stickRefY: " + RefY + ", width: " + width + ", value: " + value);
     }
 
-    function shiftArrayRight(oldArray) {
+    function shiftArrayRight(oldArray, newValue) {
         let newArray = new Array(oldArray.length).fill(0);
         for (let i = 0; i < oldArray.length; i++) {
             newArray[i + 1] = oldArray[i];
         }
+        newArray[0] = newValue;
         return newArray;
     }
 
@@ -398,51 +402,59 @@
                     let grapeTime = new Date(stockData.created_at);
                     if (grapeTime - relTime >= Min5) {
                         priceChartSelectData[0] = shiftArrayRight(priceChartSelectData[0]);
-                        priceChartSelectDataMaxPoint[0] = shiftArrayRight(priceChartSelectDataMaxPoint[0]);
-                        priceChartSelectDataMaxPoint[0][0] = stockData.stck_prpr;
-                        priceChartSelectDataMinPoint[0] = shiftArrayRight(priceChartSelectDataMinPoint[0]);
-                        priceChartSelectDataMinPoint[0][0] = stockData.stck_prpr;
-                        priceChartSelectDataZeroPoint[0] = shiftArrayRight(priceChartSelectDataZeroPoint[0]);
-                        priceChartSelectDataZeroPoint[0][0] = stockData.stck_prpr;
+                        priceChartSelectDataMaxPoint[0] = shiftArrayRight(priceChartSelectDataMaxPoint[0], stockData.stck_prpr);
+                        priceChartSelectDataMinPoint[0] = shiftArrayRight(priceChartSelectDataMinPoint[0], stockData.stck_prpr);
+                        priceChartSelectDataZeroPoint[0] = shiftArrayRight(priceChartSelectDataZeroPoint[0], stockData.stck_prpr);
                         relTime = grapeTime;
-                        stickRefY = marginTop + LayoutHeight / 2;
+                        candleRefY = marginTop + LayoutHeight / 2;
                         expandGraph(0, priceChartWriter, priceChartLayout);
+
+                        selectData[0] = shiftArrayRight(selectData[0], stockData.cntg_vol);
+                        showValueLate = getMax(selectData[0]);
+                        stickRefY = marginTop + LayoutHeight;
+                        expandGraph(0, tradeVolumeChartWriter, tradeVolumeChartLayout);
                     }
                     if (grapeTime - relTime >= Min3) {
                         priceChartSelectData[1] = shiftArrayRight(priceChartSelectData[1]);
-                        priceChartSelectDataMaxPoint[1] = shiftArrayRight(priceChartSelectDataMaxPoint[1]);
-                        priceChartSelectDataMaxPoint[1][0] = stockData.stck_prpr;
-                        priceChartSelectDataMinPoint[1] = shiftArrayRight(priceChartSelectDataMinPoint[1]);
-                        priceChartSelectDataMinPoint[1][0] = stockData.stck_prpr;
-                        priceChartSelectDataZeroPoint[1] = shiftArrayRight(priceChartSelectDataZeroPoint[1]);
-                        priceChartSelectDataZeroPoint[1][0] = stockData.stck_prpr;
+                        priceChartSelectDataMaxPoint[1] = shiftArrayRight(priceChartSelectDataMaxPoint[1], stockData.stck_prpr);
+                        priceChartSelectDataMinPoint[1] = shiftArrayRight(priceChartSelectDataMinPoint[1], stockData.stck_prpr);
+                        priceChartSelectDataZeroPoint[1] = shiftArrayRight(priceChartSelectDataZeroPoint[1], stockData.stck_prpr);
                         relTime = grapeTime;
-                        stickRefY = marginTop + LayoutHeight / 2;
+                        candleRefY = marginTop + LayoutHeight / 2;
                         expandGraph(1, priceChartWriter, priceChartLayout);
+
+                        selectData[1] = shiftArrayRight(selectData[1], stockData.cntg_vol);
+                        showValueLate = getMax(selectData[1]);
+                        stickRefY = marginTop + LayoutHeight;
+                        expandGraph(1, tradeVolumeChartWriter, tradeVolumeChartLayout);
                     }
                     if (grapeTime - relTime >= Min1) {
                         priceChartSelectData[2] = shiftArrayRight(priceChartSelectData[2]);
-                        priceChartSelectDataMaxPoint[2] = shiftArrayRight(priceChartSelectDataMaxPoint[2]);
-                        priceChartSelectDataMaxPoint[2][0] = stockData.stck_prpr;
-                        priceChartSelectDataMinPoint[2] = shiftArrayRight(priceChartSelectDataMinPoint[2]);
-                        priceChartSelectDataMinPoint[2][0] = stockData.stck_prpr;
-                        priceChartSelectDataZeroPoint[2] = shiftArrayRight(priceChartSelectDataZeroPoint[2]);
-                        priceChartSelectDataZeroPoint[2][0] = stockData.stck_prpr;
+                        priceChartSelectDataMaxPoint[2] = shiftArrayRight(priceChartSelectDataMaxPoint[2], stockData.stck_prpr);
+                        priceChartSelectDataMinPoint[2] = shiftArrayRight(priceChartSelectDataMinPoint[2], stockData.stck_prpr);
+                        priceChartSelectDataZeroPoint[2] = shiftArrayRight(priceChartSelectDataZeroPoint[2], stockData.stck_prpr);
                         relTime = grapeTime;
-                        stickRefY = marginTop + LayoutHeight / 2;
+                        candleRefY = marginTop + LayoutHeight / 2;
                         expandGraph(2, priceChartWriter, priceChartLayout);
+
+                        selectData[2] = shiftArrayRight(selectData[2], stockData.cntg_vol);
+                        showValueLate = getMax(selectData[2]);
+                        stickRefY = marginTop + LayoutHeight;
+                        expandGraph(2, tradeVolumeChartWriter, tradeVolumeChartLayout);
                     }
                     if (grapeTime - relTime >= Sec30) {
                         priceChartSelectData[3] = shiftArrayRight(priceChartSelectData[3]);
-                        priceChartSelectDataMaxPoint[3] = shiftArrayRight(priceChartSelectDataMaxPoint[3]);
-                        priceChartSelectDataMaxPoint[3][0] = stockData.stck_prpr;
-                        priceChartSelectDataMinPoint[3] = shiftArrayRight(priceChartSelectDataMinPoint[3]);
-                        priceChartSelectDataMinPoint[3][0] = stockData.stck_prpr;
-                        priceChartSelectDataZeroPoint[3] = shiftArrayRight(priceChartSelectDataZeroPoint[3]);
-                        priceChartSelectDataZeroPoint[3][0] = stockData.stck_prpr;
+                        priceChartSelectDataMaxPoint[3] = shiftArrayRight(priceChartSelectDataMaxPoint[3], stockData.stck_prpr);
+                        priceChartSelectDataMinPoint[3] = shiftArrayRight(priceChartSelectDataMinPoint[3], stockData.stck_prpr);
+                        priceChartSelectDataZeroPoint[3] = shiftArrayRight(priceChartSelectDataZeroPoint[3], stockData.stck_prpr);
                         relTime = grapeTime;
-                        stickRefY = marginTop + LayoutHeight / 2;
+                        candleRefY = marginTop + LayoutHeight / 2;
                         expandGraph(3, priceChartWriter, priceChartLayout);
+
+                        selectData[3] = shiftArrayRight(selectData[3], stockData.cntg_vol);
+                        showValueLate = getMax(selectData[3]);
+                        stickRefY = marginTop + LayoutHeight;
+                        expandGraph(3, tradeVolumeChartWriter, tradeVolumeChartLayout);
                     }
                 }
 
@@ -463,10 +475,19 @@
                 priceChartSelectData[3][0] = stockData.stck_prpr;
                 priceChartSelectData[4].push(stockData.stck_prpr);
 
+                // 거래량 저장
+                selectData[0][0] += stockData.cntg_vol;
+                selectData[1][0] += stockData.cntg_vol;
+                selectData[2][0] += stockData.cntg_vol;
+                selectData[3][0] += stockData.cntg_vol;
+                selectData[4].push(stockData.cntg_vol);
 
-                // 거래량 그래프 캔들 그리기
+
+                // 그래프 그릴 x좌표 연산
+                candleRefX = LayoutWidth + marginLeft - LayoutWidth / graphComp + valueStickWidth;
                 stickRefX = LayoutWidth + marginLeft - LayoutWidth / graphComp + valueStickWidth;
 
+                // 그래프 상 고가, 저가 기준으로 상하 화면에 대한 그래프 비율 연산
                 let priceGap = priceChartSelectDataZeroPoint[selectDataIndex][0] - stockData.stck_prpr;
                 let highPointGap = priceChartSelectDataMaxPoint[selectDataIndex][0] - priceChartSelectDataZeroPoint[selectDataIndex][0];
                 let lowPointGap = priceChartSelectDataZeroPoint[selectDataIndex][0] - priceChartSelectDataMinPoint[selectDataIndex][0];
@@ -476,82 +497,44 @@
                         (stockData.stck_prpr - getMin(priceChartSelectDataMinPoint[selectDataIndex], graphComp)) / tickSize
                         + 20);
 
-                console.log(viewRate);
+                // 거래량 고점 갱신 시 그래프 표시 비율 연산
+                let stickValue;
+                if (selectData[selectDataIndex][0] > showValueLate && selectData[selectDataIndex][1] !== undefined) {
+                    showValueLate = selectData[selectDataIndex][0];
+                    stickRefY -= LayoutHeight * 0.8;
+                    stickValue = LayoutHeight * 0.8;
+                } else {
+                    stickRefY -= stockData.cntg_vol / showValueLate * LayoutHeight * 0.8;
+                    stickValue = selectData[selectDataIndex][0] / showValueLate * LayoutHeight * 0.8
+                }
 
-                drowCandle(stickRefX, stickRefY, valueStickWidth, priceGap, highPointGap, lowPointGap, tickSize, viewRate);
+                // 최신 그래프 그리기
+                drowCandle(candleRefX, candleRefY, valueStickWidth, priceGap, highPointGap, lowPointGap, tickSize, viewRate);
+                drowStick(stickRefX, stickRefY, valueStickWidth, stickValue);
 
-                let stickRefY2 = stickRefY;
+                // 과거 캔들 그래프 그리기
+                let candleRefY2 = candleRefY;
                 for (let i = 1; i < priceChartSelectData[selectDataIndex].length; i++) {
-                    stickRefY2 = stickRefY2 - viewRate * (priceChartSelectDataZeroPoint[selectDataIndex][i]-priceChartSelectData[selectDataIndex][i])/tickSize;
-                    drowCandle(stickRefX - i * LayoutWidth / graphComp,
-                        stickRefY2,
+                    candleRefY2 = candleRefY2 - viewRate * (priceChartSelectDataZeroPoint[selectDataIndex][i]-priceChartSelectData[selectDataIndex][i])/tickSize;
+                    drowCandle(candleRefX - i * LayoutWidth / graphComp,
+                        candleRefY2,
                         valueStickWidth,
                         priceChartSelectDataZeroPoint[selectDataIndex][i] - priceChartSelectData[selectDataIndex][i],
                         priceChartSelectDataMaxPoint[selectDataIndex][i] - priceChartSelectDataZeroPoint[selectDataIndex][i],
                         priceChartSelectDataZeroPoint[selectDataIndex][i] - priceChartSelectDataMinPoint[selectDataIndex][i],
                         tickSize, viewRate);
                 }
-            }else if(stockData.stck_prpr == null){
-                if (relTime == null) {
-                    relTime = new Date(stockData.created_at);
-                } else {
-                    let grapeTime = new Date(stockData.created_at);
-                    if (grapeTime - relTime >= Min5) {
-                        selectData[0] = shiftArrayRight(selectData[0]);
-                        showValueLate = getMax(selectData[0]);
-                        relTime = grapeTime;
-                        stickRefY = marginTop + LayoutHeight;
-                        expandGraph(0, tradeVolumeChartWriter, tradeVolumeChartLayout);
-                    }
-                    if (grapeTime - relTime >= Min3) {
-                        selectData[1] = shiftArrayRight(selectData[1]);
-                        showValueLate = getMax(selectData[1]);
-                        relTime = grapeTime;
-                        stickRefY = marginTop + LayoutHeight;
-                        expandGraph(1, tradeVolumeChartWriter, tradeVolumeChartLayout);
-                    }
-                    if (grapeTime - relTime >= Min1) {
-                        selectData[2] = shiftArrayRight(selectData[2]);
-                        showValueLate = getMax(selectData[2]);
-                        relTime = grapeTime;
-                        stickRefY = marginTop + LayoutHeight;
-                        expandGraph(2, tradeVolumeChartWriter, tradeVolumeChartLayout);
-                    }
-                    if (grapeTime - relTime >= Sec30) {
-                        selectData[3] = shiftArrayRight(selectData[3]);
-                        showValueLate = getMax(selectData[3]);
-                        relTime = grapeTime;
-                        stickRefY = marginTop + LayoutHeight;
-                        expandGraph(3, tradeVolumeChartWriter, tradeVolumeChartLayout);
-                    }
-                }
 
-
-                selectData[0][0] += stockData.cntg_vol;
-                selectData[1][0] += stockData.cntg_vol;
-                selectData[2][0] += stockData.cntg_vol;
-                selectData[3][0] += stockData.cntg_vol;
-                selectData[4].push(stockData.cntg_vol);
-
-                stickRefX = LayoutWidth + marginLeft - LayoutWidth / graphComp + valueStickWidth;
-
-                // 거래량 고점 갱신 시 그래프 표시 비율 변경
-                if (selectData[selectDataIndex][0] > showValueLate && selectData[selectDataIndex][1] !== undefined) {
-                    showValueLate = selectData[selectDataIndex][0];
-                    drowStick(stickRefX, LayoutHeight + marginTop - LayoutHeight * 0.8, valueStickWidth, LayoutHeight * 0.8);
-                } else {
-                    // 거래량 그래프 스틱 그리기
-                    stickRefY -= stockData.cntg_vol / showValueLate * LayoutHeight * 0.8;
-                    drowStick(stickRefX, stickRefY, valueStickWidth, selectData[selectDataIndex][0] / showValueLate * LayoutHeight * 0.8);
-                }
-
-
+                // 과거 거래량 그래프 그리기
                 for (let i = 1; i < selectData[selectDataIndex].length; i++) {
                     drowStick(stickRefX - i * LayoutWidth / graphComp,
                         LayoutHeight + marginTop - selectData[selectDataIndex][i] / showValueLate * LayoutHeight * 0.8,
                         valueStickWidth,
                         selectData[selectDataIndex][i] / showValueLate * LayoutHeight * 0.8);
                 }
+
+            }else if(stockData.stck_prpr == null){
+                // TODO 호가창 데이터 들어왔을 때 처리할 로직
             }
         };
         chartSocket.onerror = function (event) {
