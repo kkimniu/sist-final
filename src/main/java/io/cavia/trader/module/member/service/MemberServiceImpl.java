@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -106,5 +107,10 @@ public class MemberServiceImpl implements MemberService {
 
         // 3. JWT 생성 및 반환
         return jwtUtil.createToken(member.getEmail());
+    }
+
+    public Member getMemberByEmail(String email) {
+        return memberRepository.findByEmail(email).orElseThrow(
+                () -> new IllegalArgumentException("조회된 사용자가 없습니다."));
     }
 }
