@@ -6,7 +6,9 @@ import io.cavia.trader.module.game.dto.Game;
 import jakarta.websocket.Session;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.WebSocketSession;
 
+import java.net.http.WebSocket;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -44,8 +46,8 @@ public class GameAdministrationServiceImpl implements GameAdministrationService 
                 .getOutput()
         );
 
-        game.setChatSessions(new ConcurrentHashMap<Integer, Session>());
-        game.setChartSessions(new ConcurrentHashMap<Integer, Session>());
+        game.setChatSessions(new ConcurrentHashMap<String, WebSocketSession>());
+        game.setChartSessions(new ConcurrentHashMap<String, WebSocketSession>());
         game.setStartedAt(LocalDateTime.now());
 
         return game;

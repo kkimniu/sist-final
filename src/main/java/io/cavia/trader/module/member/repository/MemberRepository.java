@@ -1,7 +1,9 @@
 package io.cavia.trader.module.member.repository;
 
 import io.cavia.trader.module.member.entity.Member;
+import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface MemberRepository {
@@ -20,6 +22,11 @@ public interface MemberRepository {
      * @return 조회된 회원 객체 (없을 경우 Optional.empty())
      */
     Optional<Member> findByEmail(String email);
+
+    /**
+     * 닉네임을 수정합니다.
+     */
+    int updateNickname(Long id, String nickname, LocalDateTime nicknameUpdatedAt);
 
     /**
      * 이메일이 이미 있는지 조회합니다.

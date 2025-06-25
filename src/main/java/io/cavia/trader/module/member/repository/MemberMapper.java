@@ -2,7 +2,9 @@ package io.cavia.trader.module.member.repository;
 
 import io.cavia.trader.module.member.entity.Member;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Mapper
@@ -22,6 +24,18 @@ public interface MemberMapper {
      * @return 조회된 회원 객체 (없을 경우 Optional.empty())
      */
     Optional<Member> findByEmail(String email);
+
+    /**
+     * id로 회원을 조회합니다.
+     *
+     * @return 조회된 회원 객체 (없을 경우 Optional.empty())
+     */
+    Optional<Member> findById(Long id);
+
+    /**
+     * 닉네임을 수정합니다.
+     */
+    int updateNickname(@Param("id") Long id, @Param("nickname") String nickname, @Param("nicknameUpdatedAt") LocalDateTime nicknameUpdatedAt);
 
     /**
      * 이메일이 이미 있는지 조회합니다.
