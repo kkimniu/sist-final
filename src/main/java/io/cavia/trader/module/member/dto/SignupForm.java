@@ -1,4 +1,4 @@
-package io.cavia.trader.module.member.controller;
+package io.cavia.trader.module.member.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.Getter;
