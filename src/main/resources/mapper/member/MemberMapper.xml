@@ -93,12 +93,38 @@
         SELECT EXISTS(SELECT 1 FROM members WHERE nickname = #{nickname})
     </select>
 
+    <!-- 비밀번호 중복 여부를 확인하는 SELECT 쿼리입니다. -->
+    <select id="existsByIdAndPassword" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM members WHERE id = #{id} AND password = #{password})
+    </select>
+
     <!--nickname을 수정하는 UPDATE 쿼리입니다.-->
     <update id="updateNickname">
         UPDATE members
         <set>
             nickname = #{nickname},
             nickname_updated_at = #{nicknameUpdatedAt}
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+    <!--비밀번호를 수정하는 UPDATE 쿼리입니다.-->
+    <update id="updatePassword">
+        UPDATE members
+        <set>
+            password = #{password},
+            password_updated_at = #{passwordUpdatedAt}
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+    <!--자산을 수정하는 UPDATE 쿼리입니다.-->
+    <update id="updateCash">
+        UPDATE members
+        <set>
+            cash = #{cash},
         </set>
         WHERE
         id = #{id}

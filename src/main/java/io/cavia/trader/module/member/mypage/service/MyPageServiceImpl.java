@@ -4,6 +4,7 @@ import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.mypage.dto.GameParticipationDto;
 import io.cavia.trader.module.member.mypage.mapper.MyPageMapper;
 import io.cavia.trader.module.member.repository.MemberMapper;
+import io.cavia.trader.module.member.repository.MybatisMemberRepository;
 import io.cavia.trader.module.notice.exception.InvalidNoticeRequestException;
 import io.cavia.trader.module.notice.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ public class MyPageServiceImpl implements MyPageService {
 
     private final MyPageMapper mypageMapper;
     private final MemberMapper memberMapper;
+    private final MybatisMemberRepository mybatisMemberRepository;
 
     @Override
     public List<GameParticipationDto> findByMemberId(int memberId) {
@@ -42,11 +44,26 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
-    public void changeNickname(Long id, String nickname, LocalDateTime nicknameUpdatedAt) {
+    public void changeNickname(int id, String nickname, LocalDateTime nicknameUpdatedAt) {
         int result = memberMapper.updateNickname(id,nickname,nicknameUpdatedAt);
         if(result<=0){
             throw new InvalidNoticeRequestException("닉네임 변경 실패");
         }
+    }
+
+    @Override
+    public boolean validateDuplicatePassword(int id, String password) {
+        return mybatisMemberRepository.existsByIdAndPassword(id,password);
+    }
+
+    @Override
+    public int changePassword(int id, String password, LocalDateTime passwordUpdatedAt) {
+        return mybatisMemberRepository.updatePassword(id,password,passwordUpdatedAt);
+    }
+
+    @Override
+    public int resetCash(int id) {
+        return mybatisMemberRepository.updateCash(id,90000000L);
     }
 
 }
