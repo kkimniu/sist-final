@@ -14,4 +14,8 @@ public class ViewMyPageController {
     public String myPage(){
         return "member/mypage/mypage-main";
     }
+    @GetMapping("/nickname-edit")
+    public String nicknameUpdate(){
+        return "member/mypage/nickname-edit";
+    }
 }
