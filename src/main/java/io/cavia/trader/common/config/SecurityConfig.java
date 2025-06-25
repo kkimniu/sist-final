@@ -2,6 +2,7 @@ package io.cavia.trader.common.config;
 
 import io.cavia.trader.module.jwt.JwtAuthenticationFilter;
 import io.cavia.trader.module.jwt.JwtUtil;
+import io.cavia.trader.module.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
-    private final UserDetailsService userDetailsService;
+    private final MemberRepository memberRepository;
 
     // PasswordEncoder를 Bean으로 등록
     @Bean
@@ -31,7 +32,7 @@ public class SecurityConfig {
     // JwtAuthenticationFilter를 Bean으로 등록
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtUtil, userDetailsService);
+        return new JwtAuthenticationFilter(jwtUtil, memberRepository);
     }
 
     // SecurityFilterChain 설정을 Bean으로 등록

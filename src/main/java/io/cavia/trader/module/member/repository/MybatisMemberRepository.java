@@ -44,4 +44,9 @@ public class MybatisMemberRepository implements MemberRepository {
 
     @Override
     public boolean existsByIdAndPassword(int id,String password) {return memberMapper.existsByIdAndPassword(id,password);}
+
+    @Override
+    public Optional<Member> findById(Long id) {
+        return memberMapper.findById(id);
+    }
 }
