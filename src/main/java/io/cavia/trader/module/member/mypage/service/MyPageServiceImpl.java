@@ -4,10 +4,12 @@ import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.mypage.dto.GameParticipationDto;
 import io.cavia.trader.module.member.mypage.mapper.MyPageMapper;
 import io.cavia.trader.module.member.repository.MemberMapper;
+import io.cavia.trader.module.notice.exception.InvalidNoticeRequestException;
 import io.cavia.trader.module.notice.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +39,14 @@ public class MyPageServiceImpl implements MyPageService {
             throw new NotFoundException("사용자가 존재하지 않습니다");
         }
         return member;
+    }
+
+    @Override
+    public void changeNickname(Long id, String nickname, LocalDateTime nicknameUpdatedAt) {
+        int result = memberMapper.updateNickname(id,nickname,nicknameUpdatedAt);
+        if(result<=0){
+            throw new InvalidNoticeRequestException("닉네임 변경 실패");
+        }
     }
 
 }
