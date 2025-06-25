@@ -11,4 +11,6 @@ public interface MyPageService {
     public List<GameParticipationDto> findByMemberId(int memberId);
     public Member findById(Long id);
     public void changeNickname(Long id, String nickname, LocalDateTime nicknameUpdatedAt);
+    public boolean validateDuplicatePassword(int id,String password);
+    public int changePassword(int id, String password, LocalDateTime passwordUpdatedAt);
 }

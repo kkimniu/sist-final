@@ -49,4 +49,14 @@ public class MyPageServiceImpl implements MyPageService {
         }
     }
 
+    @Override
+    public boolean validateDuplicatePassword(int id, String password) {
+        return memberMapper.existsByIdAndPassword(id,password);
+    }
+
+    @Override
+    public int changePassword(int id, String password, LocalDateTime passwordUpdatedAt) {
+        return memberMapper.updatePassword(id,password,passwordUpdatedAt);
+    }
+
 }
