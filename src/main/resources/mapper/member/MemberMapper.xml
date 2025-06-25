@@ -117,4 +117,14 @@
         id = #{id}
     </update>
 
+    <!--자산을 수정하는 UPDATE 쿼리입니다.-->
+    <update id="updateCash">
+        UPDATE members
+        <set>
+            cash = #{cash},
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
 </mapper>
