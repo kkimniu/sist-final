@@ -26,12 +26,17 @@ public interface MemberRepository {
     /**
      * 닉네임을 수정합니다.
      */
-    int updateNickname(Long id, String nickname, LocalDateTime nicknameUpdatedAt);
+    int updateNickname(int id, String nickname, LocalDateTime nicknameUpdatedAt);
 
     /**
      * 비밀번호를 수정합니다.
      */
     int updatePassword(int id, String password, LocalDateTime passwordUpdatedAt);
+
+    /**
+     * 자산을 수정합니다.
+     */
+    int updateCash(int id, Long cash);
 
     /**
      * 이메일이 이미 있는지 조회합니다.
