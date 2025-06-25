@@ -4,6 +4,7 @@ import io.cavia.trader.module.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -21,6 +22,9 @@ public class MybatisMemberRepository implements MemberRepository {
     public Optional<Member> findByEmail(String email) {
         return memberMapper.findByEmail(email);
     }
+
+    @Override
+    public int updateNickname(Long id, String nickname, LocalDateTime nicknameUpdatedAt) {return memberMapper.updateNickname(id,nickname,nicknameUpdatedAt);}
 
     @Override
     public boolean existsByEmail(String email) {
