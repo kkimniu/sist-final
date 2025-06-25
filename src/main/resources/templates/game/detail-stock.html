@@ -493,9 +493,9 @@
                 }
             }else if(stockData.stck_prpr == null){
                 if (relTime == null) {
-                    relTime = new Date(data.created_at);
+                    relTime = new Date(stockData.created_at);
                 } else {
-                    let grapeTime = new Date(data.created_at);
+                    let grapeTime = new Date(stockData.created_at);
                     if (grapeTime - relTime >= Min5) {
                         selectData[0] = shiftArrayRight(selectData[0]);
                         showValueLate = getMax(selectData[0]);
@@ -527,11 +527,11 @@
                 }
 
 
-                selectData[0][0] += data.cntg_vol;
-                selectData[1][0] += data.cntg_vol;
-                selectData[2][0] += data.cntg_vol;
-                selectData[3][0] += data.cntg_vol;
-                selectData[4].push(data.cntg_vol);
+                selectData[0][0] += stockData.cntg_vol;
+                selectData[1][0] += stockData.cntg_vol;
+                selectData[2][0] += stockData.cntg_vol;
+                selectData[3][0] += stockData.cntg_vol;
+                selectData[4].push(stockData.cntg_vol);
 
                 stickRefX = LayoutWidth + marginLeft - LayoutWidth / graphComp + valueStickWidth;
 
@@ -541,7 +541,7 @@
                     drowStick(stickRefX, LayoutHeight + marginTop - LayoutHeight * 0.8, valueStickWidth, LayoutHeight * 0.8);
                 } else {
                     // 거래량 그래프 스틱 그리기
-                    stickRefY -= data.cntg_vol / showValueLate * LayoutHeight * 0.8;
+                    stickRefY -= stockData.cntg_vol / showValueLate * LayoutHeight * 0.8;
                     drowStick(stickRefX, stickRefY, valueStickWidth, selectData[selectDataIndex][0] / showValueLate * LayoutHeight * 0.8);
                 }
 
