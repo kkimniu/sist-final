@@ -4,18 +4,58 @@
     <meta charset="UTF-8">
     <title>게임 메인 화면</title>
 </head>
-<body onload = "onloadBody()">
+<style>
+    #priceChartContainer {
+        position: relative;
+        width: 1200px;
+        height: 450px;
+        overflow-x: auto;
+    }
+
+    #tradeVolumeChartContainer {
+        position: relative;
+        width: 1200px;
+        height: 450px;
+        overflow-x: auto;
+    }
+
+    #priceChartWriter {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    #priceChartLayout {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    #tradeVolumeChartWriter {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    #tradeVolumeChartLayout {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+
+</style>
+<body onload = "onloadBody();">
 <div id = "graphLayout">
-    <div>
+    <div id = "priceChartContainer">
         <canvas id="priceChartLayout"></canvas>
         <canvas id="priceChartWriter"></canvas>
     </div>
-    <div>
+    <div id = "tradeVolumeChartContainer">
         <canvas id="tradeVolumeChartLayout"></canvas>
         <canvas id="tradeVolumeChartWriter"></canvas>
     </div>
 </div>
-
 <script>
     let chartSocket;
 
@@ -177,7 +217,6 @@
         context.lineWidth = 1;
         context.stroke();
 
-
         const widthLine = mainWidth / widthLineLength;
         const heightLine = mainHeight / hightLineLength;
 
@@ -218,7 +257,7 @@
 
         // 데이터 갱신을 위해 타겟 봉 영역 지우기
         priceChartWriterCtx.clearRect(RefX, 0, width, mainHeight);
-        drowGuideLine(guideLineLengthX, guideLineLengthY);
+        drowGuideLine(guideLineLengthX, guideLineLengthY, priceChartLayoutCtx);
 
         // 캔들 컴포넌트 그리기
         if (value > 0) {
@@ -257,7 +296,7 @@
         if (value === undefined) value = 0;
 
         tradeVolumeChartWriterCtx.clearRect(RefX, 0, width, mainHeight);
-        drowGuideLine(guideLineLengthX, guideLineLengthY);
+        drowGuideLine(guideLineLengthX, guideLineLengthY, tradeVolumeChartLayoutCtx);
 
         tradeVolumeChartWriterCtx.beginPath();
         tradeVolumeChartWriterCtx.rect(RefX, RefY, width, value);
@@ -526,7 +565,6 @@
     window.addEventListener("beforeunload", function (event) {
         chartSocket.close();
     })
-</script>
 </script>
 </body>
 </html>
