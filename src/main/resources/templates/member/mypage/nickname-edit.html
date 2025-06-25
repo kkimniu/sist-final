@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        async function updateNickname(event){
+            event.preventDefault();
+
+            const id = 1; //추후 토큰으로 교체
+            const nickname = document.getElementById('nickname').value.trim();
+            const message = document.getElementById('message');
+            //닉네임 검증
+            if(!nickname){
+                message.innerText = '닉네임을 입력해주세요';
+                message.style.color = 'red';
+                return
+            }
+            try{
+                const checkRes = await fetch(`/api/mypage/check-nickname?nickname=${encodeURIComponent(nickname)}`);
+                //중복 검사
+                if(!checkRes.ok){
+                    message.innerText = '이미 사용중인 닉네임입니다';
+                    message.style.color = 'red';
+                    return;
+                }
+                //닉네임 변경
+                const res = await fetch('/api/mypage/nickname', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-type':'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: id,
+                        nickname: nickname
+                    })
+                });
+                if(!res.ok){
+                    throw new Error('닉네임 변경에 실패했습니다.');
+                }
+
+                alert('닉네임 변경에 성공했습니다.');
+                location.href = '/member/mypage/mypage-main';
+            }catch (error){
+                message.innerText = error.message;
+                message.style.color = 'red';
+            }
+        }
+    </script>
+</head>
+<body>
+<h2>닉네임 변경</h2>
+<h3>변경할 닉네임을 올려주세요</h3>
+<form onsubmit="updateNickname(event)">
+    <input type="text" id="nickname" name="nickname" placeholder="닉네임을 입력해주세요">
+    <span id="message" style="display:block; margin-top:10px;">닉네임 피드백 메세지</span>
+    <input type="submit">
+</form>
+</body>
+</html>
