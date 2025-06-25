@@ -22,7 +22,7 @@ public class MemberServiceImpl implements MemberService {
     private final EmailService emailService;
     private final EmailVerificationRepository emailVerificationRepository;
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;//TODO: SecurityConfig 에서 빈으로 등록해야함
+    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
     @Value("${member.default.cash}")
@@ -71,7 +71,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = Member.builder()
                 .email(signupForm.getEmail())
                 .nickname(signupForm.getNickname())
-                .password(signupForm.getPassword())
+                .password(passwordEncoder.encode(signupForm.getPassword()))
                 .cash(memberDefaultCash)
                 .build();
 
