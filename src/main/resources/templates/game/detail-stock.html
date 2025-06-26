@@ -71,59 +71,54 @@
 <div id = "orderBookLayout">
     <table id="orderBook">
         <tr>
-            <td id="buyPrice10"></td>
             <td id="buy10"></td>
+            <td id="buyPrice10"></td>
             <td></td>
         </tr>
         <tr>
-            <td id="buyPrice9"></td>
             <td id="buy9"></td>
+            <td id="buyPrice9"></td>
             <td></td>
         </tr>
         <tr>
-            <td id="buyPrice8"></td>
             <td id="buy8"></td>
+            <td id="buyPrice8"></td>
             <td></td>
         </tr>
         <tr>
-            <td id="buyPrice7"></td>
             <td id="buy7"></td>
+            <td id="buyPrice7"></td>
             <td></td>
         </tr>
         <tr>
-            <td id="buyPrice6"></td>
             <td id="buy6"></td>
+            <td id="buyPrice6"></td>
             <td></td>
         </tr>
         <tr>
-            <td id="buyPrice5"></td>
             <td id="buy5"></td>
+            <td id="buyPrice5"></td>
             <td></td>
         </tr>
         <tr>
-            <td id="buyPrice4"></td>
             <td id="buy4"></td>
+            <td id="buyPrice4"></td>
             <td></td>
         </tr>
         <tr>
-            <td id="buyPrice3"></td>
             <td id="buy3"></td>
+            <td id="buyPrice3"></td>
             <td></td>
         </tr>
         <tr>
-            <td id="buyPrice2"></td>
             <td id="buy2"></td>
+            <td id="buyPrice2"></td>
             <td></td>
         </tr>
         <tr>
-            <td id="buyPrice1"></td>
             <td id="buy1"></td>
+            <td id="buyPrice1"></td>
             <td id="buyAll"></td>
-        </tr>
-        <tr>
-            <td id="concludeVolume"></td>
-            <td id="concludePrice"></td>
-            <td></td>
         </tr>
         <tr>
             <td id="selAll"></td>
@@ -189,10 +184,10 @@
     // 호가창 스타일 지정
     for (let i = 1; i <= 10; i++) {
         let buy = document.getElementById("buy" + i);
-        buy.style.backgroundColor = "skyblue";
         buy.style.color = "blue";
 
         let buyPrice = document.getElementById("buyPrice" + i);
+        buyPrice.style.backgroundColor = "skyblue";
         buyPrice.style.color = "blue";
 
         let buyAll = document.getElementById("buyAll");
@@ -252,7 +247,6 @@
     const graphLayout = document.getElementById("graphContainer");
 
     graphLayout.addEventListener("scroll", function (event) {
-        console.log("onCode: " + onCode);
         if (onCode === false) {
             autoScroll = event.target.scrollLeft + event.target.clientWidth >= event.target.scrollWidth - 1;
         } else {
@@ -490,26 +484,24 @@
         priceChartWriterCtx.lineTo(RefX + valueStickWidth / 2, RefY + lowPointPixels);
         priceChartWriterCtx.stroke();
 
-        console.log("주가 차트 크기" + value);
         //console.log("valuePixels: " + valuePixels + " highPointPixels: " + highPointPixels + " lowPointPixels: " + lowPointPixels);
         //console.log("stickRefX: " + RefX + ", stickRefY: " + RefY + ", width: " + width + ", value: " + value + ", highpoint: " + highPoint + ", lowpoint: " + lowPoint + ", tickSize: " + tickSize + ", viewRate: " + viewRate);
     }
 
-    function drowStick(RefX, RefY, width, value) {
+    function drowStick(refX, refY, width, value) {
 
-        RefX = Math.round(RefX);
+        refX = Math.round(refX);
 
         if (value === undefined) value = 0;
 
-        tradeVolumeChartWriterCtx.clearRect(RefX-width, 0, width*2, tradeVolumeChartHeight);
+        tradeVolumeChartWriterCtx.clearRect(refX-width, 0, width*2, tradeVolumeChartHeight);
         drowGuideLine(guideLineLengthX, guideLineLengthY, tradeVolumeChartLayoutCtx, tradeVolumeChartHeight);
 
         tradeVolumeChartWriterCtx.beginPath();
-        tradeVolumeChartWriterCtx.rect(RefX, RefY, width, value);
+        tradeVolumeChartWriterCtx.rect(refX, refY, width, value);
         tradeVolumeChartWriterCtx.fillStyle = 'blue';
         tradeVolumeChartWriterCtx.fill();
 
-        console.log("거래량 차트 크기" + value);
         //console.log("stickRefX: " + RefX + ", stickRefY: " + RefY + ", width: " + width + ", value: " + value);
     }
 
@@ -559,7 +551,6 @@
             
             graphComp++;
             guideLineLengthX = graphComp/3;
-            console.log("오토 스크롤: " + autoScroll);
             if (autoScroll) {
                 scrollSummary();
             }
@@ -604,11 +595,6 @@
             let stockData = JSON.parse(event.data);
 
             if (stockData.stck_prpr != null) {
-
-                // 체결가가 체결 정보에 포함 되어 있어서 이 부분은 여기에서 처리
-                concludeVolume.innerText = stockData.cntg_vol;
-                concludePrice.innerText = stockData.stck_prpr;
-
                 if (relTime == null) {
                     relTime = new Date(stockData.created_at);
                     for (let i = 0; i < priceChartSelectDataZeroPoint.length; i++) {
@@ -760,8 +746,8 @@
             }else if(stockData.stck_prpr == null){
                 // TODO 호가창 데이터 들어왔을 때 처리할 로직
                 for (let i = 1; i <= 10; i++) {
-                    document.getElementById("buy" + i).innerText = stockData["askp" + i];
-                    document.getElementById("buyPrice" + i).innerText = stockData["askp_rsqn" + i];
+                    document.getElementById("buy" + i).innerText = stockData["askp_rsqn" + i];
+                    document.getElementById("buyPrice" + i).innerText = stockData["askp" + i];
                     document.getElementById("buyAll").innerText = stockData.total_askp_rsqn_icdc;
 
                     document.getElementById("sel" + i).innerText = stockData["bidp" + i];
