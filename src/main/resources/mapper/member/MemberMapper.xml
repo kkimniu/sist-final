@@ -130,4 +130,11 @@
         id = #{id}
     </update>
 
+    <!--회원삭제 DELETE 쿼리입니다.-->
+    <delete id="delete">
+        delete
+        from members
+        where id = #{id}
+    </delete>
+
 </mapper>
