@@ -20,8 +20,8 @@
         order by entered_at ASC
     </select>
     <delete id="deleteGameParticipation">
-        delete
-        from game_participations
-        where member_id = #{memberId}
+        DELETE
+        FROM game_participations
+        WHERE member_id = #{memberId}
     </delete>
 </mapper>
