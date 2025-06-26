@@ -17,14 +17,13 @@ import java.io.UnsupportedEncodingException;
 public class SmtpEmailService implements EmailService {
 
     private final JavaMailSender javaMailSender;
-    private final TemplateEngine templateEngine;
 
     @Value("${email.from.address}")
     private String fromAddress;
     @Value("${email.from.personal}")
     private String fromPersonal;
 
-    private void sendEmail(String to, String subject, String body) {
+    public void sendEmail(String to, String subject, String body) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
             // MimeMessageHelper를 사용하면 MimeMessage를 더 쉽게 조작할 수 있습니다.
@@ -40,22 +39,5 @@ public class SmtpEmailService implements EmailService {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("메일 발신자의 인코딩 문제가 있습니다");
         }
-    }
-
-    /**
-     * 사용자의 이메일 인증을 위해 인증키가 포함된 이메일을 발송합니다.
-     *
-     * @param to      메일 받을 주소
-     * @param authKey 사용자에게 전달할 이메일 인증을 위한 인증키
-     */
-    @Override
-    public void sendAuthEmail(String to, String authKey) {
-        Context context = new Context();
-        context.setVariable("username", to);
-        context.setVariable("authKey", authKey);
-        // 템플릿을 사용하여 HTML 본문 생성
-        String htmlBody = templateEngine.process("email/auth-email", context);
-
-        sendEmail(to, "[TRADER.IO] 이메일 인증", htmlBody);
     }
 }
