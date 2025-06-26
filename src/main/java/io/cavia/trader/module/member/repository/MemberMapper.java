@@ -48,6 +48,11 @@ public interface MemberMapper {
     int updateCash(@Param("id") int id, @Param("cash") Long cash);
 
     /**
+     * 회원을 삭제합니다
+     */
+    int delete(int id);
+
+    /**
      * 이메일이 이미 있는지 조회합니다.
      *
      * @param email 조회할 이메일
