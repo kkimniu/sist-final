@@ -66,4 +66,14 @@ public class MyPageServiceImpl implements MyPageService {
         return mybatisMemberRepository.updateCash(id,90000000L);
     }
 
+    @Override
+    public int deleteMember(int id) {
+        return memberMapper.delete(id);
+    }
+
+    @Override
+    public int deletedGameParticipation(int memberId) {
+        return mypageMapper.deleteGameParticipation(memberId);
+    }
+
 }

@@ -14,4 +14,6 @@ public interface MyPageService {
     public boolean validateDuplicatePassword(int id,String password);
     public int changePassword(int id, String password, LocalDateTime passwordUpdatedAt);
     public int resetCash(int id);
+    public int deleteMember(int id);
+    public int deletedGameParticipation(int memberId);
 }
