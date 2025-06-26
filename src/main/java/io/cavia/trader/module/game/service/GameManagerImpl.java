@@ -18,7 +18,7 @@ public class GameManagerImpl implements GameManager {
     private final int GAME_LIFE_CYCLE = 30;
     public Deque<Game> games = new ArrayDeque<>();
 
-    @Scheduled(cron = "0 0/10 * * * *")
+    @Scheduled(cron = "1/10 * * * * *")
     @Override
     public void managementGameSessionsLifeCycle() {
 
