@@ -19,5 +19,5 @@ public interface MemberService {
 
     String login(LoginRequestDto requestDto);
 
-    Member getMemberByEmail(String email);
+    Member getMemberById(Long email);
 }

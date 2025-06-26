@@ -1,5 +1,6 @@
 package io.cavia.trader.module.jwt;
 
+import io.cavia.trader.module.member.entity.MemberRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -38,17 +39,17 @@ public class JwtUtil {
     }
 
     /**
-     * 사용자 이름을 받아 JWT를 생성하는 메서드
+     * 사용자 고유번호를 받아 JWT를 생성하는 메서드
      *
-     * @param username 사용자 이름
+     * @param userId 사용자 고유번호
      * @return 생성된 JWT 문자열
      */
-    public String createToken(String username) {
+    public String createToken(Long userId, MemberRoleEnum role) {
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + tokenExpirationTime);
 
         return Jwts.builder()
-                .setSubject(username) // 토큰의 주체(사용자 이름) 설정
+                .setSubject(userId.toString()) // 토큰의 주체(사용자 이름) 설정
                 .setIssuedAt(now) // 토큰 발급 시간 설정
                 .setExpiration(expirationDate) // 토큰 만료 시간 설정
                 .signWith(key, SignatureAlgorithm.HS256) // 사용할 암호화 알고리즘과 키로 서명

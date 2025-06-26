@@ -1,7 +1,6 @@
 package io.cavia.trader.module.member.repository;
 
 import io.cavia.trader.module.member.entity.Member;
-import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -58,4 +57,12 @@ public interface MemberRepository {
      * 비밀번호가 있는지 조회.
      */
     boolean existsByIdAndPassword(int id, String password);
+
+    /**
+     * id로 멤버를 조회함
+     *
+     * @param id
+     * @return 조회된 회원 객체 (없을 경우 Optional.empty())
+     */
+    Optional<Member> findById(Long id);
 }

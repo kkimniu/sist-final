@@ -106,11 +106,11 @@ public class MemberServiceImpl implements MemberService {
         }
 
         // 3. JWT 생성 및 반환
-        return jwtUtil.createToken(member.getEmail());
+        return jwtUtil.createToken(member.getId(), member.getRole());
     }
 
-    public Member getMemberByEmail(String email) {
-        return memberRepository.findByEmail(email).orElseThrow(
+    public Member getMemberById(Long id) {
+        return memberRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("조회된 사용자가 없습니다."));
     }
 }

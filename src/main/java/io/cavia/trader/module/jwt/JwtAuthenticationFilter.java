@@ -1,5 +1,8 @@
 package io.cavia.trader.module.jwt;
 
+import io.cavia.trader.module.member.entity.Member;
+import io.cavia.trader.module.member.repository.MemberRepository;
+import io.cavia.trader.module.member.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,7 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -22,7 +25,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserDetailsService userDetailsService;
+    private final MemberRepository memberRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -39,7 +42,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Claims userInfo = jwtUtil.getUserInfoFromToken(token);
 
                 try {
-                    setAuthentication(userInfo.getSubject());
+                    Long userId = Long.parseLong(userInfo.getSubject());
+                    setAuthentication(userId);
                 } catch (Exception e) {
                     log.error("인증 처리 중 예외 발생: {}", e.getMessage());
                     // 여기서 response에 에러를 담아 보낼 수도 있습니다.
@@ -57,12 +61,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     /**
      * 인증 처리 메서드
      *
-     * @param username JWT에서 추출한 사용자 이름
+     * @param userId JWT에서 추출한 사용자 고유 번호
      */
-    private void setAuthentication(String username) {
+    private void setAuthentication(Long userId) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
+
+        Member member = memberRepository.findById(userId).orElseThrow(
+                () -> new UsernameNotFoundException("해당 id 값으로 사용자를 찾을 수 없습니다."));
         // UserDetailsService를 통해 사용자 정보를 로드합니다.
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        UserDetails userDetails = new UserDetailsImpl(member);
         // 인증 객체를 생성합니다.
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         // SecurityContext에 인증 정보를 설정합니다.

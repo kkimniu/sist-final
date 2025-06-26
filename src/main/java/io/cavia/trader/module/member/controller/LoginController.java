@@ -50,8 +50,13 @@ public class LoginController {
         }
 
         // @AuthenticationPrincipal에서 직접 사용자 이름을 가져와 서비스 호출
-        String username = userDetails.getUsername();
-        Member memberInfo = memberService.getMemberByEmail(username);
+        // 이제 getUsername은 멤버 id 값을 반환함. 근데 스트링타입임(오버라이딩 한거라 못바꿈)
+        Long userId = Long.parseLong(userDetails.getUsername());
+        Member memberInfo = memberService.getMemberById(userId);
+
+        //위 방법보다 간단한건 바로 가져올 수 있음. 토큰인증된 사용자 정보가 userDetails 안에 Member 객체로 담겨있는 것임
+        //멤버 id 값만 빠르게 필요하다면 getUsername()으로 빠르게 가져오거나, 다른 정보도 필요하면 member 를 꺼내서 쓰면 됨.
+        Member memberInfo2 = userDetails.getMember();
 
         return ResponseEntity.ok(memberInfo);
     }
