@@ -132,9 +132,9 @@
 
     <!--회원삭제 DELETE 쿼리입니다.-->
     <delete id="delete">
-        delete
-        from members
-        where id = #{id}
+        DELETE
+        FROM members
+        WHERE id = #{id}
     </delete>
 
 </mapper>
