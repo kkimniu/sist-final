@@ -42,6 +42,13 @@
         top: 0;
     }
 
+    #orderBook {
+        td {
+            text-align: center;
+            vertical-align: middle;
+        }
+    }
+
 
 </style>
 <body onload = "onloadBody();">
@@ -56,8 +63,8 @@
     </div>
 </div>
 
-<div>
-    <table id="orderBookBuy">
+<div id = "orderBookLayout">
+    <table id="orderBook">
         <tr>
             <td id="buyPrice10"></td>
             <td id="buy10"></td>
@@ -108,9 +115,11 @@
             <td id="buy1"></td>
             <td id="buyAll"></td>
         </tr>
-    </table>
-
-    <table id="orderBookSel">
+        <tr>
+            <td id="concludeVolume"></td>
+            <td id="concludePrice"></td>
+            <td></td>
+        </tr>
         <tr>
             <td id="selAll"></td>
             <td id="sel1"></td>
@@ -186,6 +195,24 @@
         let selAll = document.getElementById("selAll");
         selAll.style.color = "red";
     }
+
+    // 호가창 컴포넌트 캐싱
+    const concludeVolume = document.getElementById("concludeVolume");
+    const concludePrice = document.getElementById("concludePrice");
+
+    // 호가창 크기 지정
+    const orderBookLayout = document.getElementById("orderBookLayout");
+    const orderBook = document.getElementById("orderBook");
+
+    orderBookLayout.querySelector("table").style.tableLayout = "fixed";
+
+    orderBookLayout.width = window.innerWidth*0.3;
+    orderBookLayout.style.width = window.innerWidth*0.3 + "px";
+    orderBookLayout.height = window.innerHeight*0.5;
+    orderBookLayout.style.height = window.innerHeight*0.5 + "px";
+
+    orderBook.style.width = 100 + "%";
+    orderBook.style.height = 100 + "%";
 </script>
 <script>
     let chartSocket;
@@ -268,6 +295,8 @@
     tradeVolumeChartWriter.style.height = tradeVolumeChartHeight+"px";
     tradeVolumeChartContainer.style.width = mainWidth+"px";
     tradeVolumeChartContainer.style.height = tradeVolumeChartHeight+"px";
+
+
 
     // 기본 봉 개수
     let graphComp = 10;
@@ -562,6 +591,11 @@
             let stockData = JSON.parse(event.data);
 
             if (stockData.stck_prpr != null) {
+
+                // 체결가가 체결 정보에 포함 되어 있어서 이 부분은 여기에서 처리
+                concludeVolume.innerText = stockData.cntg_vol;
+                concludePrice.innerText = stockData.stck_prpr;
+
                 if (relTime == null) {
                     relTime = new Date(stockData.created_at);
                     for (let i = 0; i < priceChartSelectDataZeroPoint.length; i++) {
