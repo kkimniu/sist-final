@@ -20,4 +20,6 @@ public interface MemberService {
     String login(LoginRequestDto requestDto);
 
     Member getMemberById(Long email);
+
+    void sendAuthEmail(String to, String authKey);
 }

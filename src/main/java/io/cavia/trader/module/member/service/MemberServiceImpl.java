@@ -12,9 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final TemplateEngine templateEngine;
 
     @Value("${member.default.cash}")
     private Long memberDefaultCash;
@@ -33,7 +35,7 @@ public class MemberServiceImpl implements MemberService {
     public void sendVerificationEmail(String email) {
         String authKey = String.valueOf((int) (Math.random() * 900000 + 100000));
 
-        emailService.sendAuthEmail(email, authKey);
+        sendAuthEmail(email, authKey);
         emailVerificationRepository.save(EmailVerification.create(email, authKey, 60));
     }
 
@@ -112,5 +114,21 @@ public class MemberServiceImpl implements MemberService {
     public Member getMemberById(Long id) {
         return memberRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("조회된 사용자가 없습니다."));
+    }
+
+    /**
+     * 사용자의 이메일 인증을 위해 인증키가 포함된 이메일을 발송합니다.
+     *
+     * @param to      메일 받을 주소
+     * @param authKey 사용자에게 전달할 이메일 인증을 위한 인증키
+     */
+    public void sendAuthEmail(String to, String authKey) {
+        Context context = new Context();
+        context.setVariable("username", to);
+        context.setVariable("authKey", authKey);
+        // 템플릿을 사용하여 HTML 본문 생성
+        String htmlBody = templateEngine.process("email/auth-email", context);
+
+        emailService.sendEmail(to, "[TRADER.IO] 이메일 인증", htmlBody);
     }
 }
