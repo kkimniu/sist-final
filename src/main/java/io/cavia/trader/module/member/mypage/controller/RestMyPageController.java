@@ -4,9 +4,14 @@ import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.mypage.dto.GameParticipationDto;
 import io.cavia.trader.module.member.mypage.dto.NicknameUpdateRequestDto;
 import io.cavia.trader.module.member.mypage.service.MyPageService;
+import io.cavia.trader.module.member.security.UserDetailsImpl;
 import io.cavia.trader.module.member.service.MemberService;
+import io.cavia.trader.module.notice.exception.InvalidNoticeRequestException;
+import io.cavia.trader.module.notice.exception.NotFoundException;
+import io.cavia.trader.module.notice.exception.NoticeOperationFailedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -20,14 +25,14 @@ public class RestMyPageController {
     private final MyPageService mypageService;
     private final MemberService memberService;
 
-    @GetMapping("/member-id/{memberId}")
-    public ResponseEntity<List<GameParticipationDto>> getGameParticipationsByMemberId(@PathVariable int memberId) {
-        return ResponseEntity.status(200).body(mypageService.findByMemberId(memberId));
+    @GetMapping("/my-games")
+    public ResponseEntity<List<GameParticipationDto>> getGameParticipationsByMemberId(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.status(200).body(mypageService.findByMemberId(userDetails.getMember().getId().intValue()));
     }
 
-    @GetMapping("/id/{id}")
-    public ResponseEntity<Member> getMembersByEmail(@PathVariable Long id) {
-        return ResponseEntity.status(200).body(mypageService.findById(id));
+    @GetMapping("/me")
+    public ResponseEntity<Member> getMembersByEmail(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.status(200).body(mypageService.findById(userDetails.getMember().getId()));
     }
 
     @GetMapping("/check-nickname")
@@ -37,8 +42,8 @@ public class RestMyPageController {
     }
 
     @GetMapping("/password-verification")
-    public ResponseEntity<String> getcheckPassword(@RequestParam int id, @RequestParam String nickname) {
-        mypageService.validateDuplicatePassword(id, nickname);
+    public ResponseEntity<String> getcheckPassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam String password) {
+        mypageService.validateDuplicatePassword(userDetails.getMember().getId().intValue(), password);
         return ResponseEntity.status(200).body("비밀번호 맞음");
     }
 
@@ -47,4 +52,15 @@ public class RestMyPageController {
         mypageService.changeNickname(nicknameUpdateRequestDto.getId(), nicknameUpdateRequestDto.getNickname(), LocalDateTime.now());
         return ResponseEntity.status(200).body("변경성공");
     }
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if(mypageService.deletedGameParticipation(userDetails.getMember().getId().intValue())< 0){
+            throw new NotFoundException("회원 삭제를 실패했습니다");
+        }
+        if (mypageService.deleteMember(Integer.parseInt(userDetails.getUsername())) < 0) {
+            throw new NoticeOperationFailedException("회원 삭제를 실패했습니다");
+        }
+        return ResponseEntity.status(200).body("회원 삭제완료");
+    }
+
 }

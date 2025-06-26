@@ -65,4 +65,13 @@ public class ViewMyPageController {
         return "member/mypage/mypage-main";
     }
 
+    @GetMapping("/withdraw-verification")
+    public String withdrawVerification() {
+        return "member/mypage/withdraw-verification";
+    }
+
+    @GetMapping("/withdraw")
+    public String withdrawn() {
+        return "member/mypage/withdraw";
+    }
 }
