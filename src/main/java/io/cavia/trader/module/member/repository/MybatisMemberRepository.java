@@ -33,6 +33,9 @@ public class MybatisMemberRepository implements MemberRepository {
     public int updateCash(int id, Long cash) {return memberMapper.updateCash(id,cash);}
 
     @Override
+    public int delete(int id) {return memberMapper.delete(id);}
+
+    @Override
     public boolean existsByEmail(String email) {
         return memberMapper.existsByEmail(email);
     }
