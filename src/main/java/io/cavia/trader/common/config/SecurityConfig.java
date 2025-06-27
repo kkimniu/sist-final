@@ -50,7 +50,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         // [ 1. 비회원(Anonymous) 접근 허용 ]
-                        .requestMatchers("/", "/login", "/signup", "/signup/**").permitAll()
+                        .requestMatchers("/", "/login", "/signup", "/signup/**", "/game/**", "/ws/**").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/login-checker").permitAll()
 
