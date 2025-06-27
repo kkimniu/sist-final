@@ -24,19 +24,33 @@
         </form>
     </div>
 </div>
+<div>
+    <input type="button" value="회원탈퇴" onclick="location.href = 'withdraw-verification'"><br>
+</div>
 <script>
     window.onload = async function () {
-
-        const id = 1;
+        const token = localStorage.getItem('jwt-token');
+        if (!token) {
+            document.getElementById('message').innerText = '로컬 스토리지에 토큰이 없습니다. 먼저 로그인을 해주세요.';
+            return;
+        }
         try {
-            const res1 = await fetch(`/api/mypage/id/${id}`);
+            const res1 = await fetch(`/api/mypage/me`,{
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            });
             if(!res1.ok) throw new Error('회원 정보를 불러오지 못했습니다');
             const member = await res1.json();
             document.getElementById('nickname').innerText = member.nickname;
             document.getElementById('cash').innerText = member.cash;
             document.getElementById('total-score').innerText = member.totalScore;
 
-            const res2 = await fetch(`/api/mypage/member-id/${member.id}`);
+            const res2 = await fetch(`/api/mypage/my-games`, {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            });
             if(!res2.ok) throw new Error('게임 기록을 불러오지 못했습니다');
             const gameParticipation = await res2.json();
             const list = document.getElementById('game-list');

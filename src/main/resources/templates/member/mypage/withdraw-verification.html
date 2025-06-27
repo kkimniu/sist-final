@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>회원탈퇴</h2>
+<h3>회원 탈퇴를 원하시면 비밀번호를 입력해주세요. 회원에 관련된 모든 데이터가 삭제됩니다. 삭제된 데이터는 복구가 불가능합니다</h3>
+
+<form id="withdraw-form">
+    <input type="hidden" id="id" name="id" value=1>
+    <input type="password" id="password" name="password" placeholder="비밀번호를 입력해주세요" >
+    <span id="message" style="display:block; margin-top:10px;"></span>
+    <button type="submit">탈퇴하기</button>
+</form>
+<button onclick="location.href='mypage-main'">돌아가기</button>
+</body>
+<script>
+    document.getElementById('withdraw-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const token = localStorage.getItem('jwt-token');
+        const password =  document.getElementById('password').value;
+        const message = document.getElementById('message');
+
+        if (!token) {
+            document.getElementById('message').innerText = '로컬 스토리지에 토큰이 없습니다. 먼저 로그인을 해주세요.';
+            return;
+        }
+        //비밀번호 검증
+        fetch(`/api/mypage/password-verification`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({ password: password })
+        })
+        .then(response => {
+            if (!response.ok) {
+                document.getElementById('message').innerText = '비밀번호가 일치하지않습니다';
+                document.getElementById('message').style.color = 'red';
+                throw new Error('비밀번호가 일치하지않습니다');
+                return;
+            }
+            //리턴을 생략하고 fetch를하면 fetch는 실행됨 대신 .then()이 기다리지 않고 바로 실행
+            return fetch('/api/mypage/delete', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                 body: JSON.stringify({ password: password })
+            });
+        })
+        .then(response => {
+            if (!response.ok) {
+               throw new Error('회원 탈퇴 실패');
+            }
+            localStorage.removeItem('jwt-token');
+            window.location.href = '/member/mypage/withdraw';
+        })
+        .catch(error => {
+            message.innerText = error.message;
+            message.style.color = 'red';
+        });
+    });
+</script>
+</html>

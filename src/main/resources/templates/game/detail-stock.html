@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>게임 메인 화면</title>
+</head>
+<style>
+    #graphContainer {
+        overflow-x: auto;
+    }
+
+    #priceChartContainer {
+        position: relative;
+    }
+
+    #tradeVolumeChartContainer {
+        position: relative;
+        margin-top: 30px;
+    }
+
+    #priceChartWriter {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    #priceChartLayout {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    #tradeVolumeChartWriter {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    #tradeVolumeChartLayout {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    #orderBook {
+        td {
+            text-align: center;
+            vertical-align: middle;
+        }
+    }
+
+
+</style>
+<body onload = "onloadBody();">
+
+<div id = gameInfo>
+
+</div>
+
+<div id = "graphContainer">
+    <div id = "priceChartContainer">
+        <canvas id="priceChartLayout"></canvas>
+        <canvas id="priceChartWriter"></canvas>
+    </div>
+    <div id = "tradeVolumeChartContainer">
+        <canvas id="tradeVolumeChartLayout"></canvas>
+        <canvas id="tradeVolumeChartWriter"></canvas>
+    </div>
+</div>
+
+<div id = "orderBookLayout">
+    <table id="orderBook">
+        <tr>
+            <td id="buy10"></td>
+            <td id="buyPrice10"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td id="buy9"></td>
+            <td id="buyPrice9"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td id="buy8"></td>
+            <td id="buyPrice8"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td id="buy7"></td>
+            <td id="buyPrice7"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td id="buy6"></td>
+            <td id="buyPrice6"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td id="buy5"></td>
+            <td id="buyPrice5"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td id="buy4"></td>
+            <td id="buyPrice4"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td id="buy3"></td>
+            <td id="buyPrice3"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td id="buy2"></td>
+            <td id="buyPrice2"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td id="buy1"></td>
+            <td id="buyPrice1"></td>
+            <td id="buyAll"></td>
+        </tr>
+        <tr>
+            <td id="selAll"></td>
+            <td id="sel1"></td>
+            <td id="selPrice1"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td id="sel2"></td>
+            <td id="selPrice2"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td id="sel3"></td>
+            <td id="selPrice3"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td id="sel4"></td>
+            <td id="selPrice4"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td id="sel5"></td>
+            <td id="selPrice5"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td id="sel6"></td>
+            <td id="selPrice6"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td id="sel7"></td>
+            <td id="selPrice7"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td id="sel8"></td>
+            <td id="selPrice8"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td id="sel9"></td>
+            <td id="selPrice9"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td id="sel10"></td>
+            <td id="selPrice10"></td>
+        </tr>
+    </table>
+</div>
+
+<div id = "orderPanelLayout">
+
+</div>
+
+<div id = "chattingLayout">
+
+</div>
+<script>
+    // 호가창 스타일 지정
+    for (let i = 1; i <= 10; i++) {
+        let buy = document.getElementById("buy" + i);
+        buy.style.color = "blue";
+
+        let buyPrice = document.getElementById("buyPrice" + i);
+        buyPrice.style.backgroundColor = "skyblue";
+        buyPrice.style.color = "blue";
+
+        let buyAll = document.getElementById("buyAll");
+        buyAll.style.color = "blue";
+
+        let sel = document.getElementById("sel" + i);
+        sel.style.backgroundColor = "pink";
+        sel.style.color = "red";
+
+        let selPrice = document.getElementById("selPrice" + i);
+        selPrice.style.color = "red";
+
+        let selAll = document.getElementById("selAll");
+        selAll.style.color = "red";
+    }
+
+    // 호가창 컴포넌트 캐싱
+    const concludeVolume = document.getElementById("concludeVolume");
+    const concludePrice = document.getElementById("concludePrice");
+
+    // 호가창 크기 지정
+    const orderBookLayout = document.getElementById("orderBookLayout");
+    const orderBook = document.getElementById("orderBook");
+
+    orderBookLayout.querySelector("table").style.tableLayout = "fixed";
+
+    orderBookLayout.width = window.innerWidth*0.3;
+    orderBookLayout.style.width = window.innerWidth*0.3 + "px";
+    orderBookLayout.height = window.innerHeight*0.5;
+    orderBookLayout.style.height = window.innerHeight*0.5 + "px";
+
+    orderBook.style.width = 100 + "%";
+    orderBook.style.height = 100 + "%";
+</script>
+<script>
+    let chartSocket;
+
+    const graphContainer = document.getElementById("graphContainer");
+
+    const priceChartContainer = document.getElementById("priceChartContainer");
+
+    const priceChartWriter = document.getElementById("priceChartWriter");
+    const priceChartWriterCtx = priceChartWriter.getContext("2d");
+
+    const priceChartLayout = document.getElementById("priceChartLayout");
+    const priceChartLayoutCtx = priceChartLayout.getContext("2d");
+
+    const tradeVolumeChartContainer = document.getElementById("tradeVolumeChartContainer");
+
+    const tradeVolumeChartWriter = document.getElementById("tradeVolumeChartWriter");
+    const tradeVolumeChartWriterCtx = tradeVolumeChartWriter.getContext("2d");
+
+    const tradeVolumeChartLayout = document.getElementById("tradeVolumeChartLayout");
+    const tradeVolumeChartLayoutCtx = tradeVolumeChartLayout.getContext("2d");
+
+
+    const graphLayout = document.getElementById("graphContainer");
+
+    graphLayout.addEventListener("scroll", function (event) {
+        if (onCode === false) {
+            autoScroll = event.target.scrollLeft + event.target.clientWidth >= event.target.scrollWidth - 1;
+        } else {
+            onCode = false;
+        }
+    })
+
+    let autoScroll = true;
+    let onCode = false;
+
+    // 화면 크기 비율로 설정할 필요 있음
+    let mainWidth = window.innerWidth*0.6;
+    let mainHeight = 400;
+
+    let priceChartHeight = mainHeight*0.65;
+    let tradeVolumeChartHeight = mainHeight*0.35;
+
+    const marginLeft = 0;
+    const marginTop = 0;
+
+    // 컴포넌트 크기 설정(html 크기 속성이랑 css 크기 속성이 다르게 먹어서 둘다 설정)
+
+    graphLayoutwidth = window.innerWidth*0.65;
+    graphLayout.height = mainHeight*1.3;
+
+    priceChartLayout.width = mainWidth;
+    priceChartLayout.height = priceChartHeight;
+    priceChartWriter.width = mainWidth;
+    priceChartWriter.height = priceChartHeight;
+    priceChartContainer.width = mainWidth;
+    priceChartContainer.height = priceChartHeight;
+
+    tradeVolumeChartLayout.width = mainWidth;
+    tradeVolumeChartLayout.height = tradeVolumeChartHeight;
+    tradeVolumeChartWriter.width = mainWidth;
+    tradeVolumeChartWriter.height = tradeVolumeChartHeight;
+    tradeVolumeChartContainer.width = mainWidth;
+    tradeVolumeChartContainer.height = tradeVolumeChartHeight;
+
+    graphLayout.style.width = window.innerWidth*0.65 + "px";
+    graphLayout.style.height = mainHeight*1.3 + "px";
+
+    priceChartLayout.style.width = mainWidth + "px";
+    priceChartLayout.style.height = priceChartHeight + "px";
+    priceChartWriter.style.width = mainWidth + "px";
+    priceChartWriter.style.height = priceChartHeight + "px";
+    priceChartContainer.style.height = priceChartHeight + "px";
+    priceChartContainer.style.width = mainWidth + "px";
+
+    tradeVolumeChartLayout.style.width = mainWidth+"px";
+    tradeVolumeChartLayout.style.height = tradeVolumeChartHeight+"px";
+    tradeVolumeChartWriter.style.width = mainWidth+"px";
+    tradeVolumeChartWriter.style.height = tradeVolumeChartHeight+"px";
+    tradeVolumeChartContainer.style.width = mainWidth+"px";
+    tradeVolumeChartContainer.style.height = tradeVolumeChartHeight+"px";
+
+
+
+    // 기본 봉 개수
+    let graphComp = 10;
+
+    let stickRefX =  mainWidth;
+    let stickRefY = tradeVolumeChartHeight;
+
+    let candleRefX = mainWidth;
+    let candleRefY = priceChartHeight/ 2;
+
+    const guideLineLengthY = 8;
+    let guideLineLengthX = graphComp/3;
+
+    const valueStickWidth = 10;
+
+    // 그래프의 각 틱 시간정보
+    let relTime;
+
+    // 5분 봉 캐시 변수
+    let priceChartValueData5Min = [0];
+    let priceChartValueData5MinZeroPoint = [0];
+    let priceChartValueData5MinMax = [0];
+    let priceChartValueData5MinMin = [0];
+
+    let valueData5Min = [0];
+    // 임의로 지정한 거래량 첫 막대의 그래프 기준값
+    let MaxStickValue5Min = 200000;
+
+    // 3분 봉 캐시 변수
+    let priceChartValueData3Min = [0];
+    let priceChartValueData3MinZeroPoint = [0];
+    let priceChartValueData3MinMax = [0];
+    let priceChartValueData3MinMin = [0];
+
+    let valueData3Min = [0];
+    let MaxStickValue3Min= MaxStickValue5Min * (3/5);
+
+    // 1분 봉 캐시 변수
+    let priceChartValueData1Min = [0];
+    let priceChartValueData1MinZeroPoint = [0];
+    let priceChartValueData1MinMax = [0];
+    let priceChartValueData1MinMin = [0];
+
+    let valueData1Min = [0];
+    let MaxStickValue1Min = MaxStickValue5Min/5;
+
+    // 30초 봉 캐시 변수
+    let priceChartValueData30Sec = [0];
+    let priceChartValueData30SecZeroPoint = [0];
+    let priceChartValueData30SecMax = [0];
+    let priceChartValueData30SecMin = [0];
+
+
+    let valueData30Sec = [0];
+    let MaxStickValue30Sec = MaxStickValue5Min/10;
+
+    // 1틱 차트 내부 데이터
+    let priceChartValueData1Tick = [0];
+
+    let valueData1Tick = [0];
+
+    // 화면에 표시될 데이터를 선택하기 위해 집계 데이터를 배열로 관리
+    let priceChartSelectData = [priceChartValueData5Min, priceChartValueData3Min, priceChartValueData1Min, priceChartValueData30Sec, priceChartValueData1Tick];
+    let priceChartSelectDataZeroPoint = [priceChartValueData5MinZeroPoint, priceChartValueData3MinZeroPoint, priceChartValueData1MinZeroPoint, priceChartValueData30SecZeroPoint];
+    let priceChartSelectDataMaxPoint = [priceChartValueData5MinMax, priceChartValueData3MinMax, priceChartValueData1MinMax, priceChartValueData30SecMax];
+    let priceChartSelectDataMinPoint = [priceChartValueData5MinMin, priceChartValueData3MinMin, priceChartValueData1MinMin, priceChartValueData30SecMin];
+
+    let selectData = [valueData5Min, valueData3Min, valueData1Min, valueData30Sec, valueData1Tick];
+    let selectDataMaxVolume = [MaxStickValue5Min, MaxStickValue3Min, MaxStickValue1Min, MaxStickValue30Sec];
+
+    // 화면에 표시될 데이터 선택 변수
+    let selectDataIndex = 3;
+
+    // 기준 시간 별로 milliseconds를 계산하여 캐시
+    const Min5 = 5 * 60 * 1000;
+    const Min3 = 3 * 60 * 1000;
+    const Min1 = 60 * 1000;
+    const Sec30 = 30 * 1000;
+
+    function scrollSummary() {
+        onCode = true;
+        graphLayout.scrollLeft = graphLayout.scrollWidth;
+    }
+
+    function onloadBody() {
+
+        chartSocketHandler();
+
+        drowGuideLine(guideLineLengthX, guideLineLengthY, priceChartLayoutCtx, priceChartHeight);
+        drowGuideLine(guideLineLengthX, guideLineLengthY, tradeVolumeChartLayoutCtx, tradeVolumeChartHeight);
+    }
+
+    function drowGuideLine(widthLineLength, heightLineLength, context, height) {
+
+        // canvas 내부의 외곽선 그리기
+
+        // 1. 경로 시작 (이후 지정된 영역을 한 번에 그리는 느낌)
+        context.beginPath();
+
+        // 2. 외곽선 사각형
+        context.rect(marginLeft, marginTop, mainWidth, height-marginTop*2);
+
+        // 3. 지정된 영역 채워 그리기
+        context.strokeStyle = 'gray';
+        context.lineWidth = 1;
+        context.stroke();
+
+        const widthLine = mainWidth / widthLineLength;
+        const heightLine = height / heightLineLength;
+
+        // 가로 가이드 라인
+        for (let i = 1; i < heightLineLength; i++) {
+            context.beginPath();
+            context.moveTo(marginLeft,
+                i * heightLine);
+            context.lineTo(mainWidth,
+                i * heightLine);
+
+            context.strokeStyle = 'gray';
+            context.lineWidth = 1;
+            context.stroke();
+        }
+
+        // 세로 가이드라인
+        for (let i = 1; i < widthLineLength; i++) {
+            context.beginPath();
+            context.moveTo(i * widthLine,
+                marginTop);
+            context.lineTo(i * widthLine,
+                marginTop + height);
+
+            context.strokeStyle = 'gray';
+            context.lineWidth = 1;
+            context.stroke();
+        }
+    }
+
+    function drowCandle(RefX, RefY, width, value, highPoint, lowPoint, tickSize, viewRate) {
+
+        RefX = Math.round(RefX);
+
+
+        if (value === undefined) return;
+
+        let valuePixels = Math.abs(value / tickSize * viewRate);
+        let highPointPixels = highPoint / tickSize * viewRate;
+        let lowPointPixels = lowPoint / tickSize * viewRate;
+
+        // 데이터 갱신을 위해 타겟 봉 영역 지우기
+        priceChartWriterCtx.clearRect(RefX-width, 0, width*2, priceChartHeight);
+        drowGuideLine(guideLineLengthX, guideLineLengthY, priceChartLayoutCtx, priceChartHeight);
+
+        // 캔들 컴포넌트 그리기
+        if (value > 0) {
+            priceChartWriterCtx.fillStyle = 'blue';
+            priceChartWriterCtx.strokeStyle = 'blue';
+            priceChartWriterCtx.beginPath();
+            priceChartWriterCtx.rect(RefX, RefY, width, valuePixels);
+            priceChartWriterCtx.fill();
+        } else {
+            priceChartWriterCtx.fillStyle = 'red';
+            priceChartWriterCtx.strokeStyle = 'red';
+            priceChartWriterCtx.beginPath();
+            priceChartWriterCtx.rect(RefX, RefY-valuePixels, width, valuePixels);
+            priceChartWriterCtx.fill();
+        }
+
+        // 고점 라인 그리기
+        priceChartWriterCtx.beginPath();
+        priceChartWriterCtx.moveTo(RefX + valueStickWidth / 2, RefY);
+        priceChartWriterCtx.lineTo(RefX + valueStickWidth / 2, RefY - highPointPixels);
+
+        priceChartWriterCtx.stroke();
+
+        // 저점 라인 그리기
+        priceChartWriterCtx.beginPath();
+        priceChartWriterCtx.moveTo(RefX + valueStickWidth / 2, RefY);
+        priceChartWriterCtx.lineTo(RefX + valueStickWidth / 2, RefY + lowPointPixels);
+        priceChartWriterCtx.stroke();
+
+        //console.log("valuePixels: " + valuePixels + " highPointPixels: " + highPointPixels + " lowPointPixels: " + lowPointPixels);
+        //console.log("stickRefX: " + RefX + ", stickRefY: " + RefY + ", width: " + width + ", value: " + value + ", highpoint: " + highPoint + ", lowpoint: " + lowPoint + ", tickSize: " + tickSize + ", viewRate: " + viewRate);
+    }
+
+    function drowStick(refX, refY, width, value) {
+
+        refX = Math.round(refX);
+
+        if (value === undefined) value = 0;
+
+        tradeVolumeChartWriterCtx.clearRect(refX-width, 0, width*2, tradeVolumeChartHeight);
+        drowGuideLine(guideLineLengthX, guideLineLengthY, tradeVolumeChartLayoutCtx, tradeVolumeChartHeight);
+
+        tradeVolumeChartWriterCtx.beginPath();
+        tradeVolumeChartWriterCtx.rect(refX, refY, width, value);
+        tradeVolumeChartWriterCtx.fillStyle = 'blue';
+        tradeVolumeChartWriterCtx.fill();
+
+        //console.log("stickRefX: " + RefX + ", stickRefY: " + RefY + ", width: " + width + ", value: " + value);
+    }
+
+    function shiftArrayRight(oldArray) {
+        let newArray = new Array(oldArray.length).fill(0);
+        for (let i = 0; i < oldArray.length; i++) {
+            newArray[i + 1] = oldArray[i];
+        }
+        return newArray;
+    }
+
+    function getMax(intArray, length) {
+        let max = intArray[0];
+        for (let i; i < length; i++) {
+            if (i > max) max = i;
+        }
+        return max;
+    }
+
+    function getMin(intArray, length) {
+        let min = intArray[0];
+        for (let i; i < length; i++) {
+            if (i < min) min = i;
+        }
+        return min;
+    }
+
+    function expandGraph(index) {
+        if (priceChartSelectData[selectDataIndex].length > graphComp && index === selectDataIndex) {
+            mainWidth += mainWidth / graphComp;
+
+            priceChartWriter.style.width = mainWidth + "px";
+            priceChartLayout.style.width = mainWidth + "px";
+            priceChartContainer.style.width = mainWidth + "px";
+
+            priceChartWriter.width = mainWidth;
+            priceChartLayout.width = mainWidth;
+            priceChartContainer.width = mainWidth;
+
+            tradeVolumeChartWriter.style.width = mainWidth + "px";
+            tradeVolumeChartLayout.style.width = mainWidth + "px";
+            tradeVolumeChartContainer.style.width = mainWidth + "px";
+
+            tradeVolumeChartWriter.width = mainWidth;
+            tradeVolumeChartLayout.width = mainWidth;
+            tradeVolumeChartContainer.width = mainWidth;
+            
+            graphComp++;
+            guideLineLengthX = graphComp/3;
+            if (autoScroll) {
+                scrollSummary();
+            }
+        }
+    }
+
+    function getTickSize(price) {
+        let unit;
+        switch (true) {
+            case (price < 1000):
+                unit = 1;
+                break;
+            case (price < 5000):
+                unit = 5;
+                break;
+            case (price < 10000):
+                unit = 10;
+                break;
+            case (price < 50000):
+                unit = 50;
+                break;
+            case (price < 100000):
+                unit = 100;
+                break;
+            case (price < 500000):
+                unit = 500;
+                break;
+            default:
+                unit = 1000;
+                break;
+        }
+        return unit;
+    }
+
+    function chartSocketHandler() {
+        chartSocket = new WebSocket("http://localhost:8081/ws/chart");
+        chartSocket.onopen = function (event) {
+            console.log("연결 성공");
+        };
+        chartSocket.onmessage = function (event) {
+
+            let stockData = JSON.parse(event.data);
+
+            if (stockData.stck_prpr != null) {
+                if (relTime == null) {
+                    relTime = new Date(stockData.created_at);
+                    for (let i = 0; i < priceChartSelectDataZeroPoint.length; i++) {
+                        priceChartSelectDataZeroPoint[i][0] = stockData.stck_prpr;
+                        priceChartSelectDataMaxPoint[i][0] = stockData.stck_prpr;
+                        priceChartSelectDataMinPoint[i][0] = stockData.stck_prpr;
+                    }
+                } else {
+                    let grapeTime = new Date(stockData.created_at);
+                    if (grapeTime - relTime >= Min5) {
+                        priceChartSelectData[0] = shiftArrayRight(priceChartSelectData[0]);
+                        priceChartSelectDataMaxPoint[0] = shiftArrayRight(priceChartSelectDataMaxPoint[0]);
+                        priceChartSelectDataMaxPoint[0][0] = stockData.stck_prpr;
+                        priceChartSelectDataMinPoint[0] = shiftArrayRight(priceChartSelectDataMinPoint[0]);
+                        priceChartSelectDataMinPoint[0][0] = stockData.stck_prpr;
+                        priceChartSelectDataZeroPoint[0] = shiftArrayRight(priceChartSelectDataZeroPoint[0]);
+                        priceChartSelectDataZeroPoint[0][0] = stockData.stck_prpr;
+                        relTime = grapeTime;
+                        candleRefY = priceChartHeight / 2;
+
+                        selectData[0] = shiftArrayRight(selectData[0]);
+                        stickRefY = tradeVolumeChartHeight;
+                        expandGraph(0, tradeVolumeChartWriter, tradeVolumeChartLayout, graphLayout);
+                    }
+                    if (grapeTime - relTime >= Min3) {
+                        priceChartSelectData[1] = shiftArrayRight(priceChartSelectData[1]);
+                        priceChartSelectDataMaxPoint[1] = shiftArrayRight(priceChartSelectDataMaxPoint[1]);
+                        priceChartSelectDataMaxPoint[1][0] = stockData.stck_prpr;
+                        priceChartSelectDataMinPoint[1] = shiftArrayRight(priceChartSelectDataMinPoint[1]);
+                        priceChartSelectDataMinPoint[1][0] = stockData.stck_prpr;
+                        priceChartSelectDataZeroPoint[1] = shiftArrayRight(priceChartSelectDataZeroPoint[1]);
+                        priceChartSelectDataZeroPoint[1][0] = stockData.stck_prpr;
+                        relTime = grapeTime;
+                        candleRefY = priceChartHeight / 2;
+
+                        selectData[1] = shiftArrayRight(selectData[1]);
+                        stickRefY = tradeVolumeChartHeight;
+                        expandGraph(1);
+                    }
+                    if (grapeTime - relTime >= Min1) {
+                        priceChartSelectData[2] = shiftArrayRight(priceChartSelectData[2]);
+                        priceChartSelectDataMaxPoint[2] = shiftArrayRight(priceChartSelectDataMaxPoint[2]);
+                        priceChartSelectDataMaxPoint[2][0] = stockData.stck_prpr;
+                        priceChartSelectDataMinPoint[2] = shiftArrayRight(priceChartSelectDataMinPoint[2]);
+                        priceChartSelectDataMinPoint[2][0] = stockData.stck_prpr;
+                        priceChartSelectDataZeroPoint[2] = shiftArrayRight(priceChartSelectDataZeroPoint[2]);
+                        priceChartSelectDataZeroPoint[2][0] = stockData.stck_prpr;
+                        relTime = grapeTime;
+                        candleRefY = priceChartHeight / 2;
+
+                        selectData[2] = shiftArrayRight(selectData[2]);
+                        stickRefY = tradeVolumeChartHeight;
+                        expandGraph(2);
+                    }
+                    if (grapeTime - relTime >= Sec30) {
+                        priceChartSelectData[3] = shiftArrayRight(priceChartSelectData[3]);
+                        priceChartSelectDataMaxPoint[3] = shiftArrayRight(priceChartSelectDataMaxPoint[3]);
+                        priceChartSelectDataMaxPoint[3][0] = stockData.stck_prpr;
+                        priceChartSelectDataMinPoint[3] = shiftArrayRight(priceChartSelectDataMinPoint[3]);
+                        priceChartSelectDataMinPoint[3][0] = stockData.stck_prpr;
+                        priceChartSelectDataZeroPoint[3] = shiftArrayRight(priceChartSelectDataZeroPoint[3]);
+                        priceChartSelectDataZeroPoint[3][0] = stockData.stck_prpr;
+                        relTime = grapeTime;
+                        candleRefY = priceChartHeight / 2;
+
+                        selectData[3] = shiftArrayRight(selectData[3]);
+                        stickRefY = tradeVolumeChartHeight;
+                        expandGraph(3);
+                    }
+                }
+
+                // 봉마다 고점, 저점 저장
+                for (let i = 0; i < priceChartSelectDataMaxPoint.length; i++) {
+                    if (priceChartSelectDataMaxPoint[i][0] < stockData.stck_prpr) {
+                        priceChartSelectDataMaxPoint[i][0] = stockData.stck_prpr;
+                    }
+                    if (priceChartSelectDataMinPoint[i][0] > stockData.stck_prpr) {
+                        priceChartSelectDataMinPoint[i][0] = stockData.stck_prpr;
+                    }
+                }
+
+                // 종가 저장
+                priceChartSelectData[0][0] = stockData.stck_prpr;
+                priceChartSelectData[1][0] = stockData.stck_prpr;
+                priceChartSelectData[2][0] = stockData.stck_prpr;
+                priceChartSelectData[3][0] = stockData.stck_prpr;
+                priceChartSelectData[4].push(stockData.stck_prpr);
+
+                // 거래량 저장
+                selectData[0][0] += stockData.cntg_vol;
+                selectData[1][0] += stockData.cntg_vol;
+                selectData[2][0] += stockData.cntg_vol;
+                selectData[3][0] += stockData.cntg_vol;
+                selectData[4].push(stockData.cntg_vol);
+
+                // 그래프 그릴 x좌표 연산
+                candleRefX = mainWidth - (mainWidth / graphComp);
+                stickRefX = candleRefX;
+
+                // 그래프 상 고가, 저가 기준으로 상하 화면에 대한 그래프 비율 연산
+                let priceGap = priceChartSelectDataZeroPoint[selectDataIndex][0] - stockData.stck_prpr;
+                let highPointGap = priceChartSelectDataMaxPoint[selectDataIndex][0] - priceChartSelectDataZeroPoint[selectDataIndex][0];
+                let lowPointGap = priceChartSelectDataZeroPoint[selectDataIndex][0] - priceChartSelectDataMinPoint[selectDataIndex][0];
+                let tickSize = getTickSize(stockData.stck_prpr);
+                let viewRate = priceChartHeight /
+                    ((getMax(priceChartSelectDataMaxPoint[selectDataIndex], graphComp) - stockData.stck_prpr) / tickSize +
+                        (stockData.stck_prpr - getMin(priceChartSelectDataMinPoint[selectDataIndex], graphComp)) / tickSize
+                        + 20);
+
+                // 거래량 고점 갱신 시 그래프 표시 비율 연산
+                if (selectData[selectDataIndex][0] > selectDataMaxVolume[selectDataIndex] && selectData[selectDataIndex][1] !== undefined) {
+                    selectDataMaxVolume[selectDataIndex] = selectData[selectDataIndex][0];
+                    drowStick(stickRefX,
+                        stickRefY - tradeVolumeChartHeight * 0.8,
+                        valueStickWidth,
+                        tradeVolumeChartHeight * 0.8);
+                } else {
+                    // 최신 스틱 그래프 그리기
+                    drowStick(stickRefX,
+                        stickRefY - selectData[selectDataIndex][0] / selectDataMaxVolume[selectDataIndex] * tradeVolumeChartHeight * 0.8,
+                        valueStickWidth,
+                        selectData[selectDataIndex][0] / selectDataMaxVolume[selectDataIndex] * tradeVolumeChartHeight * 0.8);
+                }
+
+                // 최신 캔들 그래프 그리기
+                drowCandle(candleRefX, candleRefY, valueStickWidth, priceGap, highPointGap, lowPointGap, tickSize, viewRate);
+
+                // 과거 캔들 그래프 그리기
+                let candleRefY2 = candleRefY;
+                for (let i = 1; i < priceChartSelectData[selectDataIndex].length; i++) {
+                    candleRefY2 = candleRefY2 - viewRate * (priceChartSelectDataZeroPoint[selectDataIndex][i]-priceChartSelectData[selectDataIndex][i])/tickSize;
+                    drowCandle(candleRefX - i * mainWidth / graphComp,
+                        candleRefY2,
+                        valueStickWidth,
+                        priceChartSelectDataZeroPoint[selectDataIndex][i] - priceChartSelectData[selectDataIndex][i],
+                        priceChartSelectDataMaxPoint[selectDataIndex][i] - priceChartSelectDataZeroPoint[selectDataIndex][i],
+                        priceChartSelectDataZeroPoint[selectDataIndex][i] - priceChartSelectDataMinPoint[selectDataIndex][i],
+                        tickSize, viewRate);
+                }
+
+                // 과거 거래량 그래프 그리기
+                for (let i = 1; i < selectData[selectDataIndex].length; i++) {
+                    drowStick(stickRefX - i * mainWidth / graphComp,
+                        stickRefY - selectData[selectDataIndex][i] / selectDataMaxVolume[selectDataIndex] * tradeVolumeChartHeight * 0.8,
+                        valueStickWidth,
+                        selectData[selectDataIndex][i] / selectDataMaxVolume[selectDataIndex] * tradeVolumeChartHeight * 0.8);
+                }
+
+            }else if(stockData.stck_prpr == null){
+                // TODO 호가창 데이터 들어왔을 때 처리할 로직
+                for (let i = 1; i <= 10; i++) {
+                    document.getElementById("buy" + i).innerText = stockData["askp_rsqn" + i];
+                    document.getElementById("buyPrice" + i).innerText = stockData["askp" + i];
+                    document.getElementById("buyAll").innerText = stockData.total_askp_rsqn_icdc;
+
+                    document.getElementById("sel" + i).innerText = stockData["bidp" + i];
+                    document.getElementById("selPrice" + i).innerText = stockData["bidp_rsqn" + i];
+                    document.getElementById("selAll").innerText = stockData.total_bidp_rsqn_icdc;
+                }
+            }
+        };
+        chartSocket.onerror = function (event) {
+            alert("에러 발생", event);
+        };
+        chartSocket.onclose = function (event) {
+            console.log("연결이 끊겼습니다.");
+        };
+    }
+
+    window.addEventListener("beforeunload", function (event) {
+        chartSocket.close();
+    })
+</script>
+</body>
+</html>

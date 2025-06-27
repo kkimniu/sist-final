@@ -35,7 +35,7 @@ public interface MemberMapper {
     /**
      * 닉네임을 수정합니다.
      */
-    int updateNickname(@Param("id") int id, @Param("nickname") String nickname, @Param("nicknameUpdatedAt") LocalDateTime nicknameUpdatedAt);
+    int updateNickname(@Param("id") Long id, @Param("nickname") String nickname, @Param("nicknameUpdatedAt") LocalDateTime nicknameUpdatedAt);
 
     /**
      * 비밀번호를 수정합니다.
@@ -48,6 +48,11 @@ public interface MemberMapper {
      * 자산을 수정합니다.
      */
     int updateCash(@Param("id") int id, @Param("cash") Long cash);
+
+    /**
+     * 회원을 삭제합니다
+     */
+    int delete(Long id);
 
     /**
      * 이메일이 이미 있는지 조회합니다.
@@ -68,5 +73,5 @@ public interface MemberMapper {
     /**
      * 비밀번호가 있는지 조회.
      */
-    boolean existsByIdAndPassword(int id, String password);
+    boolean existsByIdAndPassword(Long id, String password);
 }

@@ -24,7 +24,7 @@ public class MybatisMemberRepository implements MemberRepository {
     }
 
     @Override
-    public int updateNickname(int id, String nickname, LocalDateTime nicknameUpdatedAt) {
+    public int updateNickname(Long id, String nickname, LocalDateTime nicknameUpdatedAt) {
         return memberMapper.updateNickname(id, nickname, nicknameUpdatedAt);
     }
 
@@ -39,6 +39,11 @@ public class MybatisMemberRepository implements MemberRepository {
     }
 
     @Override
+    public int delete(Long id) {
+        return memberMapper.delete(id);
+    }
+
+    @Override
     public boolean existsByEmail(String email) {
         return memberMapper.existsByEmail(email);
     }
@@ -49,7 +54,7 @@ public class MybatisMemberRepository implements MemberRepository {
     }
 
     @Override
-    public boolean existsByIdAndPassword(int id, String password) {
+    public boolean existsByIdAndPassword(Long id, String password) {
         return memberMapper.existsByIdAndPassword(id, password);
     }
 

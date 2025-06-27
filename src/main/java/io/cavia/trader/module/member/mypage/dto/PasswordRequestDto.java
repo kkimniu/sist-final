@@ -7,6 +7,6 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class NicknameUpdateRequestDto {
-    private String nickname;
+public class PasswordRequestDto {
+    private String password;
 }

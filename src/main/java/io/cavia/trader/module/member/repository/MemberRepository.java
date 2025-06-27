@@ -25,7 +25,7 @@ public interface MemberRepository {
     /**
      * 닉네임을 수정합니다.
      */
-    int updateNickname(int id, String nickname, LocalDateTime nicknameUpdatedAt);
+    int updateNickname(Long id, String nickname, LocalDateTime nicknameUpdatedAt);
 
     /**
      * 비밀번호를 수정합니다.
@@ -36,6 +36,11 @@ public interface MemberRepository {
      * 자산을 수정합니다.
      */
     int updateCash(int id, Long cash);
+
+    /**
+     * 회원을 삭제합니다
+     */
+    int delete(Long id);
 
     /**
      * 이메일이 이미 있는지 조회합니다.
@@ -56,7 +61,7 @@ public interface MemberRepository {
     /**
      * 비밀번호가 있는지 조회.
      */
-    boolean existsByIdAndPassword(int id, String password);
+    boolean existsByIdAndPassword(Long id, String password);
 
     /**
      * id로 멤버를 조회함

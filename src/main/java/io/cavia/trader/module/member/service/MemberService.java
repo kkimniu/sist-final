@@ -5,8 +5,6 @@ import io.cavia.trader.module.member.dto.ResetPasswordRequestDto;
 import io.cavia.trader.module.member.dto.SignupForm;
 import io.cavia.trader.module.member.entity.Member;
 
-import java.util.Optional;
-
 public interface MemberService {
     void sendVerificationEmail(String email);
 
