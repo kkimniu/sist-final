@@ -18,7 +18,7 @@ public interface MyPageService {
 
     public int changePassword(int id, String password, LocalDateTime passwordUpdatedAt);
 
-    public int resetCash(int id);
+    public int resetCash(Long id);
 
     public int deleteMember(Long id, String password);
 }
