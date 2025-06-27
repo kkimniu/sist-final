@@ -17,11 +17,8 @@
         <strong>닉네임</strong> <span id="nickname"></span>
         <strong>등급</strong> <span id="total-score"></span><br>
         <input type="button" value="닉네임변경" onclick="location.href='nickname-edit'"><input type="button" value="비밀번호변경" onclick="location.href='password-verification'"><br>
-        <h3>자산조회</h3> <span id="cash"></span>
-        <form th:action="@{/member/mypage/mypage-main}" method="post">
-            <input type="hidden" id="id" name="id" value=1>
-            <input type="submit" value="자산초기화"><br>
-        </form>
+        <h3>자산조회</h3> <span id="cash"></span><br>
+        <input type="button" value="자산초기화" onclick="cashReset()"><br>
     </div>
 </div>
 <div>
@@ -66,7 +63,32 @@
                 });
             }
         }catch(err) {
-            alert(err.message);
+
+        }
+    }
+</script>
+<script>
+    async function cashReset() {
+        const token = localStorage.getItem('jwt-token');
+        if (!token) {
+            document.getElementById('message').innerText = '로컬 스토리지에 토큰이 없습니다. 먼저 로그인을 해주세요.';
+            return;
+        }
+        try {
+            const res = await fetch(`/api/mypage/cash-reset`,{
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            });
+            if(!res.ok){
+                throw new Error('자산 초기화 실패');
+            }
+            alert('자산 초기화 성공');
+            location.href = '/member/mypage/mypage-main';
+        }catch (error){
+            alert(error.message);
         }
     }
 </script>
