@@ -50,7 +50,7 @@ public class RestMyPageController {
 
     @PatchMapping("/nickname")
     public ResponseEntity<String> updateNickname(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody NicknameUpdateRequestDto nicknameUpdateRequestDto) {
-        mypageService.changeNickname(userDetails.getMember().getId(), nicknameUpdateRequestDto.getNickname(), LocalDateTime.now());
+        mypageService.changeNickname(userDetails.getMember().getId(), nicknameUpdateRequestDto.getNickname());
         return ResponseEntity.status(200).body("변경성공");
     }
     @DeleteMapping("/delete")
