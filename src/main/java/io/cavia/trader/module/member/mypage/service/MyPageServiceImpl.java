@@ -54,7 +54,7 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
-    public boolean validateDuplicatePassword(Long id, String password) {
+    public boolean validatePassword(Long id, String password) {
         Member member = memberRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
         );

@@ -42,7 +42,7 @@ public class RestMyPageController {
 
     @PostMapping("/password-verification")
     public ResponseEntity<String> getcheckPassword(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody PasswordRequestDto passwordRequestDto) {
-        if(!mypageService.validateDuplicatePassword(userDetails.getMember().getId(),  passwordRequestDto.getPassword())){
+        if(!mypageService.validatePassword(userDetails.getMember().getId(),  passwordRequestDto.getPassword())){
             return ResponseEntity.status(400).body("비밀번호가 일치하지 않습니다.");
         }
         return ResponseEntity.status(200).body("비밀번호 맞음");
@@ -55,7 +55,7 @@ public class RestMyPageController {
     }
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody PasswordRequestDto passwordRequestDto) {
-        if(!mypageService.validateDuplicatePassword(userDetails.getMember().getId(), passwordRequestDto.getPassword())){
+        if(!mypageService.validatePassword(userDetails.getMember().getId(), passwordRequestDto.getPassword())){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         mypageService.deleteGameParticipation(userDetails.getMember().getId());
