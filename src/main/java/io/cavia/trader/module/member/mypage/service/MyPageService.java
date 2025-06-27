@@ -12,7 +12,7 @@ public interface MyPageService {
 
     public Member findById(Long id);
 
-    public void changeNickname(Long id, String nickname, LocalDateTime nicknameUpdatedAt);
+    public void changeNickname(Long id, String nickname);
 
     public boolean validatePassword(Long id, String password);
 

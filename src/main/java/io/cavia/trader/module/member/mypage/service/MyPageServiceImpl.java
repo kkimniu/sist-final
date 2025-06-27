@@ -46,11 +46,11 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
-    public void changeNickname(Long id, String nickname, LocalDateTime nicknameUpdatedAt) {
+    public void changeNickname(Long id, String nickname) {
         if (memberRepository.existsByNickname(nickname)) {
             throw new IllegalStateException("이미 존재하는 닉네임입니다.");
         }
-        if (memberRepository.updateNickname(id, nickname, nicknameUpdatedAt) <= 0) {
+        if (memberRepository.updateNickname(id, nickname, LocalDateTime.now()) <= 0) {
             throw new InvalidNoticeRequestException("닉네임 변경 실패");
         }
     }
