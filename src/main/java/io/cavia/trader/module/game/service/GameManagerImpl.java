@@ -64,7 +64,7 @@ public class GameManagerImpl implements GameManager {
          * 유저 정보 주입과 주입 세션 반환을 한 메서드에서 처리하였습니다
          */
         Member member = getUserInfo(tokenToClaims);
-        if (gameDTOs.isEmpty()) {
+        if (!gameDTOs.isEmpty()) {
             GameDTO gameDTO = gameDTOs.peekFirst();
             List<UserDTO> userDTOs = gameDTO.getUserDTOs();
             if (userDTOs != null) {
@@ -95,7 +95,7 @@ public class GameManagerImpl implements GameManager {
                 if (targetSession.equals(entry.getValue())) return entry.getKey();
             }
         }
-        throw new RuntimeException("해당 유저가 게임에 참가하지 않았습니다.");
+        throw new RuntimeException("웹소켓 세션 파기 중 오류 발생! 해당 유저의 세션을 찾을 수 없습니다.");
     }
 
     @Override

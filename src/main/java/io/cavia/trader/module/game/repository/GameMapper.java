@@ -21,8 +21,8 @@ public interface GameMapper {
                                @Param("postCash") long postCash,
                                @Param("enteredAt") LocalDateTime enteredAt
     );
-    Member findMemberById(int id);
-    void updateCashAndTotalScoreById(@Param("id") int id,
+    Member findMemberById(long id);
+    void updateCashAndTotalScoreById(@Param("id") long id,
                                      @Param("cash") int cash,
                                      @Param("totalScore") int totalScore
     );

@@ -24,7 +24,6 @@ public class GameRestController {
     @PostMapping("/verify")
     public ResponseEntity<?> validateAccess(@RequestHeader("Authorization") String authorizationHeader) {
         String token = jwtUtil.substringToken(authorizationHeader);
-        System.out.println("token = " + token);
         if(jwtUtil.validateToken(token)){
            return new ResponseEntity<Member>(
                    gameManager.getUserInfo(
