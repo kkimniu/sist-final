@@ -30,7 +30,7 @@ public class MybatisMemberRepository implements MemberRepository {
     public int updatePassword(int id, String password, LocalDateTime passwordUpdatedAt) {return memberMapper.updatePassword(id,password,passwordUpdatedAt);}
 
     @Override
-    public int updateCash(int id, Long cash) {return memberMapper.updateCash(id,cash);}
+    public int updateCash(Long id, Long cash) {return memberMapper.updateCash(id,cash);}
 
     @Override
     public int delete(Long id) {return memberMapper.delete(id);}
