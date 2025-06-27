@@ -34,9 +34,9 @@ public class ViewMyPageController {
     }
 
     @PostMapping("/password-verification")
-    public String passwordVerification(@RequestParam int id, @RequestParam String password, Model model) {
+    public String passwordVerification(@RequestParam Long id, @RequestParam String password, Model model) {
         model.addAttribute("id", id);
-        if (!myPageService.validateDuplicatePassword(id, password)) {
+        if (!myPageService.validatePassword(id, password)) {
             model.addAttribute("errorMessage", "비밀번호가 일치하지 않습니다.");
             return "member/mypage/password-verification.html";
         }
@@ -65,4 +65,13 @@ public class ViewMyPageController {
         return "member/mypage/mypage-main";
     }
 
+    @GetMapping("/withdraw-verification")
+    public String withdrawVerification() {
+        return "member/mypage/withdraw-verification";
+    }
+
+    @GetMapping("/withdraw")
+    public String withdrawn() {
+        return "member/mypage/withdraw";
+    }
 }
