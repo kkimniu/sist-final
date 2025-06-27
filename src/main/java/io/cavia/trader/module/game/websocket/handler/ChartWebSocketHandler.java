@@ -66,7 +66,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                 if (session.isOpen()) session.sendMessage(new TextMessage(tradesJson));
                             }
                         } catch (Exception e2) {
-                            e2.printStackTrace();
+                            throw new RuntimeException(e2);
                         }
                     });
                 });
@@ -104,7 +104,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                             }
 
                         } catch (Exception e2) {
-                            e2.printStackTrace();
+                            throw new RuntimeException(e2);
                         }
                     });
 
@@ -114,7 +114,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                 thread2.start();
 
             } catch (Exception e3) {
-                e3.printStackTrace();
+                throw new RuntimeException(e3);
             }
         }else {
             session.sendMessage(new TextMessage("유효하지 않은 JWT 토큰입니다."));
