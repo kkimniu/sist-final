@@ -64,6 +64,14 @@ public class GameManagerImpl implements GameManager {
          * 유저 정보 주입과 주입 세션 반환을 한 메서드에서 처리하였습니다
          */
         Member member = getUserInfo(tokenToClaims);
+
+        // 이미 참여중인 유저는 웹소켓 세션만 갈아 끼우고 연결
+        if (findChartSessionKeyByUserId(member.getId())) {
+            replaceChartSessionByUserId(member.getId(), webSocketSession);
+
+            return findGameSessionByUserId(member.getId());
+        }
+
         if (!gameDTOs.isEmpty()) {
             GameDTO gameDTO = gameDTOs.peekFirst();
             List<UserDTO> userDTOs = gameDTO.getUserDTOs();
@@ -81,6 +89,8 @@ public class GameManagerImpl implements GameManager {
                 );
             }
             gameDTO.getChartSessions().put(member.getId(), webSocketSession);
+            gameDTO.getUserIdsInChartSessions().put(webSocketSession.getId(), member.getId());
+
             return gameDTO;
 
         } else {
@@ -89,19 +99,76 @@ public class GameManagerImpl implements GameManager {
     }
 
     @Override
-    public Long findChartSessionKeyBySessionId(WebSocketSession targetSession) {
-        for (GameDTO gameDTO : gameDTOs) {
-            for (Map.Entry<Long, WebSocketSession> entry : gameDTO.getChartSessions().entrySet()) {
-                if (targetSession.equals(entry.getValue())) return entry.getKey();
+    public void removeChartSessionBySessionId(WebSocketSession targetSession) {
+        try {
+            for (GameDTO gameDTO : gameDTOs) {
+                Map<String, Long> sessionKeys = gameDTO.getUserIdsInChartSessions();
+                if (sessionKeys.containsKey(targetSession.getId())) {
+                    gameDTO.getChartSessions().remove(sessionKeys.get(targetSession.getId()));
+                }
             }
+        } catch (Exception e) {
+            throw new RuntimeException("세션 삭제 중 예외 발생: 해당 세션을 찾을 수 없습니다.", e);
         }
-        throw new RuntimeException("웹소켓 세션 파기 중 오류 발생! 해당 유저의 세션을 찾을 수 없습니다.");
     }
 
     @Override
-    public void removeChartSession(Long sessionKey) {
+    public boolean findChartSessionKeyByUserId(Long userId) {
         for (GameDTO gameDTO : gameDTOs) {
-            gameDTO.getChartSessions().remove(sessionKey);
+            if (gameDTO.getChartSessions().containsKey(userId)) return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void replaceChartSessionByUserId(long targetId, WebSocketSession newSession) {
+        try {
+            for (GameDTO gameDTO : gameDTOs) {
+                if (gameDTO.getChartSessions().containsKey(targetId)) {
+                    gameDTO.getChartSessions().replace(targetId, newSession);
+                    gameDTO.getUserIdsInChartSessions().put(newSession.getId(), targetId);
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("세션 교체 중 예외 발생: 세션에서 해당 유저를 찾을 수 없습니다.", e);
         }
     }
+
+    @Override
+    public void removeChartSession(WebSocketSession session) {
+        try {
+            for (GameDTO gameDTO : gameDTOs) {
+                if (gameDTO.getUserIdsInChartSessions()
+                        .containsKey(session.getId())) {
+
+                    gameDTO.getChartSessions()
+                            .remove(gameDTO.getUserIdsInChartSessions()
+                                    .get(session.getId()));
+
+                    gameDTO.getUserIdsInChartSessions()
+                            .remove(session.getId());
+                    return;
+                }
+            }
+            throw new RuntimeException("세션 삭제 중 예외 발생: 세션을 찾을 수 없습니다.");
+        }catch (Exception e) {
+            throw new RuntimeException("세션 삭제 중 알 수 없는 예외 발생.", e);
+        }
+    }
+
+
+    @Override
+    public GameDTO findGameSessionByUserId(Long userId) {
+        for (GameDTO gameDTO : gameDTOs) {
+            for (UserDTO userDTO : gameDTO.getUserDTOs()) {
+                if (userDTO.getUserId() == userId) {
+                    return gameDTO;
+                }
+            }
+        }
+        throw new RuntimeException("세션 조회 중 예외 발생: 세션에서 해당 유저를 찾을 수 없습니다.");
+    }
+
+
 }

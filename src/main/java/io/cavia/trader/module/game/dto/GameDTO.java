@@ -22,6 +22,8 @@ public class GameDTO {
     private List<TradesOutput> trades;
     private List<UserDTO> userDTOs;
     private Map<Long, WebSocketSession> chartSessions;
+    private Map<String, Long> UserIdsInChartSessions;
     private Map<Long, WebSocketSession> chatSessions;
+    private Map<String, Long> UserIdsInChatSessions;
     private LocalDateTime startedAt;
 }

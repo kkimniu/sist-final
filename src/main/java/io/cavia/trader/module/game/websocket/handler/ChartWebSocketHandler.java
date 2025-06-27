@@ -27,7 +27,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
         String token = message.getPayload().toString();
         if(jwtUtil.validateToken(token)){
-            // 유저가 연결되었을 때, 가장 젊은 게임 세션에 연결
+            // 유저가 연결되었을 때, 가장 젊은 게임 세션에 연결 (유저가 이미 세션에 속해 있다면 DTO의 세션만 교체)
             GameDTO gameDTO = gameManager.addUserToGameAndGetYoungestSession(
                     jwtUtil.getUserInfoFromToken(token), session);
 
@@ -130,10 +130,8 @@ public class ChartWebSocketHandler implements WebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
     // 유저가 웹소켓 연결을 종료하면 세션을 종료하고 유저가 속한 세션을 찾아서 삭제
+        gameManager.removeChartSession(session);
         session.close();
-        gameManager.removeChartSession(
-                gameManager.findChartSessionKeyBySessionId(session)
-        );
     }
 
     @Override

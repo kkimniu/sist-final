@@ -10,9 +10,20 @@ import java.util.Deque;
 public interface GameManager {
 
     void managementGameSessionsLifeCycle();
+
     Member getUserInfo(Claims userInfo);
+
     Deque<GameDTO> getGameDTOs();
+
     GameDTO addUserToGameAndGetYoungestSession(Claims tokenToClaims, WebSocketSession webSocketSession);
-    Long findChartSessionKeyBySessionId(WebSocketSession targetSession);
-    void removeChartSession(Long chartSessionKey);
+
+    void removeChartSessionBySessionId(WebSocketSession targetSession);
+
+    boolean findChartSessionKeyByUserId(Long userId);
+
+    void replaceChartSessionByUserId(long targetId, WebSocketSession newSession);
+
+    void removeChartSession(WebSocketSession session);
+
+    GameDTO findGameSessionByUserId(Long userId);
 }

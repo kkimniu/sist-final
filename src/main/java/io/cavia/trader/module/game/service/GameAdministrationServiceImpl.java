@@ -48,7 +48,9 @@ public class GameAdministrationServiceImpl implements GameAdministrationService 
         gameDTO.setUserDTOs(new ArrayList<UserDTO>());
 
         gameDTO.setChatSessions(new ConcurrentHashMap<Long, WebSocketSession>());
+        gameDTO.setUserIdsInChartSessions(new ConcurrentHashMap<String, Long>());
         gameDTO.setChartSessions(new ConcurrentHashMap<Long, WebSocketSession>());
+        gameDTO.setUserIdsInChatSessions(new ConcurrentHashMap<String, Long>());
         gameDTO.setStartedAt(LocalDateTime.now());
 
         return gameDTO;
