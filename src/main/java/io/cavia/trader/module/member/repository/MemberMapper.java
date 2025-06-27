@@ -47,7 +47,7 @@ public interface MemberMapper {
     /**
      * 자산을 수정합니다.
      */
-    int updateCash(@Param("id") int id, @Param("cash") Long cash);
+    int updateCash(@Param("id") Long id, @Param("cash") Long cash);
 
     /**
      * 회원을 삭제합니다

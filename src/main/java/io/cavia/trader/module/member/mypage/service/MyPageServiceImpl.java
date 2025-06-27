@@ -8,6 +8,7 @@ import io.cavia.trader.module.member.repository.MemberRepository;
 import io.cavia.trader.module.notice.exception.InvalidNoticeRequestException;
 import io.cavia.trader.module.notice.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,9 @@ public class MyPageServiceImpl implements MyPageService {
     private final MemberMapper memberMapper;
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
+
+    @Value("${member.cash.reset}")
+    private Long memberCashReset;
 
     @Override
     public List<GameParticipationDto> findByMemberId(int memberId) {
@@ -69,8 +73,8 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
-    public int resetCash(int id) {
-        return memberRepository.updateCash(id, 90000000L);
+    public int resetCash(Long id) {
+        return memberRepository.updateCash(id, memberCashReset);
     }
 
     @Override

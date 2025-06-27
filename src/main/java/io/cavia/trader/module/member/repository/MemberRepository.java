@@ -35,7 +35,7 @@ public interface MemberRepository {
     /**
      * 자산을 수정합니다.
      */
-    int updateCash(int id, Long cash);
+    int updateCash(Long id, Long cash);
 
     /**
      * 회원을 삭제합니다

@@ -34,7 +34,7 @@ public class MybatisMemberRepository implements MemberRepository {
     }
 
     @Override
-    public int updateCash(int id, Long cash) {
+    public int updateCash(Long id, Long cash) {
         return memberMapper.updateCash(id, cash);
     }
 

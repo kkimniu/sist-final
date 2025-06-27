@@ -47,6 +47,12 @@ public class RestMyPageController {
         return ResponseEntity.status(200).body("비밀번호 맞음");
     }
 
+    @PatchMapping("/cash-reset")
+    public ResponseEntity<String> restCash(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        mypageService.resetCash(userDetails.getMember().getId());
+        return ResponseEntity.status(200).body("변경성공");
+    }
+
     @PatchMapping("/nickname")
     public ResponseEntity<String> updateNickname(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody NicknameUpdateRequestDto nicknameUpdateRequestDto) {
         mypageService.changeNickname(userDetails.getMember().getId(), nicknameUpdateRequestDto.getNickname());
