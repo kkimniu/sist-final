@@ -59,12 +59,6 @@ public class ViewMyPageController {
         return "member/mypage/mypage-main.html";
     }
 
-    @PostMapping("/mypage-main")
-    public String restCash(@RequestParam int id) {
-        int result = myPageService.resetCash(id);
-        return "member/mypage/mypage-main";
-    }
-
     @GetMapping("/withdraw-verification")
     public String withdrawVerification() {
         return "member/mypage/withdraw-verification";
