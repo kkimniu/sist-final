@@ -40,7 +40,9 @@ public interface MemberMapper {
     /**
      * 비밀번호를 수정합니다.
      */
-    int updatePassword(@Param("id") int id, @Param("password") String password, @Param("passwordUpdatedAt") LocalDateTime passwordUpdatedAt);
+    int updatePassword(@Param("id") Long id,
+                       @Param("password") String password,
+                       @Param("passwordUpdatedAt") LocalDateTime passwordUpdatedAt);
 
     /**
      * 자산을 수정합니다.

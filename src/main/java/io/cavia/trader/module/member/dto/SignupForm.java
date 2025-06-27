@@ -32,6 +32,14 @@ public class SignupForm {
 
         public interface SignupGroup extends TermsGroup, EmailGroup, AuthKeyGroup, NicknameGroup, PasswordGroup {
         }
+
+        public interface EmailVerificationGroup extends EmailGroup, AuthKeyGroup {
+
+        }
+
+        public interface ResetPasswordGroup extends EmailVerificationGroup, PasswordGroup {
+
+        }
     }
 
     /**
@@ -72,9 +80,5 @@ public class SignupForm {
     @Size(min = 8, max = 64, message = "비밀번호는 8자 이상 64자 이하로 입력해주세요", groups = ValidationGroups.PasswordGroup.class)
     private String password;
 
-    /**
-     * 비밀번호 확인 필드
-     */
-    @NotEmpty(message = "비밀번호를 다시 한번 입력해주세요.", groups = ValidationGroups.PasswordGroup.class)
     private String passwordConfirm;
 }

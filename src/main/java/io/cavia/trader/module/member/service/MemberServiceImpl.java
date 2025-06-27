@@ -3,6 +3,7 @@ package io.cavia.trader.module.member.service;
 import io.cavia.trader.common.email.EmailService;
 import io.cavia.trader.module.jwt.JwtUtil;
 import io.cavia.trader.module.member.dto.LoginRequestDto;
+import io.cavia.trader.module.member.dto.ResetPasswordRequestDto;
 import io.cavia.trader.module.member.dto.SignupForm;
 import io.cavia.trader.module.member.entity.EmailVerification;
 import io.cavia.trader.module.member.entity.Member;
@@ -91,6 +92,7 @@ public class MemberServiceImpl implements MemberService {
      * @param requestDto 로그인 요청 정보
      * @return 생성된 JWT
      */
+    @Override
     public String login(LoginRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password = requestDto.getPassword();
@@ -111,6 +113,7 @@ public class MemberServiceImpl implements MemberService {
         return jwtUtil.createToken(member.getId(), member.getRole());
     }
 
+    @Override
     public Member getMemberById(Long id) {
         return memberRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("조회된 사용자가 없습니다."));
@@ -122,6 +125,7 @@ public class MemberServiceImpl implements MemberService {
      * @param to      메일 받을 주소
      * @param authKey 사용자에게 전달할 이메일 인증을 위한 인증키
      */
+    @Override
     public void sendAuthEmail(String to, String authKey) {
         Context context = new Context();
         context.setVariable("username", to);
@@ -130,5 +134,23 @@ public class MemberServiceImpl implements MemberService {
         String htmlBody = templateEngine.process("email/auth-email", context);
 
         emailService.sendEmail(to, "[TRADER.IO] 이메일 인증", htmlBody);
+    }
+
+    @Override
+    public boolean isOurMember(String email) {
+        return memberRepository.existsByEmail(email);
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordRequestDto requestDto) {
+        verifyAuthKey(requestDto.getEmail(), requestDto.getAuthKey());
+
+        Member member = memberRepository.findByEmail(requestDto.getEmail()).orElseThrow(
+                () -> new IllegalArgumentException("이메일로 조회된 사용자가 없습니다."));
+
+        String newEncodedPassword = passwordEncoder.encode(requestDto.getPassword());
+        if (memberRepository.updatePassword(member.getId(), newEncodedPassword, LocalDateTime.now()) == 0) {
+            throw new IllegalStateException("비밀번호 수정 작업이 실패했습니다.");
+        }
     }
 }

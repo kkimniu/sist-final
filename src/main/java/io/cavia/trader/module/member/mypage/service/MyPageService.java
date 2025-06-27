@@ -12,6 +12,6 @@ public interface MyPageService {
     public Member findById(Long id);
     public void changeNickname(int id, String nickname, LocalDateTime nicknameUpdatedAt);
     public boolean validateDuplicatePassword(int id,String password);
-    public int changePassword(int id, String password, LocalDateTime passwordUpdatedAt);
+    public int changePassword(Long id, String password, LocalDateTime passwordUpdatedAt);
     public int resetCash(int id);
 }

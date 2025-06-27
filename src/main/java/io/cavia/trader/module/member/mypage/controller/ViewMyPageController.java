@@ -50,7 +50,7 @@ public class ViewMyPageController {
             model.addAttribute("errorMessage", "비밀번호가 일치하지 않습니다.");
             return "member/mypage/password-change.html";
         }
-        int result = myPageService.changePassword(id, password, LocalDateTime.now());
+        int result = myPageService.changePassword((long)id, password, LocalDateTime.now());
         if (result <= 0) {
             model.addAttribute("id", id);
             model.addAttribute("errorMessage", "비밀번호 변경이 실패했습니다.");

@@ -30,7 +30,7 @@ public interface MemberRepository {
     /**
      * 비밀번호를 수정합니다.
      */
-    int updatePassword(int id, String password, LocalDateTime passwordUpdatedAt);
+    int updatePassword(Long id, String password, LocalDateTime passwordUpdatedAt);
 
     /**
      * 자산을 수정합니다.

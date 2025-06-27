@@ -1,6 +1,7 @@
 package io.cavia.trader.module.member.service;
 
 import io.cavia.trader.module.member.dto.LoginRequestDto;
+import io.cavia.trader.module.member.dto.ResetPasswordRequestDto;
 import io.cavia.trader.module.member.dto.SignupForm;
 import io.cavia.trader.module.member.entity.Member;
 
@@ -22,4 +23,8 @@ public interface MemberService {
     Member getMemberById(Long email);
 
     void sendAuthEmail(String to, String authKey);
+
+    boolean isOurMember(String email);
+
+    void resetPassword(ResetPasswordRequestDto requestDto);
 }
