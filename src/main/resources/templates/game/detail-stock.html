@@ -53,8 +53,13 @@
 </style>
 <body onload = "onloadBody();">
 
-<div id = gameInfo>
-
+<div id = gameInfoLayout>
+    <label id = nickname></label><br>
+    <label>보유 현금: </label><label id = cash></label><br>
+    <label>주가: </label><label id = stockPrice></label><br>
+    <label>보유 주식: </label><label id = holdingStocks></label><br>
+    <label>게임참여 인원: </label><label id = userJoinedCount></label><br>
+    <label>남은 세션 시간: </label><label id = remainingTime></label>
 </div>
 
 <div id = "graphContainer">
@@ -180,6 +185,31 @@
 <div id = "chattingLayout">
 
 </div>
+<script>
+    const nickname = document.getElementById("nickname");
+    const cash = document.getElementById("cash");
+    const stockPrice = document.getElementById("stockPrice");
+    const holdingStocks = document.getElementById("holdingStocks");
+    const userJoinedCount = document.getElementById("userJoinedCount");
+    const remainingTime = document.getElementById("remainingTime");
+</script>
+<script>
+    async function certificationToken() {
+        const response = await fetch("http://localhost:8081/game/api/verify", {
+            method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + localStorage.getItem("jwt-token")
+                },
+                body: ""
+        });
+        if (response.status === 200) {
+            return response.json();
+        }else {
+            throw new Error("토큰 인증 실패!");
+        }
+    }
+</script>
 <script>
     // 호가창 스타일 지정
     for (let i = 1; i <= 10; i++) {
@@ -389,6 +419,13 @@
     }
 
     function onloadBody() {
+        certificationToken()
+            .then(data => {
+                nickname.innerText = data.nickname;
+                cash.innerText = data.cash;
+            });
+
+
 
         chartSocketHandler();
 
@@ -587,8 +624,10 @@
 
     function chartSocketHandler() {
         chartSocket = new WebSocket("http://localhost:8081/ws/chart");
+
         chartSocket.onopen = function (event) {
             console.log("연결 성공");
+            chartSocket.send(localStorage.getItem("jwt-token"));
         };
         chartSocket.onmessage = function (event) {
 
@@ -743,6 +782,7 @@
                         selectData[selectDataIndex][i] / selectDataMaxVolume[selectDataIndex] * tradeVolumeChartHeight * 0.8);
                 }
 
+                stockPrice.innerText = stockData.stck_prpr;
             }else if(stockData.stck_prpr == null){
                 // TODO 호가창 데이터 들어왔을 때 처리할 로직
                 for (let i = 1; i <= 10; i++) {

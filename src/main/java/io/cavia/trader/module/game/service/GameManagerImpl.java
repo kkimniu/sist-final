@@ -1,12 +1,13 @@
 package io.cavia.trader.module.game.service;
 
 import io.cavia.trader.module.game.dto.Game;
+import io.cavia.trader.module.game.entity.Member;
+import io.cavia.trader.module.game.repository.GameMapper;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -15,6 +16,8 @@ import java.util.Deque;
 public class GameManagerImpl implements GameManager {
 
     private final GameAdministrationService gameAdministrationService;
+    private final GameMapper gameMapper;
+
     private final int GAME_LIFE_CYCLE = 30;
     public Deque<Game> games = new ArrayDeque<>();
 
@@ -44,4 +47,10 @@ public class GameManagerImpl implements GameManager {
         return this.games;
     }
 
+    public Member getUserInfo(Claims userInfo) {
+        return gameMapper.findMemberById(
+                Integer.parseInt(userInfo.getSubject()
+                )
+        );
+    }
 }
