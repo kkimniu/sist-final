@@ -8,6 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NicknameUpdateRequestDto {
-    private int id;
     private String nickname;
 }

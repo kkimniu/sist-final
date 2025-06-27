@@ -25,7 +25,7 @@ public interface MemberRepository {
     /**
      * 닉네임을 수정합니다.
      */
-    int updateNickname(int id, String nickname, LocalDateTime nicknameUpdatedAt);
+    int updateNickname(Long id, String nickname, LocalDateTime nicknameUpdatedAt);
 
     /**
      * 비밀번호를 수정합니다.

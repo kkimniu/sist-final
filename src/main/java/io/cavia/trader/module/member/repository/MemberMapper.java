@@ -35,7 +35,7 @@ public interface MemberMapper {
     /**
      * 닉네임을 수정합니다.
      */
-    int updateNickname(@Param("id") int id, @Param("nickname") String nickname, @Param("nicknameUpdatedAt") LocalDateTime nicknameUpdatedAt);
+    int updateNickname(@Param("id") Long id, @Param("nickname") String nickname, @Param("nicknameUpdatedAt") LocalDateTime nicknameUpdatedAt);
 
     /**
      * 비밀번호를 수정합니다.
