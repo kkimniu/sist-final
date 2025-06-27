@@ -41,11 +41,17 @@ public class RestMyPageController {
     }
 
     @PostMapping("/password-verification")
-    public ResponseEntity<String> getcheckPassword(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody PasswordRequestDto passwordRequestDto) {
-        if(!mypageService.validatePassword(userDetails.getMember().getId(),  passwordRequestDto.getPassword())){
+    public ResponseEntity<String> getcheckPassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PasswordRequestDto passwordRequestDto) {
+        if (!mypageService.validatePassword(userDetails.getMember().getId(), passwordRequestDto.getPassword())) {
             return ResponseEntity.status(400).body("비밀번호가 일치하지 않습니다.");
         }
         return ResponseEntity.status(200).body("비밀번호 맞음");
+    }
+
+    @PatchMapping("/cash-reset")
+    public ResponseEntity<String> restCash(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        mypageService.resetCash(userDetails.getMember().getId());
+        return ResponseEntity.status(200).body("변경성공");
     }
 
     @PatchMapping("/nickname")
@@ -53,13 +59,14 @@ public class RestMyPageController {
         mypageService.changeNickname(nicknameUpdateRequestDto.getId(), nicknameUpdateRequestDto.getNickname(), LocalDateTime.now());
         return ResponseEntity.status(200).body("변경성공");
     }
+
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody PasswordRequestDto passwordRequestDto) {
-        if(!mypageService.validatePassword(userDetails.getMember().getId(), passwordRequestDto.getPassword())){
+    public ResponseEntity<String> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PasswordRequestDto passwordRequestDto) {
+        if (!mypageService.validatePassword(userDetails.getMember().getId(), passwordRequestDto.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        if (mypageService.deleteMember(userDetails.getMember().getId(),passwordRequestDto.getPassword()) <= 0) {
+        if (mypageService.deleteMember(userDetails.getMember().getId(), passwordRequestDto.getPassword()) <= 0) {
             throw new NoticeOperationFailedException("회원 삭제를 실패했습니다");
         }
         return ResponseEntity.status(200).body("회원 삭제완료");
