@@ -58,7 +58,6 @@ public class RestMyPageController {
         if(!mypageService.validatePassword(userDetails.getMember().getId(), passwordRequestDto.getPassword())){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
-        mypageService.deleteGameParticipation(userDetails.getMember().getId());
 
         if (mypageService.deleteMember(userDetails.getMember().getId(),passwordRequestDto.getPassword()) <= 0) {
             throw new NoticeOperationFailedException("회원 삭제를 실패했습니다");

@@ -47,8 +47,8 @@ public class MyPageServiceImpl implements MyPageService {
 
     @Override
     public void changeNickname(int id, String nickname, LocalDateTime nicknameUpdatedAt) {
-        int result = memberMapper.updateNickname(id,nickname,nicknameUpdatedAt);
-        if(result<=0){
+        int result = memberMapper.updateNickname(id, nickname, nicknameUpdatedAt);
+        if (result <= 0) {
             throw new InvalidNoticeRequestException("닉네임 변경 실패");
         }
     }
@@ -63,16 +63,16 @@ public class MyPageServiceImpl implements MyPageService {
 
     @Override
     public int changePassword(int id, String password, LocalDateTime passwordUpdatedAt) {
-        return memberRepository.updatePassword(id,password,passwordUpdatedAt);
+        return memberRepository.updatePassword(id, password, passwordUpdatedAt);
     }
 
     @Override
     public int resetCash(int id) {
-        return memberRepository.updateCash(id,90000000L);
+        return memberRepository.updateCash(id, 90000000L);
     }
 
     @Override
-    public int deleteMember(Long id,String password) {
+    public int deleteMember(Long id, String password) {
 
         Member member = memberRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
@@ -82,11 +82,6 @@ public class MyPageServiceImpl implements MyPageService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         return memberMapper.delete(id);
-    }
-
-    @Override
-    public int deleteGameParticipation(Long memberId) {
-        return mypageMapper.deleteGameParticipation(memberId);
     }
 
 }
