@@ -29,11 +29,13 @@
             return;
         }
         //비밀번호 검증
-        fetch(`/api/mypage/password-verification?password=${encodeURIComponent(password)}`, {
-            method: 'GET',
+        fetch(`/api/mypage/password-verification`, {
+            method: 'POST',
             headers: {
+                'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token
-            }
+            },
+            body: JSON.stringify({ password: password })
         })
         .then(response => {
             if (!response.ok) {
@@ -43,13 +45,13 @@
                 return;
             }
             //리턴을 생략하고 fetch를하면 fetch는 실행됨 대신 .then()이 기다리지 않고 바로 실행
-            console.log("🔥 DELETE 요청 전 token:", token);
             return fetch('/api/mypage/delete', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + token
-                }
+                },
+                 body: JSON.stringify({ password: password })
             });
         })
         .then(response => {
