@@ -3,11 +3,10 @@ package io.cavia.trader.module.member.mypage.controller;
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.mypage.dto.GameParticipationDto;
 import io.cavia.trader.module.member.mypage.dto.NicknameUpdateRequestDto;
+import io.cavia.trader.module.member.mypage.dto.PasswordRequestDto;
 import io.cavia.trader.module.member.mypage.service.MyPageService;
 import io.cavia.trader.module.member.security.UserDetailsImpl;
 import io.cavia.trader.module.member.service.MemberService;
-import io.cavia.trader.module.notice.exception.InvalidNoticeRequestException;
-import io.cavia.trader.module.notice.exception.NotFoundException;
 import io.cavia.trader.module.notice.exception.NoticeOperationFailedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -41,9 +40,11 @@ public class RestMyPageController {
         return ResponseEntity.status(200).body("중복없음");
     }
 
-    @GetMapping("/password-verification")
-    public ResponseEntity<String> getcheckPassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam String password) {
-        mypageService.validateDuplicatePassword(userDetails.getMember().getId().intValue(), password);
+    @PostMapping("/password-verification")
+    public ResponseEntity<String> getcheckPassword(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody PasswordRequestDto passwordRequestDto) {
+        if(!mypageService.validateDuplicatePassword(userDetails.getMember().getId(),  passwordRequestDto.getPassword())){
+            return ResponseEntity.status(400).body("비밀번호가 일치하지 않습니다.");
+        }
         return ResponseEntity.status(200).body("비밀번호 맞음");
     }
 
@@ -53,11 +54,13 @@ public class RestMyPageController {
         return ResponseEntity.status(200).body("변경성공");
     }
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        if(mypageService.deletedGameParticipation(userDetails.getMember().getId().intValue())< 0){
-            throw new NotFoundException("회원 삭제를 실패했습니다");
+    public ResponseEntity<String> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody PasswordRequestDto passwordRequestDto) {
+        if(!mypageService.validateDuplicatePassword(userDetails.getMember().getId(), passwordRequestDto.getPassword())){
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
-        if (mypageService.deleteMember(Integer.parseInt(userDetails.getUsername())) < 0) {
+        mypageService.deleteGameParticipation(userDetails.getMember().getId());
+
+        if (mypageService.deleteMember(userDetails.getMember().getId(),passwordRequestDto.getPassword()) <= 0) {
             throw new NoticeOperationFailedException("회원 삭제를 실패했습니다");
         }
         return ResponseEntity.status(200).body("회원 삭제완료");

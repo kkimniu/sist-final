@@ -9,5 +9,5 @@ import java.util.List;
 public interface MyPageMapper {
 
     public List<GameParticipationDto> findByMemberId(int memberId);
-    public int deleteGameParticipation(int memberId);
+    public int deleteGameParticipation(Long memberId);
 }

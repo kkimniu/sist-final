@@ -34,7 +34,7 @@ public class ViewMyPageController {
     }
 
     @PostMapping("/password-verification")
-    public String passwordVerification(@RequestParam int id, @RequestParam String password, Model model) {
+    public String passwordVerification(@RequestParam Long id, @RequestParam String password, Model model) {
         model.addAttribute("id", id);
         if (!myPageService.validateDuplicatePassword(id, password)) {
             model.addAttribute("errorMessage", "비밀번호가 일치하지 않습니다.");
