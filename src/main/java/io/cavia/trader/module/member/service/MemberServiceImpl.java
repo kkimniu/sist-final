@@ -28,8 +28,8 @@ public class MemberServiceImpl implements MemberService {
     private final JwtUtil jwtUtil;
     private final TemplateEngine templateEngine;
 
-    @Value("${member.default.cash}")
-    private Long memberDefaultCash;
+    @Value("${member.cash.default}")
+    private Long memberCashDefault;
 
     @Override
     public void sendVerificationEmail(String email) {
@@ -75,7 +75,7 @@ public class MemberServiceImpl implements MemberService {
                 .email(signupForm.getEmail())
                 .nickname(signupForm.getNickname())
                 .password(passwordEncoder.encode(signupForm.getPassword()))
-                .cash(memberDefaultCash)
+                .cash(memberCashDefault)
                 .build();
 
         validateDuplicateNickname(signupForm.getNickname());
