@@ -2,13 +2,11 @@ package io.cavia.trader.module.game.service;
 
 import io.cavia.trader.module.client.connector.RestWebClientImpl;
 import io.cavia.trader.module.client.dto.StocksOutput;
-import io.cavia.trader.module.game.dto.Game;
-import jakarta.websocket.Session;
+import io.cavia.trader.module.game.dto.GameDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
-import java.net.http.WebSocket;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -23,34 +21,34 @@ public class GameAdministrationServiceImpl implements GameAdministrationService 
     private List<StocksOutput> stocks;
 
     @Override
-    public Game createGame() {
+    public GameDTO createGame() {
         if (stocks == null) setStocks();
-        Game game = new Game();
+        GameDTO gameDTO = new GameDTO();
 
-        game.setStockId(stocks
+        gameDTO.setStockId(stocks
                 .get(
                         (int)(Math.random() * stocks.size())
                 )
                 .getId()
         );
 
-        game.setTrades(restWebClient
-                .getTrades(game.getStockId())
+        gameDTO.setTrades(restWebClient
+                .getTrades(gameDTO.getStockId())
                 .block()
                 .getOutput()
         );
 
-        game.setQuotes(restWebClient
-                .getQuotes(game.getStockId())
+        gameDTO.setQuotes(restWebClient
+                .getQuotes(gameDTO.getStockId())
                 .block()
                 .getOutput()
         );
 
-        game.setChatSessions(new ConcurrentHashMap<String, WebSocketSession>());
-        game.setChartSessions(new ConcurrentHashMap<String, WebSocketSession>());
-        game.setStartedAt(LocalDateTime.now());
+        gameDTO.setChatSessions(new ConcurrentHashMap<String, WebSocketSession>());
+        gameDTO.setChartSessions(new ConcurrentHashMap<String, WebSocketSession>());
+        gameDTO.setStartedAt(LocalDateTime.now());
 
-        return game;
+        return gameDTO;
     }
 
 
@@ -61,7 +59,7 @@ public class GameAdministrationServiceImpl implements GameAdministrationService 
                 .getOutput();
     }
 
-    public int getMinutesBetween(Game game) {
+    public int getMinutesBetween(GameDTO gameDTO) {
 
         // 현재 시간과 게임 시작 시간의 차이
         int minutesBetween = (int) (
@@ -69,7 +67,7 @@ public class GameAdministrationServiceImpl implements GameAdministrationService 
                         .atZone(ZoneId.systemDefault())
                         .toInstant()
                         .toEpochMilli()
-                        - game.getStartedAt()
+                        - gameDTO.getStartedAt()
                         .atZone(ZoneId.systemDefault())
                         .toInstant()
                         .toEpochMilli());

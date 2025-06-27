@@ -16,13 +16,14 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString
-public class Game {
-
+public class GameDTO {
     private int id;
     private int stockId;
+    private long userId;
     private List<QuotesOutput> quotes;
     private List<TradesOutput> trades;
-    private Map<String, WebSocketSession> chartSessions;
-    private Map<String, WebSocketSession> chatSessions;
+    private List<UserDTO> userDTOs;
+    private Map<Long, WebSocketSession> chartSessions;
+    private Map<Long, WebSocketSession> chatSessions;
     private LocalDateTime startedAt;
 }
