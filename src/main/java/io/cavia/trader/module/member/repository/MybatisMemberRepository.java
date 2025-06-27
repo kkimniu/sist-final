@@ -33,7 +33,7 @@ public class MybatisMemberRepository implements MemberRepository {
     public int updateCash(int id, Long cash) {return memberMapper.updateCash(id,cash);}
 
     @Override
-    public int delete(int id) {return memberMapper.delete(id);}
+    public int delete(Long id) {return memberMapper.delete(id);}
 
     @Override
     public boolean existsByEmail(String email) {
@@ -46,7 +46,7 @@ public class MybatisMemberRepository implements MemberRepository {
     }
 
     @Override
-    public boolean existsByIdAndPassword(int id,String password) {return memberMapper.existsByIdAndPassword(id,password);}
+    public boolean existsByIdAndPassword(Long id,String password) {return memberMapper.existsByIdAndPassword(id,password);}
 
     @Override
     public Optional<Member> findById(Long id) {
