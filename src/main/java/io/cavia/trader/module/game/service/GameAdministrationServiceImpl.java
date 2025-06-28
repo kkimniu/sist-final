@@ -3,7 +3,7 @@ package io.cavia.trader.module.game.service;
 import io.cavia.trader.module.client.connector.RestWebClientImpl;
 import io.cavia.trader.module.client.dto.StocksOutput;
 import io.cavia.trader.module.game.dto.GameDTO;
-import io.cavia.trader.module.game.dto.UserDTO;
+import io.cavia.trader.module.game.entity.GameParticipation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
@@ -45,7 +45,7 @@ public class GameAdministrationServiceImpl implements GameAdministrationService 
                 .getOutput()
         );
 
-        gameDTO.setUserDTOs(new ArrayList<UserDTO>());
+        gameDTO.setGameParticipations(new ArrayList<GameParticipation>());
 
         gameDTO.setChatSessions(new ConcurrentHashMap<Long, WebSocketSession>());
         gameDTO.setUserIdsInChartSessions(new ConcurrentHashMap<String, Long>());
