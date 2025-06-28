@@ -16,7 +16,7 @@
         )
     </insert>
 
-    <insert id="saveGameParticipations">
+    <insert id="saveGameParticipation">
         INSERT INTO
         game_participations (
             member_id,
@@ -34,7 +34,7 @@
             #{gameParticipation.gameId},
             #{gameParticipation.returnRate},
             #{gameParticipation.gameRank},
-            #{gameParticipation.earendScore},
+            #{gameParticipation.earnedScore},
             #{gameParticipation.postScore},
             #{gameParticipation.earnedCash},
             #{gameParticipation.postCash},

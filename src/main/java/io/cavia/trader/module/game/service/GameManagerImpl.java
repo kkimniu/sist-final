@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.math.BigDecimal;
@@ -31,6 +32,7 @@ public class GameManagerImpl implements GameManager {
     public Deque<GameDTO> gameDTOs = new ArrayDeque<>();
 
     @Scheduled(cron = "1/10 * * * * *")
+    @Transactional
     @Override
     public void managementGameSessionsLifeCycle() {
 
@@ -38,10 +40,6 @@ public class GameManagerImpl implements GameManager {
             // 현재시간 - 세션시작 시간을 분 단위로 치환한 값
             GameDTO gameDTO = gameDTOs.peekFirst();
             int minutesBetween = gameAdministrationService.getMinutesBetween(gameDTO);
-
-            gameMapper.saveGame(gameDTO.getStockId(),
-                    gameDTO.getStartedAt());
-            gameDTO.setId(gameMapper.findLastGameId());
 
             // 세션의 생명 주기가 끝났으면 선입 세션 삭제
             if (minutesBetween >= GAME_LIFE_CYCLE) {
@@ -57,7 +55,11 @@ public class GameManagerImpl implements GameManager {
         }
 
         // 게임 세션 1개 생성
-        gameDTOs.add(gameAdministrationService.createGame());
+        GameDTO gameDTO = gameAdministrationService.createGame();
+        gameDTOs.add(gameDTO);
+        gameMapper.saveGame(gameDTO.getStockId(),
+                gameDTO.getStartedAt());
+        gameDTO.setId(gameMapper.findLastGameId());
         System.out.println("Game Session Created, Games size: " + gameDTOs.size());
     }
 
@@ -164,9 +166,8 @@ public class GameManagerImpl implements GameManager {
                     return;
                 }
             }
-            throw new RuntimeException("세션 삭제 중 예외 발생: 세션을 찾을 수 없습니다.");
         }catch (Exception e) {
-            throw new RuntimeException("세션 삭제 중 알 수 없는 예외 발생.", e);
+            throw new RuntimeException("세션 삭제 중 예외 발생: 세션을 찾을 수 없습니다.");
         }
     }
 
