@@ -1,8 +1,8 @@
 package io.cavia.trader.module.jwt;
 
-import io.cavia.trader.module.member.entity.Member;
-import io.cavia.trader.module.member.repository.MemberRepository;
-import io.cavia.trader.module.member.security.UserDetailsImpl;
+import io.cavia.trader.module.auth.entity.Member;
+import io.cavia.trader.module.auth.repository.MemberRepository;
+import io.cavia.trader.module.auth.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

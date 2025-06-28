@@ -1,6 +1,6 @@
 package io.cavia.trader.module.jwt;
 
-import io.cavia.trader.module.member.entity.MemberRoleEnum;
+import io.cavia.trader.module.auth.entity.MemberRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

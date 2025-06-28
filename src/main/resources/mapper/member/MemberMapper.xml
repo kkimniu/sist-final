@@ -7,7 +7,7 @@
     namespace는 이 XML 파일과 연결될 MemberMapper 인터페이스의 전체 경로와
     정확히 일치해야 합니다.
 -->
-<mapper namespace="io.cavia.trader.module.member.repository.MemberMapper">
+<mapper namespace="io.cavia.trader.module.auth.repository.MemberMapper">
 
     <!--
         회원 정보를 저장하는 INSERT 쿼리입니다.
@@ -41,7 +41,7 @@
         - resultType: 쿼리 결과 한 행을 어떤 Java 객체에 담을지 지정합니다.
           DB 컬럼의 snake_case(total_score)는 객체 필드의 camelCase(totalScore)로 자동 매핑됩니다.
     -->
-    <select id="findByEmail" resultType="io.cavia.trader.module.member.entity.Member">
+    <select id="findByEmail" resultType="io.cavia.trader.module.auth.entity.Member">
         SELECT
         id,
         email,
@@ -62,7 +62,7 @@
     <!--
         id로 회원을 조회하는 SELECT 쿼리입니다.
     -->
-    <select id="findById" resultType="io.cavia.trader.module.member.entity.Member">
+    <select id="findById" resultType="io.cavia.trader.module.auth.entity.Member">
         SELECT
         id,
         email,

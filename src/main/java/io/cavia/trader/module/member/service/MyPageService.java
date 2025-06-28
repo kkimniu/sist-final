@@ -1,0 +1,24 @@
+package io.cavia.trader.module.member.service;
+
+import io.cavia.trader.module.auth.entity.Member;
+import io.cavia.trader.module.member.dto.GameParticipationDto;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+public interface MyPageService {
+
+    public List<GameParticipationDto> findByMemberId(int memberId);
+
+    public Member findById(Long id);
+
+    public void changeNickname(Long id, String nickname);
+
+    public boolean validatePassword(Long id, String password);
+
+    public int changePassword(Long id, String password, LocalDateTime passwordUpdatedAt);
+
+    public int resetCash(Long id);
+
+    public int deleteMember(Long id, String password);
+}
