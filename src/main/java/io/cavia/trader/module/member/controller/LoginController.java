@@ -32,14 +32,9 @@ public class LoginController {
         return "member/login-checker";
     }
 
-    @GetMapping("/reset-password")
-    public String showEmailForm() {
-
-        return "member/reset-password/email";
-    }
-
     /**
      * 인증된 사용자의 모든 정보를 반환하는 API
+     *
      * @param userDetails SecurityContextHolder에 저장된 인증 객체의 principal
      * @return 멤버의 전체 정보
      */

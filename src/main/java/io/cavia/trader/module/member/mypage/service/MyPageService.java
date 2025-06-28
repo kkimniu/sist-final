@@ -16,7 +16,7 @@ public interface MyPageService {
 
     public boolean validatePassword(Long id, String password);
 
-    public int changePassword(int id, String password, LocalDateTime passwordUpdatedAt);
+    public int changePassword(Long id, String password, LocalDateTime passwordUpdatedAt);
 
     public int resetCash(Long id);
 

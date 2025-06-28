@@ -29,7 +29,7 @@ public class MybatisMemberRepository implements MemberRepository {
     }
 
     @Override
-    public int updatePassword(int id, String password, LocalDateTime passwordUpdatedAt) {
+    public int updatePassword(Long id, String password, LocalDateTime passwordUpdatedAt) {
         return memberMapper.updatePassword(id, password, passwordUpdatedAt);
     }
 

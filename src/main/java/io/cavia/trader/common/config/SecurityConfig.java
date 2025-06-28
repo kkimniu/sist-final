@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -52,7 +51,7 @@ public class SecurityConfig {
                         // [ 1. 비회원(Anonymous) 접근 허용 ]
                         .requestMatchers("/", "/login", "/signup", "/signup/**").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/login-checker").permitAll()
+                        .requestMatchers("/login-checker", "/forgot-password", "/auth/**", "/error").permitAll()
 
                         // [ 2. 회원(USER, ADMIN) 접근 허용 ]
                         .requestMatchers("/api/").authenticated()

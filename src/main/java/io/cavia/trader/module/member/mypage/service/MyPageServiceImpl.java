@@ -68,7 +68,7 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
-    public int changePassword(int id, String password, LocalDateTime passwordUpdatedAt) {
+    public int changePassword(Long id, String password, LocalDateTime passwordUpdatedAt) {
         return memberRepository.updatePassword(id, password, passwordUpdatedAt);
     }
 
