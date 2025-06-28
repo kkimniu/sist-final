@@ -11,7 +11,7 @@
             started_at
         )
         VALUES (
-            #{stockId}
+            #{stockId},
             #{startedAt}
         )
     </insert>
