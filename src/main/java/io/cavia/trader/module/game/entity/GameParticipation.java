@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @Builder
-public class GameParticipations {
+public class GameParticipation {
     private long memberId;
     private Long gameId;
     private BigDecimal returnRate;

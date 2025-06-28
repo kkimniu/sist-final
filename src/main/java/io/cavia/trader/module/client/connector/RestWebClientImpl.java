@@ -36,7 +36,7 @@ public class RestWebClientImpl implements RestWebClient {
         }
     }
 
-    public Mono<TradesDTO> getTrades(int stockId) {
+    public Mono<TradesDTO> getTrades(long stockId) {
         /**
          * 현재 DB에 저장된 체결 집계 데이터 중 인자로 주입된 stockId를 가지고 있는 Row의 집합을 가진 Mono객체를 반환합니다.
          */
@@ -55,7 +55,7 @@ public class RestWebClientImpl implements RestWebClient {
         }
     }
 
-    public Mono<QuotesDTO> getQuotes(int stockId) {
+    public Mono<QuotesDTO> getQuotes(long stockId) {
         /**
          * 현재 DB에 저장된 호가 집계 데이터 중 인자로 주입된 stockId를 가지고 있는 Row의 집합을 가진 Mono객체를 반환합니다.
          */
