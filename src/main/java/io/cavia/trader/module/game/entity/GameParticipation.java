@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
+@Builder
 public class GameParticipations {
     private long memberId;
     private Long gameId;
