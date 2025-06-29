@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -45,11 +46,21 @@ public class GameManagerImpl implements GameManager {
 
             // 세션의 생명 주기가 끝났으면 선입 세션 삭제
             if (minutesBetween >= GAME_LIFE_CYCLE) {
-                // TODO 게임 세션 삭제 전 DB 저장 필요
+                // TODO 게임 세션 삭제 전 DB 저장 필요(game 객체는 세션 만들어 질때 저장 했음)
                 gameDTO.getGameParticipations().forEach(gameParticipation -> {
                     gameParticipation.setEnteredAt(LocalDateTime.now());
                     gameMapper.saveGameParticipation(gameParticipation);
                 });
+
+
+                gameDTO.getChartSessions().forEach((userId, chartSessions) -> {
+                    try {
+                        chartSessions.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
 
                 gameDTOs.removeFirst();
                 System.out.println("Game Session Closed, Games size: " + gameDTOs.size());

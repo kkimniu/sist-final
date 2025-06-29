@@ -7,6 +7,7 @@ import io.cavia.trader.module.game.entity.Member;
 import io.jsonwebtoken.Claims;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Deque;
 import java.util.List;
