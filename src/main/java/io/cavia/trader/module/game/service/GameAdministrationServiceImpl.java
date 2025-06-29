@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -38,7 +39,6 @@ public class GameAdministrationServiceImpl implements GameAdministrationService 
                 .block()
                 .getOutput()
         );
-
         gameDTO.setQuotes(restWebClient
                 .getQuotes(gameDTO.getStockId())
                 .block()

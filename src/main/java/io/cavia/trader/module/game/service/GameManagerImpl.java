@@ -1,7 +1,8 @@
 package io.cavia.trader.module.game.service;
 
+import io.cavia.trader.module.client.dto.QuotesOutput;
+import io.cavia.trader.module.client.dto.TradesOutput;
 import io.cavia.trader.module.game.dto.GameDTO;
-import io.cavia.trader.module.game.dto.UserDTO;
 import io.cavia.trader.module.game.entity.GameParticipation;
 import io.cavia.trader.module.game.entity.Member;
 import io.cavia.trader.module.game.repository.GameMapper;
@@ -14,11 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -79,19 +81,19 @@ public class GameManagerImpl implements GameManager {
          */
         Member member = getUserInfo(tokenToClaims);
 
+
         // 이미 참여중인 유저는 웹소켓 세션만 갈아 끼우고 연결
         if (findChartSessionKeyByUserId(member.getId())) {
             replaceChartSessionByUserId(member.getId(), webSocketSession);
-
             return findGameSessionByUserId(member.getId());
         }
 
         if (!gameDTOs.isEmpty()) {
             GameDTO gameDTO = gameDTOs.peekLast();
+
             List<GameParticipation> gameParticipations = gameDTO.getGameParticipations();
             if (gameParticipations != null) {
-                gameParticipations.add(GameParticipation
-                        .builder()
+                gameParticipations.add(GameParticipation.builder()
                         .gameId(gameDTO.getId())
                         .memberId(member.getId())
                         .gameRank(member.getTotalScore())
@@ -114,23 +116,9 @@ public class GameManagerImpl implements GameManager {
     }
 
     @Override
-    public void removeChartSessionBySessionId(WebSocketSession targetSession) {
-        try {
-            for (GameDTO gameDTO : gameDTOs) {
-                Map<String, Long> sessionKeys = gameDTO.getUserIdsInChartSessions();
-                if (sessionKeys.containsKey(targetSession.getId())) {
-                    gameDTO.getChartSessions().remove(sessionKeys.get(targetSession.getId()));
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("세션 삭제 중 예외 발생: 해당 세션을 찾을 수 없습니다.", e);
-        }
-    }
-
-    @Override
-    public boolean findChartSessionKeyByUserId(Long userId) {
+    public boolean findChartSessionKeyByUserId(Long memberId) {
         for (GameDTO gameDTO : gameDTOs) {
-            if (gameDTO.getChartSessions().containsKey(userId)) return true;
+            if (gameDTO.getChartSessions().containsKey(memberId)) return true;
         }
         return false;
     }
@@ -157,26 +145,30 @@ public class GameManagerImpl implements GameManager {
                 if (gameDTO.getUserIdsInChartSessions()
                         .containsKey(session.getId())) {
 
-                    gameDTO.getChartSessions()
-                            .remove(gameDTO.getUserIdsInChartSessions()
-                                    .get(session.getId()));
+                    long targetId = gameDTO.getUserIdsInChartSessions()
+                            .get(session.getId());
 
                     gameDTO.getUserIdsInChartSessions()
                             .remove(session.getId());
+
+                    // 여기에서 계속 널포인트 발생하는데 이유는 모르겠음
+                    gameDTO.getChartSessions()
+                            .replace(targetId, null);
+
                     return;
                 }
             }
-        }catch (Exception e) {
-            throw new RuntimeException("세션 삭제 중 예외 발생: 세션을 찾을 수 없습니다.");
+        } catch (Exception e) {
+            throw new RuntimeException("세션 삭제 중 예외 발생: 세션을 찾을 수 없습니다.", e);
         }
     }
 
 
     @Override
-    public GameDTO findGameSessionByUserId(Long userId) {
+    public GameDTO findGameSessionByUserId(Long memberId) {
         for (GameDTO gameDTO : gameDTOs) {
             for (GameParticipation gameParticipation : gameDTO.getGameParticipations()) {
-                if (gameParticipation.getMemberId() == userId) {
+                if (gameParticipation.getMemberId() == memberId) {
                     return gameDTO;
                 }
             }
@@ -184,5 +176,54 @@ public class GameManagerImpl implements GameManager {
         throw new RuntimeException("세션 조회 중 예외 발생: 세션에서 해당 유저를 찾을 수 없습니다.");
     }
 
+    @Override
+    public int getQuotesIndexByLateTime(LocalDateTime startedTime, List<QuotesOutput> quotes) {
+
+        long lateTime = Duration.between(startedTime, LocalDateTime.now()).toMillis();
+
+        int Index = 0;
+        long comparisonTime = 0;
+        long chartStartTime = quotes
+                .get(Index++)
+                .getCreatedAt()
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli();
+        while (lateTime > comparisonTime - chartStartTime) {
+            comparisonTime = quotes
+                    .get(Index++)
+                    .getCreatedAt()
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli();
+        }
+
+        return Index;
+    }
+
+    @Override
+    public int getTradesIndexByLateTime(LocalDateTime startedTime, List<TradesOutput> trades) {
+
+        long lateTime = Duration.between(startedTime, LocalDateTime.now()).toMillis();
+
+        int index = 0;
+        long comparisonTime = 0;
+        long chartStartTime = trades
+                .get(0)
+                .getCreatedAt()
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli();
+        while (lateTime > comparisonTime - chartStartTime) {
+            comparisonTime = trades
+                    .get(index++)
+                    .getCreatedAt()
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli();
+        }
+
+        return index;
+    }
 
 }
