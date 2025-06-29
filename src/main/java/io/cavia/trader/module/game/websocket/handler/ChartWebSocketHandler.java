@@ -53,6 +53,8 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                 String previewersTradesJson = objectMapper.writeValueAsString(previewersTrades);
 
+                session.sendMessage(new TextMessage("previewersTrades||" + previewersTradesJson));
+
 
                 AtomicLong stockBaseTime = new AtomicLong(
                         gameDTO.getTrades()
@@ -83,7 +85,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                 String tradesJson = objectMapper.writeValueAsString(trades.get(i));
                                 // 메시지 전송 부분 동기화
                                 synchronized (session) {
-                                    if (session.isOpen()) session.sendMessage(new TextMessage(tradesJson));
+                                    if (session.isOpen()) session.sendMessage(new TextMessage("trades||" + tradesJson));
                                 }
                             } catch (Exception e2) {
                                 throw new RuntimeException(e2);
@@ -97,7 +99,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                         .range(0, quotesIdx)
                         .mapToObj(gameDTO.getQuotes()::get)
                         .toList();
-                String previewersQuotesJson = objectMapper.writeValueAsString(previewersQuotes);
+                String previewersQuotesJson = objectMapper.writeValueAsString("previewersTrades||" + previewersQuotes);
 
                 session.sendMessage(new TextMessage(previewersQuotesJson));
 
@@ -131,7 +133,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                                 // 메시지 전송 부분 동기화
                                 synchronized (session) {
-                                    if (session.isOpen()) session.sendMessage(new TextMessage(quotesJson));
+                                    if (session.isOpen()) session.sendMessage(new TextMessage("quotes||" + quotesJson));
                                 }
                             }
 
