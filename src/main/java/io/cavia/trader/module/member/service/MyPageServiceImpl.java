@@ -1,10 +1,10 @@
 package io.cavia.trader.module.member.service;
 
-import io.cavia.trader.module.auth.entity.Member;
+import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.dto.GameParticipationDto;
 import io.cavia.trader.module.member.mapper.GameParticipationMapper;
-import io.cavia.trader.module.auth.repository.MemberMapper;
-import io.cavia.trader.module.auth.repository.MemberRepository;
+import io.cavia.trader.module.member.repository.MemberMapper;
+import io.cavia.trader.module.member.repository.MemberRepository;
 import io.cavia.trader.module.notice.exception.InvalidNoticeRequestException;
 import io.cavia.trader.module.notice.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;

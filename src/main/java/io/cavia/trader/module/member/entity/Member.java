@@ -1,4 +1,4 @@
-package io.cavia.trader.module.auth.entity;
+package io.cavia.trader.module.member.entity;
 
 import lombok.*;
 

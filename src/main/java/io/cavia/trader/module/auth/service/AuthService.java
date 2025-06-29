@@ -3,7 +3,7 @@ package io.cavia.trader.module.auth.service;
 import io.cavia.trader.module.auth.dto.LoginRequestDto;
 import io.cavia.trader.module.auth.dto.ResetPasswordRequestDto;
 import io.cavia.trader.module.auth.dto.SignupForm;
-import io.cavia.trader.module.auth.entity.Member;
+import io.cavia.trader.module.member.entity.Member;
 
 public interface AuthService {
     void sendVerificationEmail(String email);

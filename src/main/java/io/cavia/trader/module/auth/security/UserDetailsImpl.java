@@ -1,7 +1,7 @@
 package io.cavia.trader.module.auth.security;
 
-import io.cavia.trader.module.auth.entity.Member;
-import io.cavia.trader.module.auth.entity.MemberRoleEnum;
+import io.cavia.trader.module.member.entity.Member;
+import io.cavia.trader.module.member.entity.MemberRoleEnum;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

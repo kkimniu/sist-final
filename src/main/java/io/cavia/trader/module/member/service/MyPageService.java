@@ -1,6 +1,6 @@
 package io.cavia.trader.module.member.service;
 
-import io.cavia.trader.module.auth.entity.Member;
+import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.dto.GameParticipationDto;
 
 import java.time.LocalDateTime;

@@ -1,6 +1,6 @@
 package io.cavia.trader.module.member.controller;
 
-import io.cavia.trader.module.auth.entity.Member;
+import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.dto.GameParticipationDto;
 import io.cavia.trader.module.member.dto.NicknameUpdateRequestDto;
 import io.cavia.trader.module.member.dto.PasswordRequestDto;

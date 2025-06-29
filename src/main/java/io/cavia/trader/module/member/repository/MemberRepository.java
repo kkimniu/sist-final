@@ -1,6 +1,6 @@
-package io.cavia.trader.module.auth.repository;
+package io.cavia.trader.module.member.repository;
 
-import io.cavia.trader.module.auth.entity.Member;
+import io.cavia.trader.module.member.entity.Member;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
