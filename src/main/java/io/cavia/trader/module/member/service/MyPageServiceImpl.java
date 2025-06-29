@@ -2,7 +2,7 @@ package io.cavia.trader.module.member.service;
 
 import io.cavia.trader.module.auth.entity.Member;
 import io.cavia.trader.module.member.dto.GameParticipationDto;
-import io.cavia.trader.module.member.mapper.MyPageMapper;
+import io.cavia.trader.module.member.mapper.GameParticipationMapper;
 import io.cavia.trader.module.auth.repository.MemberMapper;
 import io.cavia.trader.module.auth.repository.MemberRepository;
 import io.cavia.trader.module.notice.exception.InvalidNoticeRequestException;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MyPageServiceImpl implements MyPageService {
 
-    private final MyPageMapper mypageMapper;
+    private final GameParticipationMapper mypageMapper;
     private final MemberMapper memberMapper;
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;

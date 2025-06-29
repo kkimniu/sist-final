@@ -2,7 +2,7 @@ package io.cavia.trader.module.auth.controller;
 
 import io.cavia.trader.module.auth.dto.ResetPasswordRequestDto;
 import io.cavia.trader.module.auth.dto.SignupForm;
-import io.cavia.trader.module.auth.service.MemberService;
+import io.cavia.trader.module.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PasswordRestController {
 
-    private final MemberService memberService;
+    private final AuthService authService;
 
     /**
      * 입력된 이메일로 인증 메일을 발송함
@@ -29,7 +29,7 @@ public class PasswordRestController {
      */
     @PostMapping("/auth/send-email")
     public ResponseEntity<?> sendVerificationEmail(@Validated(SignupForm.ValidationGroups.EmailGroup.class) @RequestBody SignupForm signupForm) {
-        memberService.sendVerificationEmail(signupForm.getEmail());
+        authService.sendVerificationEmail(signupForm.getEmail());
         return ResponseEntity.ok("이메일 전송 완료");
     }
 
@@ -42,8 +42,8 @@ public class PasswordRestController {
      */
     @PostMapping("/auth/verification")
     public ResponseEntity<?> checkAuthKeyAndIsMember(@Validated(SignupForm.ValidationGroups.EmailVerificationGroup.class) @RequestBody SignupForm signupForm) {
-        memberService.verifyAuthKey(signupForm.getEmail(), signupForm.getAuthKey());
-        if (!memberService.isOurMember(signupForm.getEmail())) {
+        authService.verifyAuthKey(signupForm.getEmail(), signupForm.getAuthKey());
+        if (!authService.isOurMember(signupForm.getEmail())) {
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("is-our-member", false, "message", "회원가입이 필요한 이메일입니다."));
         }
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("is-our-member", true, "message", "이메일 인증이 성공했습니다."));
@@ -57,7 +57,7 @@ public class PasswordRestController {
      */
     @PatchMapping("/auth/password")
     public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequestDto requestDto) {
-        memberService.resetPassword(requestDto);
+        authService.resetPassword(requestDto);
         return ResponseEntity.ok("비밀번호 변경 완료");
     }
 

@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class MemberServiceImpl implements MemberService {
+public class AuthServiceImpl implements AuthService {
 
     private final EmailService emailService;
     private final EmailVerificationRepository emailVerificationRepository;

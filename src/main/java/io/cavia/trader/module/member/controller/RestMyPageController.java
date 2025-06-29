@@ -6,7 +6,7 @@ import io.cavia.trader.module.member.dto.NicknameUpdateRequestDto;
 import io.cavia.trader.module.member.dto.PasswordRequestDto;
 import io.cavia.trader.module.member.service.MyPageService;
 import io.cavia.trader.module.auth.security.UserDetailsImpl;
-import io.cavia.trader.module.auth.service.MemberService;
+import io.cavia.trader.module.auth.service.AuthService;
 import io.cavia.trader.module.notice.exception.NoticeOperationFailedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ import java.util.List;
 public class RestMyPageController {
 
     private final MyPageService mypageService;
-    private final MemberService memberService;
+    private final AuthService authService;
 
     @GetMapping("/my-games")
     public ResponseEntity<List<GameParticipationDto>> getGameParticipationsByMemberId(@AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -35,7 +35,7 @@ public class RestMyPageController {
 
     @GetMapping("/check-nickname")
     public ResponseEntity<String> getcheckNickname(@RequestParam String nickname) {
-        memberService.validateDuplicateNickname(nickname);
+        authService.validateDuplicateNickname(nickname);
         return ResponseEntity.status(200).body("중복없음");
     }
 

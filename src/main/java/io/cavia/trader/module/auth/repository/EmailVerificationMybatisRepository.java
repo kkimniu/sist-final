@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class MybatisEmailVerificationRepository implements EmailVerificationRepository {
+public class EmailVerificationMybatisRepository implements EmailVerificationRepository {
 
     private final EmailVerificationMapper emailVerificationMapper;
 

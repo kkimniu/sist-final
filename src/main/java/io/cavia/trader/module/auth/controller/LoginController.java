@@ -4,7 +4,7 @@ import io.cavia.trader.module.jwt.JwtUtil;
 import io.cavia.trader.module.auth.dto.LoginRequestDto;
 import io.cavia.trader.module.auth.entity.Member;
 import io.cavia.trader.module.auth.security.UserDetailsImpl;
-import io.cavia.trader.module.auth.service.MemberService;
+import io.cavia.trader.module.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequiredArgsConstructor
 public class LoginController {
 
-    private final MemberService memberService;
+    private final AuthService authService;
 
     @GetMapping("/login")
     public String showLoginForm() {
@@ -47,7 +47,7 @@ public class LoginController {
         // @AuthenticationPrincipal에서 직접 사용자 이름을 가져와 서비스 호출
         // 이제 getUsername은 멤버 id 값을 반환함. 근데 스트링타입임(오버라이딩 한거라 못바꿈)
         Long userId = Long.parseLong(userDetails.getUsername());
-        Member memberInfo = memberService.getMemberById(userId);
+        Member memberInfo = authService.getMemberById(userId);
 
         //위 방법보다 간단한건 바로 가져올 수 있음. 토큰인증된 사용자 정보가 userDetails 안에 Member 객체로 담겨있는 것임
         //멤버 id 값만 빠르게 필요하다면 getUsername()으로 빠르게 가져오거나, 다른 정보도 필요하면 member 를 꺼내서 쓰면 됨.
@@ -60,7 +60,7 @@ public class LoginController {
     public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
 
         try {
-            String token = memberService.login(requestDto);
+            String token = authService.login(requestDto);
 
             // JWT를 클라이언트에게 전달하는 가장 표준적인 방법: 응답 헤더에 추가
             // JwtUtil에 상수로 정의해둔 헤더 키와 접두사를 사용
