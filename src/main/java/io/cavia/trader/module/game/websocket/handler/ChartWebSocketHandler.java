@@ -99,13 +99,13 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                         .range(0, quotesIdx)
                         .mapToObj(gameDTO.getQuotes()::get)
                         .toList();
-                String previewersQuotesJson = objectMapper.writeValueAsString("previewersTrades||" + previewersQuotes);
+                String previewersQuotesJson = objectMapper.writeValueAsString(previewersQuotes);
 
-                session.sendMessage(new TextMessage(previewersQuotesJson));
+                session.sendMessage(new TextMessage("previewersQuotes||" + previewersQuotesJson));
 
                 AtomicLong orderBaseTime = new AtomicLong(
                         gameDTO.getQuotes()
-                                .get(0)
+                                .get(quotesIdx)
                                 .getCreatedAt()
                                 .atZone(ZoneId.systemDefault())
                                 .toInstant()
