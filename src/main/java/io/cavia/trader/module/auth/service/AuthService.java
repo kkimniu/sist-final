@@ -22,7 +22,7 @@ public interface AuthService {
 
     void sendAuthEmail(String to, String authKey);
 
-    boolean isOurMember(String email);
+    boolean isMemberByEmail(String email);
 
     void resetPassword(ResetPasswordRequestDto requestDto);
 }

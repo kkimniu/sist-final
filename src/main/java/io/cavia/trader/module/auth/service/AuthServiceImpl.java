@@ -1,14 +1,15 @@
 package io.cavia.trader.module.auth.service;
 
 import io.cavia.trader.common.email.EmailService;
-import io.cavia.trader.module.jwt.JwtUtil;
 import io.cavia.trader.module.auth.dto.LoginRequestDto;
 import io.cavia.trader.module.auth.dto.ResetPasswordRequestDto;
 import io.cavia.trader.module.auth.dto.SignupForm;
 import io.cavia.trader.module.auth.entity.EmailVerification;
-import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.auth.repository.EmailVerificationRepository;
+import io.cavia.trader.module.jwt.JwtUtil;
+import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.repository.MemberRepository;
+import io.cavia.trader.module.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final TemplateEngine templateEngine;
+    private final MemberService memberService;
 
     @Value("${member.cash.default}")
     private Long memberCashDefault;
@@ -53,16 +55,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void validateDuplicateEmail(String email) {
-        if (memberRepository.existsByEmail(email)) {
-            throw new IllegalStateException("이미 존재하는 회원입니다.");
-        }
+        memberService.validateDuplicateEmail(email);
     }
 
     @Override
     public void validateDuplicateNickname(String nickname) {
-        if (memberRepository.existsByNickname(nickname)) {
-            throw new IllegalStateException("이미 존재하는 닉네임입니다.");
-        }
+        memberService.validateDuplicateNickname(nickname);
     }
 
     public void validateTermsAgreement() {
@@ -79,10 +77,10 @@ public class AuthServiceImpl implements AuthService {
                 .cash(memberCashDefault)
                 .build();
 
-        validateDuplicateNickname(signupForm.getNickname());
-        validateDuplicateEmail(signupForm.getEmail());
+        memberService.validateDuplicateNickname(signupForm.getNickname());
+        memberService.validateDuplicateEmail(signupForm.getEmail());
         verifyAuthKey(signupForm.getEmail(), signupForm.getAuthKey());
-        memberRepository.save(member);
+        memberService.createMember(member);
         System.out.println("회원가입 완료시 member = " + member);
     }
 
@@ -99,9 +97,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 1. 사용자 확인
         // .orElseThrow() : Optional 객체가 비어있을 경우 예외를 던짐
-        Member member = memberRepository.findByEmail(username).orElseThrow(
-                () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
-        );
+        Member member = memberService.getMemberByEmail(username);
 
         // 2. 비밀번호 확인
         // passwordEncoder.matches(평문, 암호화된 비밀번호)
@@ -115,8 +111,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Member getMemberById(Long id) {
-        return memberRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("조회된 사용자가 없습니다."));
+        return memberService.getMemberById(id);
     }
 
     /**
@@ -137,16 +132,15 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean isOurMember(String email) {
-        return memberRepository.existsByEmail(email);
+    public boolean isMemberByEmail(String email) {
+        return memberService.isMemberByEmail(email);
     }
 
     @Override
     public void resetPassword(ResetPasswordRequestDto requestDto) {
         verifyAuthKey(requestDto.getEmail(), requestDto.getAuthKey());
 
-        Member member = memberRepository.findByEmail(requestDto.getEmail()).orElseThrow(
-                () -> new IllegalArgumentException("이메일로 조회된 사용자가 없습니다."));
+        Member member = memberService.getMemberByEmail(requestDto.getEmail());
 
         String newEncodedPassword = passwordEncoder.encode(requestDto.getPassword());
         if (memberRepository.updatePassword(member.getId(), newEncodedPassword, LocalDateTime.now()) == 0) {

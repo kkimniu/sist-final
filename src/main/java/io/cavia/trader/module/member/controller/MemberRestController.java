@@ -4,7 +4,7 @@ import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.dto.GameParticipationDto;
 import io.cavia.trader.module.member.dto.NicknameUpdateRequestDto;
 import io.cavia.trader.module.member.dto.PasswordRequestDto;
-import io.cavia.trader.module.member.service.MyPageService;
+import io.cavia.trader.module.member.service.MemberService;
 import io.cavia.trader.module.auth.security.UserDetailsImpl;
 import io.cavia.trader.module.auth.service.AuthService;
 import io.cavia.trader.module.notice.exception.NoticeOperationFailedException;
@@ -18,19 +18,19 @@ import java.util.List;
 @RestController
 @RequestMapping("api/mypage")
 @RequiredArgsConstructor
-public class RestMyPageController {
+public class MemberRestController {
 
-    private final MyPageService mypageService;
+    private final MemberService mypageService;
     private final AuthService authService;
 
     @GetMapping("/my-games")
     public ResponseEntity<List<GameParticipationDto>> getGameParticipationsByMemberId(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.status(200).body(mypageService.findByMemberId(userDetails.getMember().getId().intValue()));
+        return ResponseEntity.status(200).body(mypageService.getGameParticipationByMemberId(userDetails.getMember().getId().intValue()));
     }
 
     @GetMapping("/me")
     public ResponseEntity<Member> getMembersByEmail(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.status(200).body(mypageService.findById(userDetails.getMember().getId()));
+        return ResponseEntity.status(200).body(mypageService.getMemberById(userDetails.getMember().getId()));
     }
 
     @GetMapping("/check-nickname")
@@ -48,7 +48,7 @@ public class RestMyPageController {
     }
 
     @PatchMapping("/cash-reset")
-    public ResponseEntity<String> restCash(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<String> resetCash(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         mypageService.resetCash(userDetails.getMember().getId());
         return ResponseEntity.status(200).body("변경성공");
     }

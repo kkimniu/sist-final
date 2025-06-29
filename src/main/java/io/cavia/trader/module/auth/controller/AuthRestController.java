@@ -88,7 +88,7 @@ public class AuthRestController {
     @PostMapping("/auth/verification")
     public ResponseEntity<?> checkAuthKeyAndIsMember(@Validated(SignupForm.ValidationGroups.EmailVerificationGroup.class) @RequestBody SignupForm signupForm) {
         authService.verifyAuthKey(signupForm.getEmail(), signupForm.getAuthKey());
-        if (!authService.isOurMember(signupForm.getEmail())) {
+        if (!authService.isMemberByEmail(signupForm.getEmail())) {
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("is-our-member", false, "message", "회원가입이 필요한 이메일입니다."));
         }
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("is-our-member", true, "message", "이메일 인증이 성공했습니다."));

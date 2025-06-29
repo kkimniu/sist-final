@@ -1,8 +1,8 @@
 package io.cavia.trader.module.member.service;
 
-import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.dto.GameParticipationDto;
-import io.cavia.trader.module.member.mapper.GameParticipationMapper;
+import io.cavia.trader.module.member.entity.Member;
+import io.cavia.trader.module.member.repository.GameParticipationRepository;
 import io.cavia.trader.module.member.repository.MemberMapper;
 import io.cavia.trader.module.member.repository.MemberRepository;
 import io.cavia.trader.module.notice.exception.InvalidNoticeRequestException;
@@ -14,13 +14,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class MyPageServiceImpl implements MyPageService {
+public class MemberServiceImpl implements MemberService {
 
-    private final GameParticipationMapper mypageMapper;
+    private final GameParticipationRepository gameParticipationRepository;
     private final MemberMapper memberMapper;
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
@@ -29,8 +28,8 @@ public class MyPageServiceImpl implements MyPageService {
     private Long memberCashReset;
 
     @Override
-    public List<GameParticipationDto> findByMemberId(int memberId) {
-        List<GameParticipationDto> list = mypageMapper.findByMemberId(memberId);
+    public List<GameParticipationDto> getGameParticipationByMemberId(int memberId) {
+        List<GameParticipationDto> list = gameParticipationRepository.findByMemberId(memberId);
         if (list == null || list.size() == 0) {
             throw new NotFoundException("게임 참여 이력이 없습니다");
         }
@@ -38,15 +37,15 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
-    public Member findById(Long id) {
-        Optional<Member> optional = memberMapper.findById(id);
-        Member member;
-        if (optional.isPresent()) {
-            member = optional.get();
-        } else {
-            throw new NotFoundException("사용자가 존재하지 않습니다");
-        }
-        return member;
+    public Member getMemberById(Long id) {
+        return memberRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("회원번호로 조회된 회원이 없습니다."));
+    }
+
+    @Override
+    public Member getMemberByEmail(String email) {
+        return memberMapper.findByEmail(email).orElseThrow(
+                () -> new IllegalArgumentException("이메일로 조회된 회원이 없습니다."));
     }
 
     @Override
@@ -68,8 +67,10 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
-    public int changePassword(Long id, String password, LocalDateTime passwordUpdatedAt) {
-        return memberRepository.updatePassword(id, password, passwordUpdatedAt);
+    public void changePassword(Long id, String newPassword) {
+        if (memberRepository.updatePassword(id, newPassword, LocalDateTime.now()) == 0) {
+            throw new IllegalStateException("비밀번호 수정 작업이 실패했습니다.");
+        }
     }
 
     @Override
@@ -88,6 +89,30 @@ public class MyPageServiceImpl implements MyPageService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         return memberMapper.delete(id);
+    }
+
+    @Override
+    public boolean isMemberByEmail(String email) {
+        return memberRepository.existsByEmail(email);
+    }
+
+    @Override
+    public void validateDuplicateEmail(String email) {
+        if (memberRepository.existsByEmail(email)) {
+            throw new IllegalStateException("이미 존재하는 회원입니다.");
+        }
+    }
+
+    @Override
+    public void validateDuplicateNickname(String nickname) {
+        if (memberRepository.existsByNickname(nickname)) {
+            throw new IllegalStateException("이미 존재하는 닉네임입니다.");
+        }
+    }
+
+    @Override
+    public void createMember(Member member) {
+        memberRepository.save(member);
     }
 
 }
