@@ -30,10 +30,10 @@ public class GameManagerImpl implements GameManager {
     private final GameAdministrationService gameAdministrationService;
     private final GameMapper gameMapper;
 
-    private final int GAME_LIFE_CYCLE = 5;
+    private final int GAME_LIFE_CYCLE = 30;
     public Deque<GameDTO> gameDTOs = new ArrayDeque<>();
 
-    @Scheduled(cron = "1/10 * * * * *")
+    @Scheduled(cron = "0 */10 * * * *")
     @Transactional
     @Override
     public void managementGameSessionsLifeCycle() {
