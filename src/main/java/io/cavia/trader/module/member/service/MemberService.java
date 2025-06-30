@@ -1,6 +1,7 @@
 package io.cavia.trader.module.member.service;
 
 import io.cavia.trader.module.member.dto.GameParticipationDto;
+import io.cavia.trader.module.member.dto.PasswordChangeRequestDto;
 import io.cavia.trader.module.member.entity.Member;
 
 import java.util.List;
@@ -15,11 +16,11 @@ public interface MemberService {
 
     void changeNickname(Long id, String nickname);
 
-    boolean validatePassword(Long id, String password);
+    void validatePassword(Long id, String password);
 
-    void changePassword(Long id, String newPassword);
+    void changePassword(Long id, PasswordChangeRequestDto requestDto);
 
-    int resetCash(Long id);
+    void resetCash(Long id);
 
     int deleteMember(Long id, String password);
 
