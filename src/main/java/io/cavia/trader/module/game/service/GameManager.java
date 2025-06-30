@@ -30,5 +30,6 @@ public interface GameManager {
     GameDto findGameSessionByUserId(Long userId);
 
     int getQuotesIndexByLateTime(LocalDateTime startedTime, List<QuotesOutput> quotes);
+
     int getTradesIndexByLateTime(LocalDateTime startedTime, List<TradesOutput> quotes);
 }

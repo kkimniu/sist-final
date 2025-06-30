@@ -58,8 +58,8 @@
     <label>보유 현금: </label><label id = cash></label><br>
     <label>주가: </label><label id = stockPrice></label><br>
     <label>보유 주식: </label><label id = holdingStocks></label><br>
-    <label>게임참여 인원: </label><label id = userJoinedCount></label><br>
-    <label>남은 세션 시간: </label><label id = remainingTime></label>
+    <label>게임참여 인원: </label><label id ="numberOfParticipation"></label><br>
+    <label>남은 세션 시간: </label><label id = timeLeft></label>
 </div>
 
 <div id = "graphContainer">
@@ -207,6 +207,22 @@
             return response.json();
         }else {
             throw new Error("토큰 인증 실패!");
+        }
+    }
+</script>
+<script>
+    async function getStocksHolding() {
+        const stocksHolding = await fetch("http://localhost:8081/game/api/stocksHolding", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + localStorage.getItem("jwt-token")
+            }
+        });
+        if (stocksHolding.status === 200) {
+            return stocksHolding.json();
+        }else {
+            throw new Error("보유 종목 요청 실패!");
         }
     }
 </script>
@@ -425,6 +441,11 @@
                 cash.innerText = data.cash;
             });
 
+        getStocksHolding()
+            .then(data => {
+                document.getElementById("holdingStocks").innerText = data.message;
+            })
+
 
 
         chartSocketHandler();
@@ -637,7 +658,6 @@
             let stockData = JSON.parse(stockDataArray[1]);
 
             if (DataHead === "trades") {
-                console.log("trades");
                 if (relTime == null) {
                     relTime = new Date(stockData.created_at);
                     for (let i = 0; i < priceChartSelectDataZeroPoint.length; i++) {
@@ -788,7 +808,6 @@
 
                 stockPrice.innerText = stockData.stck_prpr;
             }else if(DataHead === "quotes"){
-                console.log("quotes");
                 for (let i = 1; i <= 10; i++) {
                     document.getElementById("buy" + i).innerText = stockData["askp_rsqn" + i];
                     document.getElementById("buyPrice" + i).innerText = stockData["askp" + i];
@@ -942,6 +961,10 @@
                         document.getElementById("selPrice" + i).innerText = value["bidp_rsqn" + i];
                         document.getElementById("selAll").innerText = value.total_bidp_rsqn_icdc;
                     }
+            }else if (DataHead === "numberOfParticipation"){
+                document.getElementById("numberOfParticipation").innerText = stockData + "명";
+            }else if (DataHead === "timeLeft"){
+                document.getElementById("timeLeft").innerText = Math.floor(stockData / 60) + "분 " + (stockData % 60) + "초";
             }else{
                 alert("에러 발생: 정제 되지 않은 데이터 수신!!", event);
             }

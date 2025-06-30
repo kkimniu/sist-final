@@ -36,4 +36,23 @@ public class GameRestController {
                     HttpStatus.UNAUTHORIZED);
         }
     }
+    @GetMapping("/stocksHolding")
+    public ResponseEntity<?> getStocksHolding(@RequestHeader("Authorization") String authorizationHeader) {
+        String token = jwtUtil.substringToken(authorizationHeader);
+        if(jwtUtil.validateToken(token)){
+            long memberId = gameManager.getUserInfo(
+                            jwtUtil.getUserInfoFromToken(
+                                    token)).getId();
+
+        return new ResponseEntity<ResponseDto>(
+                new ResponseDto(""+gameManager.findGameSessionByUserId(memberId)
+                        .getGameParticipations()
+                        .get(memberId)
+                        .getStocksHolding()), HttpStatus.OK);
+        }else{
+            return new ResponseEntity<ResponseDto>(
+                    new ResponseDto("사용자 인증에 실패하였습니다."),
+                    HttpStatus.UNAUTHORIZED);
+        }
+    }
 }
