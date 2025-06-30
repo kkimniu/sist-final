@@ -177,8 +177,8 @@ public class GameManagerImpl implements GameManager {
                             .remove(session.getId());
 
                     // 여기에서 계속 널포인트 발생하는데 이유는 모르겠음
-                    gameDTO.getChartSessions()
-                            .replace(targetId, null);
+                    /*gameDTO.getChartSessions()
+                            .replace(targetId, null);*/
 
                     return;
                 }
