@@ -1,10 +1,12 @@
 package io.cavia.trader.module.member.repository;
 
+import io.cavia.trader.module.member.dto.UserRankingDto;
 import io.cavia.trader.module.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -61,5 +63,15 @@ public class MemberMybatisRepository implements MemberRepository {
     @Override
     public Optional<Member> findById(Long id) {
         return memberMapper.findById(id);
+    }
+
+    @Override
+    public List<UserRankingDto> findAllOrderByCash() {
+        return memberMapper.findAllOrderByCash();
+    }
+
+    @Override
+    public List<UserRankingDto> findAllOrderByTotalScore() {
+        return memberMapper.findAllOrderByTotalScore();
     }
 }

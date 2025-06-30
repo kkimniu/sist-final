@@ -1,10 +1,12 @@
 package io.cavia.trader.module.member.repository;
 
+import io.cavia.trader.module.member.dto.UserRankingDto;
 import io.cavia.trader.module.member.entity.Member;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Mapper
@@ -31,6 +33,16 @@ public interface MemberMapper {
      * @return 조회된 회원 객체 (없을 경우 Optional.empty())
      */
     Optional<Member> findById(Long id);
+
+    /**
+     * 전체회원의 이름과 캐쉬를 내림차순
+     */
+    List<UserRankingDto> findAllOrderByCash();
+
+    /**
+     * 전체회원의 이름과 총점수를 내림차순
+     */
+    List<UserRankingDto> findAllOrderByTotalScore();
 
     /**
      * 닉네임을 수정합니다.
