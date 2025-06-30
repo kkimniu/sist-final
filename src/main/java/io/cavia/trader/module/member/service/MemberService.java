@@ -1,28 +1,34 @@
 package io.cavia.trader.module.member.service;
 
-import io.cavia.trader.module.member.dto.LoginRequestDto;
-import io.cavia.trader.module.member.dto.ResetPasswordRequestDto;
-import io.cavia.trader.module.member.dto.SignupForm;
+import io.cavia.trader.module.member.dto.GameParticipationDto;
 import io.cavia.trader.module.member.entity.Member;
 
-public interface MemberService {
-    void sendVerificationEmail(String email);
+import java.util.List;
 
-    void verifyAuthKey(String email, String authKey);
+public interface MemberService {
+
+    List<GameParticipationDto> getGameParticipationByMemberId(int memberId);
+
+    Member getMemberById(Long id);
+
+    Member getMemberByEmail(String email);
+
+    void changeNickname(Long id, String nickname);
+
+    boolean validatePassword(Long id, String password);
+
+    void changePassword(Long id, String newPassword);
+
+    int resetCash(Long id);
+
+    int deleteMember(Long id, String password);
+
+    boolean isMemberByEmail(String email);
 
     void validateDuplicateEmail(String email);
 
     void validateDuplicateNickname(String nickname);
 
-    void join(SignupForm signupForm);
+    void createMember(Member member);
 
-    String login(LoginRequestDto requestDto);
-
-    Member getMemberById(Long email);
-
-    void sendAuthEmail(String to, String authKey);
-
-    boolean isOurMember(String email);
-
-    void resetPassword(ResetPasswordRequestDto requestDto);
 }

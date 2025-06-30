@@ -1,4 +1,4 @@
-package io.cavia.trader.module.member.mypage.dto;
+package io.cavia.trader.module.member.dto;
 
 import lombok.*;
 

@@ -1,4 +1,4 @@
-package io.cavia.trader.module.member.security;
+package io.cavia.trader.module.auth.security;
 
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.entity.MemberRoleEnum;

@@ -1,6 +1,6 @@
-package io.cavia.trader.module.member.repository;
+package io.cavia.trader.module.auth.repository;
 
-import io.cavia.trader.module.member.entity.EmailVerification;
+import io.cavia.trader.module.auth.entity.EmailVerification;
 
 import java.util.Optional;
 

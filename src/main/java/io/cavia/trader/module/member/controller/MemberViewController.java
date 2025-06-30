@@ -1,6 +1,6 @@
-package io.cavia.trader.module.member.mypage.controller;
+package io.cavia.trader.module.member.controller;
 
-import io.cavia.trader.module.member.mypage.service.MyPageService;
+import io.cavia.trader.module.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,14 +9,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalDateTime;
-
 @Controller
 @RequestMapping("member/mypage")
 @RequiredArgsConstructor
-public class ViewMyPageController {
+public class MemberViewController {
 
-    private final MyPageService myPageService;
+    private final MemberService memberService;
 
     @GetMapping("/mypage-main")
     public String myPage() {
@@ -36,7 +34,7 @@ public class ViewMyPageController {
     @PostMapping("/password-verification")
     public String passwordVerification(@RequestParam Long id, @RequestParam String password, Model model) {
         model.addAttribute("id", id);
-        if (!myPageService.validatePassword(id, password)) {
+        if (!memberService.validatePassword(id, password)) {
             model.addAttribute("errorMessage", "비밀번호가 일치하지 않습니다.");
             return "member/mypage/password-verification.html";
         }
@@ -50,10 +48,11 @@ public class ViewMyPageController {
             model.addAttribute("errorMessage", "비밀번호가 일치하지 않습니다.");
             return "member/mypage/password-change.html";
         }
-        int result = myPageService.changePassword((long) id, password, LocalDateTime.now());
-        if (result <= 0) {
+        try {
+            memberService.changePassword((long) id, password);
+        } catch (RuntimeException e) {
             model.addAttribute("id", id);
-            model.addAttribute("errorMessage", "비밀번호 변경이 실패했습니다.");
+            model.addAttribute("errorMessage", e.getMessage());
             return "member/mypage/password-change.html";
         }
         return "member/mypage/mypage-main.html";

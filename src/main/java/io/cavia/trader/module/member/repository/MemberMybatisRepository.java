@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class MybatisMemberRepository implements MemberRepository {
+public class MemberMybatisRepository implements MemberRepository {
 
     private final MemberMapper memberMapper;
 

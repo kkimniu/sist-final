@@ -51,7 +51,7 @@ public class SecurityConfig {
                         // [ 1. 비회원(Anonymous) 접근 허용 ]
                         .requestMatchers("/", "/login", "/signup", "/signup/**").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/login-checker", "/forgot-password", "/auth/**", "/error").permitAll()
+                        .requestMatchers("/login-checker", "/forgot-password", "/auth/**", "/error", "/**").permitAll()
 
                         // [ 2. 회원(USER, ADMIN) 접근 허용 ]
                         .requestMatchers("/api/").authenticated()
