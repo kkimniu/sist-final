@@ -195,7 +195,8 @@
 </script>
 <script>
     async function certificationToken() {
-        const response = await fetch("http://localhost:8081/game/api/verify", {
+        const response = await fetch("http://192.168.0.109:8081/game/api/verify", {
+            origin: "http://192.168.0.109:8081",
             method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -212,7 +213,8 @@
 </script>
 <script>
     async function getStocksHolding() {
-        const stocksHolding = await fetch("http://localhost:8081/game/api/stocks-holding", {
+        const stocksHolding = await fetch("http://192.168.0.109:8081/game/api/stocks-holding", {
+            origin: "http://192.168.0.109:8081",
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -441,13 +443,6 @@
                 cash.innerText = data.cash;
             });
 
-        getStocksHolding()
-            .then(data => {
-                document.getElementById("stocksHolding").innerText = data.message;
-            })
-
-
-
         chartSocketHandler();
 
         drowGuideLine(guideLineLengthX, guideLineLengthY, priceChartLayoutCtx, priceChartHeight);
@@ -644,7 +639,7 @@
     }
 
     function chartSocketHandler() {
-        chartSocket = new WebSocket("http://localhost:8081/ws/chart");
+        chartSocket = new WebSocket("http://192.168.0.109:8081/ws/chart");
 
         chartSocket.onopen = function (event) {
             console.log("연결 성공");
@@ -652,6 +647,10 @@
         };
         chartSocket.onmessage = function (event) {
 
+            getStocksHolding()
+                .then(data => {
+                    document.getElementById("stocksHolding").innerText = data.message;
+                })
 
             let stockDataArray = event.data.split("||");
             let DataHead = stockDataArray[0];
