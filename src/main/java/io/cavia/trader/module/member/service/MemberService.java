@@ -32,8 +32,8 @@ public interface MemberService {
 
     void createMember(Member member);
 
-    List<UserRankingDto> findAllOrderByCash();
+    List<UserRankingDto> findAllOrderByCash(int limit , int offset);
 
-    List<UserRankingDto> findAllOrderByTotalScore();
+    List<UserRankingDto> findAllOrderByTotalScore(int limit , int offset);
 
 }

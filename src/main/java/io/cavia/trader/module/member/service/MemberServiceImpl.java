@@ -117,19 +117,19 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public List<UserRankingDto> findAllOrderByCash() {
-        if (memberRepository.findAllOrderByCash() == null || memberRepository.findAllOrderByCash().size() == 0) {
+    public List<UserRankingDto> findAllOrderByCash(int limit , int offset) {
+        if (memberRepository.findAllOrderByCash(limit,offset) == null || memberRepository.findAllOrderByCash(limit,offset).size() == 0) {
             throw new NotFoundException("게임 참여 이력이 없습니다");
         }
-        return memberRepository.findAllOrderByCash();
+        return memberRepository.findAllOrderByCash(limit,offset);
     }
 
     @Override
-    public List<UserRankingDto> findAllOrderByTotalScore() {
-        if (memberRepository.findAllOrderByTotalScore() == null || memberRepository.findAllOrderByTotalScore().size() == 0) {
+    public List<UserRankingDto> findAllOrderByTotalScore(int limit , int offset) {
+        if (memberRepository.findAllOrderByTotalScore(limit,offset) == null || memberRepository.findAllOrderByTotalScore(limit,offset).size() == 0) {
             throw new NotFoundException("게임 참여 이력이 없습니다");
         }
-        return memberRepository.findAllOrderByTotalScore();
+        return memberRepository.findAllOrderByTotalScore(limit,offset);
     }
 
 }

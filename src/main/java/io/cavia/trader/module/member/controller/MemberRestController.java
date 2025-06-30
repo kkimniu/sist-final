@@ -75,9 +75,9 @@ public class MemberRestController {
     @GetMapping("/rank")
     public ResponseEntity<List<UserRankingDto>> getRanking(@RequestParam String type){
         if("cash".equals(type)){
-            return ResponseEntity.status(200).body(memberService.findAllOrderByCash());
+            return ResponseEntity.status(200).body(memberService.findAllOrderByCash(0,20));
         }else if("totalScore".equals(type)){
-            return ResponseEntity.status(200).body(memberService.findAllOrderByTotalScore());
+            return ResponseEntity.status(200).body(memberService.findAllOrderByTotalScore(0,20));
         }else{
             return ResponseEntity.badRequest().build();
         }
