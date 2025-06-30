@@ -21,7 +21,7 @@ public class GameDto {
     private long stockId;
     private List<QuotesOutput> quotes;
     private List<TradesOutput> trades;
-    private List<GameParticipation> gameParticipations;
+    private Map<Long, GameParticipation> gameParticipations;
     private Map<Long, WebSocketSession> chartSessions;
     private Map<String, Long> UserIdsInChartSessions;
     private Map<Long, WebSocketSession> chatSessions;
