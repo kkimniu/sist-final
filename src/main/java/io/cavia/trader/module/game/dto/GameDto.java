@@ -16,7 +16,7 @@ import java.util.Map;
 @Setter
 @ToString
 @Builder
-public class GameDTO {
+public class GameDto {
     private long id;
     private long stockId;
     private List<QuotesOutput> quotes;

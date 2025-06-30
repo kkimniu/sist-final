@@ -2,13 +2,12 @@ package io.cavia.trader.module.game.service;
 
 import io.cavia.trader.module.client.connector.RestWebClientImpl;
 import io.cavia.trader.module.client.dto.StocksOutput;
-import io.cavia.trader.module.game.dto.GameDTO;
+import io.cavia.trader.module.game.dto.GameDto;
 import io.cavia.trader.module.game.entity.GameParticipation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -24,9 +23,9 @@ public class GameAdministrationServiceImpl implements GameAdministrationService 
     private List<StocksOutput> stocks;
 
     @Override
-    public GameDTO createGame() {
+    public GameDto createGame() {
         if (stocks == null) setStocks();
-        GameDTO gameDTO = new GameDTO();
+        GameDto gameDTO = new GameDto();
 
         gameDTO.setStockId(stocks
                 .get((int)(Math.random() * stocks.size())
@@ -64,7 +63,7 @@ public class GameAdministrationServiceImpl implements GameAdministrationService 
                 .getOutput();
     }
 
-    public int getMinutesBetween(GameDTO gameDTO) {
+    public int getMinutesBetween(GameDto gameDTO) {
 
         // 현재 시간과 게임 시작 시간의 차이
         int minutesBetween = (int) (

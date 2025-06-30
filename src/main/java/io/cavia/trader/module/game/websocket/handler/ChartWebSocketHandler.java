@@ -3,19 +3,16 @@ package io.cavia.trader.module.game.websocket.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cavia.trader.module.client.dto.QuotesOutput;
 import io.cavia.trader.module.client.dto.TradesOutput;
-import io.cavia.trader.module.game.dto.GameDTO;
+import io.cavia.trader.module.game.dto.GameDto;
 import io.cavia.trader.module.game.service.GameManager;
 import io.cavia.trader.module.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Component
@@ -35,7 +32,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
         String token = message.getPayload().toString();
         if(jwtUtil.validateToken(token)){
             // 유저가 연결되었을 때, 가장 젊은 게임 세션에 연결 (유저가 이미 세션에 속해 있다면 DTO의 세션만 교체)
-            GameDTO gameDTO = gameManager.addUserToGameAndGetYoungestSession(
+            GameDto gameDTO = gameManager.addUserToGameAndGetYoungestSession(
                     jwtUtil.getUserInfoFromToken(token), session);
             // 해당 게임 세션에 할당된 집계 데이터를 순차적으로 웹소켓으로 전송
             // TODO 중간에 난입한 유저일 경우 집계테이블에서 이미 지난 부분을 집합으로 먼저 전송하고 나머지 집계테이블을 보내야함

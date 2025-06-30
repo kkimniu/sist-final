@@ -2,7 +2,7 @@ package io.cavia.trader.module.game.service;
 
 import io.cavia.trader.module.client.dto.QuotesOutput;
 import io.cavia.trader.module.client.dto.TradesOutput;
-import io.cavia.trader.module.game.dto.GameDTO;
+import io.cavia.trader.module.game.dto.GameDto;
 import io.cavia.trader.module.game.entity.GameParticipation;
 import io.cavia.trader.module.game.entity.Member;
 import io.cavia.trader.module.game.repository.GameMapper;
@@ -32,16 +32,16 @@ public class GameManagerImpl implements GameManager {
     private final GameMapper gameMapper;
 
     private final int GAME_LIFE_CYCLE = 30;
-    public Deque<GameDTO> gameDTOs = new ArrayDeque<>();
+    public Deque<GameDto> gameDtos = new ArrayDeque<>();
 
     @Scheduled(cron = "0 */10 * * * *")
     @Transactional
     @Override
     public void managementGameSessionsLifeCycle() {
 
-        if (!gameDTOs.isEmpty()) {
+        if (!gameDtos.isEmpty()) {
             // 현재시간 - 세션시작 시간을 분 단위로 치환한 값
-            GameDTO gameDTO = gameDTOs.peekFirst();
+            GameDto gameDTO = gameDtos.peekFirst();
             int minutesBetween = gameAdministrationService.getMinutesBetween(gameDTO);
 
             // 세션의 생명 주기가 끝났으면 선입 세션 삭제
@@ -62,18 +62,18 @@ public class GameManagerImpl implements GameManager {
                 });
 
 
-                gameDTOs.removeFirst();
-                System.out.println("Game Session Closed, Games size: " + gameDTOs.size());
+                gameDtos.removeFirst();
+                System.out.println("Game Session Closed, Games size: " + gameDtos.size());
             }
         }
 
         // 게임 세션 1개 생성
-        GameDTO gameDTO = gameAdministrationService.createGame();
-        gameDTOs.add(gameDTO);
+        GameDto gameDTO = gameAdministrationService.createGame();
+        gameDtos.add(gameDTO);
         gameMapper.saveGame(gameDTO.getStockId(),
                 gameDTO.getStartedAt());
         gameDTO.setId(gameMapper.findLastGameId());
-        System.out.println("Game Session Created, Games size: " + gameDTOs.size());
+        System.out.println("Game Session Created, Games size: " + gameDtos.size());
     }
 
     public Member getUserInfo(Claims userInfo) {
@@ -84,7 +84,7 @@ public class GameManagerImpl implements GameManager {
     }
 
     @Override
-    public GameDTO addUserToGameAndGetYoungestSession(Claims tokenToClaims, WebSocketSession webSocketSession) {
+    public GameDto addUserToGameAndGetYoungestSession(Claims tokenToClaims, WebSocketSession webSocketSession) {
         /**
          * 인자로 받은 Cliaims로 유저 정보를 조회해서 GameSession에 유저 정보를 주입하는 메서드 입니다.
          * 조회 시점의 가장 젊은 세션에 유저 정보를 주입하기 때문에 정합성을 위해
@@ -99,8 +99,8 @@ public class GameManagerImpl implements GameManager {
             return findGameSessionByUserId(member.getId());
         }
 
-        if (!gameDTOs.isEmpty()) {
-            GameDTO gameDTO = gameDTOs.peekLast();
+        if (!gameDtos.isEmpty()) {
+            GameDto gameDTO = gameDtos.peekLast();
 
             List<GameParticipation> gameParticipations = gameDTO.getGameParticipations();
             if (gameParticipations != null) {
@@ -128,7 +128,7 @@ public class GameManagerImpl implements GameManager {
 
     @Override
     public boolean findChartSessionKeyByUserId(Long memberId) {
-        for (GameDTO gameDTO : gameDTOs) {
+        for (GameDto gameDTO : gameDtos) {
             if (gameDTO.getChartSessions().containsKey(memberId)) return true;
         }
         return false;
@@ -137,7 +137,7 @@ public class GameManagerImpl implements GameManager {
     @Override
     public void replaceChartSessionByUserId(long targetId, WebSocketSession newSession) {
         try {
-            for (GameDTO gameDTO : gameDTOs) {
+            for (GameDto gameDTO : gameDtos) {
                 if (gameDTO.getChartSessions().containsKey(targetId)) {
                     gameDTO.getChartSessions().replace(targetId, newSession);
                     gameDTO.getUserIdsInChartSessions().put(newSession.getId(), targetId);
@@ -152,7 +152,7 @@ public class GameManagerImpl implements GameManager {
     @Override
     public void removeChartSession(WebSocketSession session) {
         try {
-            for (GameDTO gameDTO : gameDTOs) {
+            for (GameDto gameDTO : gameDtos) {
                 if (gameDTO.getUserIdsInChartSessions()
                         .containsKey(session.getId())) {
 
@@ -176,8 +176,8 @@ public class GameManagerImpl implements GameManager {
 
 
     @Override
-    public GameDTO findGameSessionByUserId(Long memberId) {
-        for (GameDTO gameDTO : gameDTOs) {
+    public GameDto findGameSessionByUserId(Long memberId) {
+        for (GameDto gameDTO : gameDtos) {
             for (GameParticipation gameParticipation : gameDTO.getGameParticipations()) {
                 if (gameParticipation.getMemberId() == memberId) {
                     return gameDTO;

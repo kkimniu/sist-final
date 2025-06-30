@@ -1,9 +1,9 @@
 package io.cavia.trader.module.game.service;
 
-import io.cavia.trader.module.game.dto.GameDTO;
+import io.cavia.trader.module.game.dto.GameDto;
 
 public interface GameAdministrationService {
 
-    GameDTO createGame();
-    int getMinutesBetween(GameDTO gameDTO);
+    GameDto createGame();
+    int getMinutesBetween(GameDto gameDTO);
 }

@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Setter
 @Builder
 @ToString
-public class UserDTO {
+public class UserDto {
 
     private long userId;
     private BigDecimal returnRate;
