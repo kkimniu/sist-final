@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface MemberService {
 
-    List<GameParticipationDto> getGameParticipationByMemberId(int memberId);
+    List<GameParticipationDto> getGameParticipationByMemberId(Long memberId);
 
     Member getMemberById(Long id);
 

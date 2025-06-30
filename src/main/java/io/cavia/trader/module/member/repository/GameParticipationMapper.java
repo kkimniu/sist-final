@@ -8,5 +8,5 @@ import java.util.List;
 @Mapper
 public interface GameParticipationMapper {
 
-    List<GameParticipationDto> findByMemberId(int memberId);
+    List<GameParticipationDto> findByMemberId(Long memberId);
 }

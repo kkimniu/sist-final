@@ -20,22 +20,18 @@ public class MemberRestController {
     private final MemberService memberService;
 
     @GetMapping("/my-games")
-    public ResponseEntity<List<GameParticipationDto>> getGameParticipationsByMemberId(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.status(200).body(memberService.getGameParticipationByMemberId(userDetails.getMember().getId().intValue()));
+    public ResponseEntity<List<GameParticipationDto>> getGameParticipationsByMemberId(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.status(200)
+                .body(memberService.getGameParticipationByMemberId(userDetails.getMember().getId()));
     }
 
     @GetMapping("/me")
     public ResponseEntity<Member> getMembersByEmail(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        Member member = memberService.getMemberById(userDetails.getMember().getId());
-        return ResponseEntity.status(200).body(member);
-    }
 
-//    TODO: 삭제예정 - 변경에서 중복체크 하고 있기 때문에 필요없는 엔드포인트, 김범희
-//    @GetMapping("/check-nickname")
-//    public ResponseEntity<String> getcheckNickname(@RequestParam String nickname) {
-//        authService.validateDuplicateNickname(nickname);
-//        return ResponseEntity.status(200).body("중복없음");
-//    }
+        return ResponseEntity.status(200)
+                .body(memberService.getMemberById(userDetails.getMember().getId()));
+    }
 
     @PostMapping("/password-verification")
     public ResponseEntity<String> getcheckPassword(@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -52,15 +48,15 @@ public class MemberRestController {
     }
 
     @PatchMapping("/cash-reset")
-
     public ResponseEntity<String> resetCash(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         memberService.resetCash(userDetails.getMember().getId());
         return ResponseEntity.status(200).body("변경성공");
     }
 
     @PatchMapping("/nickname")
-    public ResponseEntity<String> updateNickname(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody NicknameUpdateRequestDto nicknameUpdateRequestDto) {
-        memberService.changeNickname(userDetails.getMember().getId(), nicknameUpdateRequestDto.getNickname());
+    public ResponseEntity<String> updateNickname(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                 @RequestBody NicknameUpdateRequestDto requestDto) {
+        memberService.changeNickname(userDetails.getMember().getId(), requestDto.getNickname());
         return ResponseEntity.status(200).body("변경성공");
     }
 

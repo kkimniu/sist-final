@@ -30,9 +30,9 @@ public class MemberServiceImpl implements MemberService {
     private Long memberCashReset;
 
     @Override
-    public List<GameParticipationDto> getGameParticipationByMemberId(int memberId) {
+    public List<GameParticipationDto> getGameParticipationByMemberId(Long memberId) {
         List<GameParticipationDto> list = gameParticipationRepository.findByMemberId(memberId);
-        if (list == null || list.size() == 0) {
+        if (list == null || list.isEmpty()) {
             throw new NotFoundException("게임 참여 이력이 없습니다");
         }
         return list;
