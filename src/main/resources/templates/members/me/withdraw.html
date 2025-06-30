@@ -1,22 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-<h2>회원탈퇴</h2>
-<h3>회원 탈퇴를 원하시면 비밀번호를 입력해주세요. 회원에 관련된 모든 데이터가 삭제됩니다. 삭제된 데이터는 복구가 불가능합니다</h3>
 
-<form id="withdraw-form">
-    <input type="hidden" id="id" name="id" value=1>
-    <input type="password" id="password" name="password" placeholder="비밀번호를 입력해주세요" >
-    <span id="message" style="display:block; margin-top:10px;"></span>
-    <button type="submit">탈퇴하기</button>
-</form>
-<button onclick="location.href='mypage-main'">돌아가기</button>
+<div id="step1-verification">
+    <h2>회원탈퇴</h2>
+    <h3>회원 탈퇴를 원하시면 비밀번호를 입력해주세요. 회원에 관련된 모든 데이터가 삭제됩니다. 삭제된 데이터는 복구가 불가능합니다</h3>
+
+    <form id="withdraw-form">
+        <input type="hidden" id="id" name="id" value=1>
+        <input type="password" id="password" name="password" placeholder="비밀번호를 입력해주세요">
+        <span id="message" style="display:block; margin-top:10px;"></span>
+        <button type="submit">탈퇴하기</button>
+    </form>
+    <button onclick="location.href='mypage-main'">돌아가기</button>
+</div>
+
+<div id="step2-goodbye" style="display: none;">
+    <h2>이용해주셔서 감사합니다. 탈퇴가 완료되었습니다</h2>
+    <div><input type="button" onclick="window.location.href='/login'" value="홈으로 이동하기"></div>
+</div>
 </body>
 <script>
+    const step1Div = document.getElementById('step1-verification');
+    const step2Div = document.getElementById('step2-goodbye');
+
     document.getElementById('withdraw-form').addEventListener('submit', function(event) {
         event.preventDefault();
 
@@ -58,8 +69,9 @@
             if (!response.ok) {
                throw new Error('회원 탈퇴 실패');
             }
+            step1Div.style.display = 'none';
+            step2Div.style.display = 'block';
             localStorage.removeItem('jwt-token');
-            window.location.href = '/member/mypage/withdraw';
         })
         .catch(error => {
             message.innerText = error.message;

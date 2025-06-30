@@ -101,7 +101,7 @@ formStep2.addEventListener('submit', async (e) => {
         if (response.ok) {
             alert('비밀번호가 성공적으로 변경되었습니다.');
             // 성공 시 마이페이지 메인 등으로 이동
-            window.location.href = '/member/mypage/mypage-main';
+            window.location.href = '/memberz/mypage/mypage-main';
         } else {
             const errorData = await response.json();
             // @Valid에서 발생한 에러의 경우, 상세 에러 메시지를 표시
