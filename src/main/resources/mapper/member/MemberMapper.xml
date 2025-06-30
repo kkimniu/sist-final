@@ -85,10 +85,11 @@
     <select id="findAllOrderByCash" resultType="io.cavia.trader.module.member.entity.Member">
         SELECT
         nickname,
-        cash,
+        cash
         FROM
         members
         ORDER BY cash DESC
+        LIMIT #{limit} OFFSET #{offset}
     </select>
 
     <!--
@@ -97,10 +98,11 @@
     <select id="findAllOrderByTotalScore" resultType="io.cavia.trader.module.member.entity.Member">
         SELECT
         nickname,
-        total_score,
+        total_score
         FROM
         members
         ORDER BY total_score DESC
+        LIMIT #{limit} OFFSET #{offset}
     </select>
 
     <!--
