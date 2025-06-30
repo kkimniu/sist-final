@@ -195,7 +195,7 @@
 </script>
 <script>
     async function certificationToken() {
-        const response = await fetch("http://localhost:8081/game/api/verify", {
+        const response = await fetch("/game/api/verify", {
             method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -212,7 +212,7 @@
 </script>
 <script>
     async function getStocksHolding() {
-        const stocksHolding = await fetch("http://localhost:8081/game/api/stocks-holding", {
+        const stocksHolding = await fetch("/game/api/stocks-holding", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -441,13 +441,6 @@
                 cash.innerText = data.cash;
             });
 
-        getStocksHolding()
-            .then(data => {
-                document.getElementById("stocksHolding").innerText = data.message;
-            })
-
-
-
         chartSocketHandler();
 
         drowGuideLine(guideLineLengthX, guideLineLengthY, priceChartLayoutCtx, priceChartHeight);
@@ -644,7 +637,7 @@
     }
 
     function chartSocketHandler() {
-        chartSocket = new WebSocket("http://localhost:8081/ws/chart");
+        chartSocket = new WebSocket("/ws/chart");
 
         chartSocket.onopen = function (event) {
             console.log("연결 성공");
@@ -652,6 +645,10 @@
         };
         chartSocket.onmessage = function (event) {
 
+            getStocksHolding()
+                .then(data => {
+                    document.getElementById("stocksHolding").innerText = data.message;
+                })
 
             let stockDataArray = event.data.split("||");
             let DataHead = stockDataArray[0];
