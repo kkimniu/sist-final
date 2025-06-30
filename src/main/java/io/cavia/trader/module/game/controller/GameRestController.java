@@ -44,7 +44,7 @@ public class GameRestController {
                             .getGameParticipations().get(memberId).getStocksHolding()), HttpStatus.OK);
 
         }catch (Exception e){
-            throw new ResponseStatusException(HttpStatus.ㅎ);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }
 }
