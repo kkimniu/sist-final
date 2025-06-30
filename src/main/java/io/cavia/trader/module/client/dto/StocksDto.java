@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class TradesDTO {
+public class StocksDto {
 
-    private List<TradesOutput> output;
+    private List<StocksOutput> output;
 }

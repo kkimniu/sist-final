@@ -11,6 +11,6 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class QuotesDTO {
+public class QuotesDto {
     private List<QuotesOutput> output;
 }

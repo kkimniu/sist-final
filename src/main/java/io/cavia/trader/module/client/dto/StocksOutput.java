@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class StocksOutput {
 
     // 고유번호
-    private int id;
+    private long id;
 
     // 종목명
     private String name;
