@@ -1,6 +1,7 @@
 package io.cavia.trader.module.member.service;
 
 import io.cavia.trader.module.member.dto.GameParticipationDto;
+import io.cavia.trader.module.member.dto.UserRankingDto;
 import io.cavia.trader.module.member.entity.Member;
 
 import java.util.List;
@@ -30,5 +31,9 @@ public interface MemberService {
     void validateDuplicateNickname(String nickname);
 
     void createMember(Member member);
+
+    List<UserRankingDto> findAllOrderByCash();
+
+    List<UserRankingDto> findAllOrderByTotalScore();
 
 }
