@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -32,29 +34,34 @@ public class ChartWebSocketHandler implements WebSocketHandler {
         String token = message.getPayload().toString();
         if(jwtUtil.validateToken(token)){
             // 유저가 연결되었을 때, 가장 젊은 게임 세션에 연결 (유저가 이미 세션에 속해 있다면 DTO의 세션만 교체)
-            GameDto gameDTO = gameManager.addUserToGameAndGetYoungestSession(
+            GameDto gameDto = gameManager.addUserToGameAndGetYoungestSession(
                     jwtUtil.getUserInfoFromToken(token), session);
+            // 게임 입장 처리 완료, 자신이 포함된 게임 참가 인원 수 클라이언트에 전달
+            if (session.isOpen()) session.sendMessage(new TextMessage("numberOfParticipation||"
+                            +gameDto.getGameParticipations().size()));
+
+
             // 해당 게임 세션에 할당된 집계 데이터를 순차적으로 웹소켓으로 전송
             // TODO 중간에 난입한 유저일 경우 집계테이블에서 이미 지난 부분을 집합으로 먼저 전송하고 나머지 집계테이블을 보내야함
             try {
 
                 // 유저에게 전송해야 할 집계 테이블 인덱스 구하기
-                int tradesIdx = gameManager.getTradesIndexByLateTime(gameDTO.getStartedAt(), gameDTO.getTrades());
+                int tradesIdx = gameManager.getTradesIndexByLateTime(gameDto.getStartedAt(), gameDto.getTrades());
 
                 // 인덱스 0부터 tradesIdx까지만 새로운 list로 생성 후 먼저 전송
                 List<TradesOutput> previewersTrades = IntStream
                         .range(0, tradesIdx)
-                        .mapToObj(gameDTO.getTrades()::get)
+                        .mapToObj(gameDto.getTrades()::get)
                         .toList();
                 // JAVA16부터는 콜렉터로 래핑할 필요 없이 그냥 toList() 사용 가능!!
 
                 String previewersTradesJson = objectMapper.writeValueAsString(previewersTrades);
 
-                session.sendMessage(new TextMessage("previewersTrades||" + previewersTradesJson));
+                if (session.isOpen()) session.sendMessage(new TextMessage("previewersTrades||" + previewersTradesJson));
 
 
                 AtomicLong stockBaseTime = new AtomicLong(
-                        gameDTO.getTrades()
+                        gameDto.getTrades()
                                 .get(tradesIdx)
                                 .getCreatedAt()
                                 .atZone(ZoneId.systemDefault())
@@ -63,7 +70,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                 );
 
                 Thread thread1 = new Thread(() -> {
-                        List<TradesOutput> trades = gameDTO.getTrades();
+                        List<TradesOutput> trades = gameDto.getTrades();
                         for(int i=tradesIdx; i<trades.size(); i++) {
                             try {
                                 if (!session.isOpen()) return;
@@ -90,18 +97,18 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                         }
                 });
 
-                int quotesIdx = gameManager.getQuotesIndexByLateTime(gameDTO.getStartedAt(), gameDTO.getQuotes());
+                int quotesIdx = gameManager.getQuotesIndexByLateTime(gameDto.getStartedAt(), gameDto.getQuotes());
 
                 List<QuotesOutput> previewersQuotes = IntStream
                         .range(0, quotesIdx)
-                        .mapToObj(gameDTO.getQuotes()::get)
+                        .mapToObj(gameDto.getQuotes()::get)
                         .toList();
                 String previewersQuotesJson = objectMapper.writeValueAsString(previewersQuotes);
 
-                session.sendMessage(new TextMessage("previewersQuotes||" + previewersQuotesJson));
+                if (session.isOpen()) session.sendMessage(new TextMessage("previewersQuotes||" + previewersQuotesJson));
 
                 AtomicLong orderBaseTime = new AtomicLong(
-                        gameDTO.getQuotes()
+                        gameDto.getQuotes()
                                 .get(quotesIdx)
                                 .getCreatedAt()
                                 .atZone(ZoneId.systemDefault())
@@ -111,7 +118,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                 Thread thread2 = new Thread(() -> {
                         try {
-                            List<QuotesOutput> quotes = gameDTO.getQuotes();
+                            List<QuotesOutput> quotes = gameDto.getQuotes();
                             for (int i = quotesIdx; i < quotes.size(); i++) {
                                 if (!session.isOpen()) return;
                                 long relTime = quotes
@@ -140,8 +147,24 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                 });
 
+                Thread thread3 = new Thread(() -> {
+                    long timeLeft = Duration.between(gameDto.getStartedAt(), LocalDateTime.now()).toSeconds();
+                    while(timeLeft < 1800) {
+                        try {
+                            timeLeft = Duration.between(gameDto.getStartedAt(), LocalDateTime.now()).toSeconds();
+                            synchronized (session) {
+                                if (session.isOpen()) session.sendMessage(new TextMessage("timeLeft||" + (1800 - timeLeft)));
+                            }
+                            Thread.sleep(1000);
+                        } catch(Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
+
                 thread1.start();
                 thread2.start();
+                thread3.start();
 
             } catch (Exception e3) {
                 throw new RuntimeException(e3);

@@ -1,6 +1,7 @@
 package io.cavia.trader.module.game.entity;
 
 import lombok.*;
+import org.springframework.security.core.Transient;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ public class GameParticipation {
     private long memberId;
     private Long gameId;
     private BigDecimal returnRate;
+    private int stocksHolding;
     private int gameRank;
     private int earnedScore;
     private int postScore;

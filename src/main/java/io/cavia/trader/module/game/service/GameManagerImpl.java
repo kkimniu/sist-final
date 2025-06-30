@@ -22,6 +22,7 @@ import java.time.ZoneId;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -31,10 +32,11 @@ public class GameManagerImpl implements GameManager {
     private final GameAdministrationService gameAdministrationService;
     private final GameMapper gameMapper;
 
-    private final int GAME_LIFE_CYCLE = 30;
+    private final int GAME_LIFE_CYCLE = 2;
     public Deque<GameDto> gameDtos = new ArrayDeque<>();
 
-    @Scheduled(cron = "0 */10 * * * *")
+    //@Scheduled(cron = "0 */10 * * * *")
+    @Scheduled(cron = "*/10 * * * * *")
     @Transactional
     @Override
     public void managementGameSessionsLifeCycle() {
@@ -47,7 +49,7 @@ public class GameManagerImpl implements GameManager {
             // 세션의 생명 주기가 끝났으면 선입 세션 삭제
             if (minutesBetween >= GAME_LIFE_CYCLE) {
                 // TODO 게임 세션 삭제 전 DB 저장 필요(game 객체는 세션 만들어 질때 저장 했음)
-                gameDTO.getGameParticipations().forEach(gameParticipation -> {
+                gameDTO.getGameParticipations().forEach((memberId, gameParticipation) -> {
                     gameParticipation.setEnteredAt(LocalDateTime.now());
                     gameMapper.saveGameParticipation(gameParticipation);
                 });
@@ -102,11 +104,12 @@ public class GameManagerImpl implements GameManager {
         if (!gameDtos.isEmpty()) {
             GameDto gameDTO = gameDtos.peekLast();
 
-            List<GameParticipation> gameParticipations = gameDTO.getGameParticipations();
+            Map<Long, GameParticipation> gameParticipations = gameDTO.getGameParticipations();
             if (gameParticipations != null) {
-                gameParticipations.add(GameParticipation.builder()
+                gameParticipations.put(member.getId(), GameParticipation.builder()
                         .gameId(gameDTO.getId())
                         .memberId(member.getId())
+                        .stocksHolding(0)
                         .gameRank(member.getTotalScore())
                         .postCash(member.getCash())
                         .earnedCash(member.getCash())
@@ -135,6 +138,17 @@ public class GameManagerImpl implements GameManager {
     }
 
     @Override
+    public GameDto findGameSessionByUserId(Long memberId) {
+        for (GameDto gameDTO : gameDtos) {
+            if (gameDTO.getGameParticipations().containsKey(memberId)){
+                return gameDTO;
+            }
+        }
+        throw new RuntimeException("세션 조회 중 예외 발생: 세션에서 해당 유저를 찾을 수 없습니다.");
+    }
+
+
+    @Override
     public void replaceChartSessionByUserId(long targetId, WebSocketSession newSession) {
         try {
             for (GameDto gameDTO : gameDtos) {
@@ -161,30 +175,12 @@ public class GameManagerImpl implements GameManager {
 
                     gameDTO.getUserIdsInChartSessions()
                             .remove(session.getId());
-
-                    // 여기에서 계속 널포인트 발생하는데 이유는 모르겠음
-                    gameDTO.getChartSessions()
-                            .replace(targetId, null);
-
                     return;
                 }
             }
         } catch (Exception e) {
             throw new RuntimeException("세션 삭제 중 예외 발생: 세션을 찾을 수 없습니다.", e);
         }
-    }
-
-
-    @Override
-    public GameDto findGameSessionByUserId(Long memberId) {
-        for (GameDto gameDTO : gameDtos) {
-            for (GameParticipation gameParticipation : gameDTO.getGameParticipations()) {
-                if (gameParticipation.getMemberId() == memberId) {
-                    return gameDTO;
-                }
-            }
-        }
-        throw new RuntimeException("세션 조회 중 예외 발생: 세션에서 해당 유저를 찾을 수 없습니다.");
     }
 
     @Override
