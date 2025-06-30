@@ -19,7 +19,7 @@ public class AuthViewController {
 
     @GetMapping("/forgot-password")
     public String showPasswordForm() {
-        return "member/reset-password";
+        return "member/password-reset";
     }
 
 }
