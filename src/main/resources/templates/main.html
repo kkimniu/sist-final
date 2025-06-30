@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
+<div th:replace="~{fragments/header :: header}"></div>
+
 <div id="message"></div>
 <div id="ranking">
     <button onclick="loadRanking('asset')">총 자산순</button>
@@ -67,4 +69,5 @@
         }
     }
 </script>
+<script src="/js/header.js"></script>
 </html>
