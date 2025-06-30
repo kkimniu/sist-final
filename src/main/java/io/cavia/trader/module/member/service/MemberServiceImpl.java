@@ -1,6 +1,7 @@
 package io.cavia.trader.module.member.service;
 
 import io.cavia.trader.module.member.dto.GameParticipationDto;
+import io.cavia.trader.module.member.dto.PasswordChangeRequestDto;
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.repository.GameParticipationRepository;
 import io.cavia.trader.module.member.repository.MemberMapper;
@@ -59,23 +60,29 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public boolean validatePassword(Long id, String password) {
+    public void validatePassword(Long id, String password) {
         Member member = memberRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
         );
-        return passwordEncoder.matches(password, member.getPassword());
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
     }
 
     @Override
-    public void changePassword(Long id, String newPassword) {
-        if (memberRepository.updatePassword(id, newPassword, LocalDateTime.now()) == 0) {
+    public void changePassword(Long id, PasswordChangeRequestDto requestDto) {
+        validatePassword(id, requestDto.getCurrentPassword());
+        String newEncodedPassword = passwordEncoder.encode(requestDto.getNewPassword());
+        if (memberRepository.updatePassword(id, newEncodedPassword, LocalDateTime.now()) == 0) {
             throw new IllegalStateException("비밀번호 수정 작업이 실패했습니다.");
         }
     }
 
     @Override
-    public int resetCash(Long id) {
-        return memberRepository.updateCash(id, memberCashReset);
+    public void resetCash(Long id) {
+        if (memberRepository.updateCash(id, memberCashReset) == 0) {
+            throw new IllegalStateException("자산 초기화가 실패했습니다.");
+        }
     }
 
     @Override
