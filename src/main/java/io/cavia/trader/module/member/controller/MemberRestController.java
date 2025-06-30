@@ -29,6 +29,13 @@ public class MemberRestController {
 
     @GetMapping("/me")
     public ResponseEntity<Member> getMembersByEmail(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        try {
+            ResponseEntity.status(200).body(memberService.getMemberById(userDetails.getMember().getId()));
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(200).body(memberService.getMemberById(userDetails.getMember().getId()));
+        }
         return ResponseEntity.status(200).body(memberService.getMemberById(userDetails.getMember().getId()));
     }
 
@@ -75,12 +82,12 @@ public class MemberRestController {
     }
 
     @GetMapping("/rank")
-    public ResponseEntity<List<UserRankingDto>> getRanking(@RequestParam String type){
-        if("cash".equals(type)){
-            return ResponseEntity.status(200).body(memberService.findAllOrderByCash(0,20));
-        }else if("totalScore".equals(type)){
-            return ResponseEntity.status(200).body(memberService.findAllOrderByTotalScore(0,20));
-        }else{
+    public ResponseEntity<List<UserRankingDto>> getRanking(@RequestParam String type) {
+        if ("cash".equals(type)) {
+            return ResponseEntity.status(200).body(memberService.findAllOrderByCash(0, 20));
+        } else if ("totalScore".equals(type)) {
+            return ResponseEntity.status(200).body(memberService.findAllOrderByTotalScore(0, 20));
+        } else {
             return ResponseEntity.badRequest().build();
         }
     }

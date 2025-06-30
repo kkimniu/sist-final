@@ -38,9 +38,4 @@ public class MemberViewController {
         return "member/mypage/withdraw";
     }
 
-    @GetMapping("/mainpage")
-    public String mainpage() {
-        return "member/mypage/mainpage";
-    }
-
 }
