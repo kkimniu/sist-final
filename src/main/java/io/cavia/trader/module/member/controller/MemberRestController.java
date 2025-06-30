@@ -1,5 +1,6 @@
 package io.cavia.trader.module.member.controller;
 
+import io.cavia.trader.module.member.dto.UserRankingDto;
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.dto.GameParticipationDto;
 import io.cavia.trader.module.member.dto.NicknameUpdateRequestDto;
@@ -71,4 +72,14 @@ public class MemberRestController {
         return ResponseEntity.status(200).body("회원 삭제완료");
     }
 
+    @GetMapping("/rank")
+    public ResponseEntity<List<UserRankingDto>> getRanking(@RequestParam String type){
+        if("cash".equals(type)){
+            return ResponseEntity.status(200).body(memberService.findAllOrderByCash());
+        }else if("totalScore".equals(type)){
+            return ResponseEntity.status(200).body(memberService.findAllOrderByTotalScore());
+        }else{
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
