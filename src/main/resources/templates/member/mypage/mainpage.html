@@ -49,14 +49,15 @@
             list.innerHTML = '';
 
             if(rankings.length === 0 ) {
-                list.innerHTML = '<li>참여한 게임이 없습니다.</li>'
-                return
+                list.innerHTML = '<div>참여한 게임이 없습니다.</div>';
+                message.innerText = '랭킹 데이터가 없습니다.';
+                return;
             }
 
-        data.forEach((user, i) => {
+        rankings.forEach((user, i) => {
             const div = document.createElement('div');
             div.innerText = `${i + 1}위 - ${user.username} | 자산: ${user.asset} | 점수: ${user.score}`;
-            container.appendChild(div);
+            list.appendChild(div);
         });
 
         message.innerText = type === 'asset' ? '총 자산순 랭킹입니다.' : '점수순 랭킹입니다.';
