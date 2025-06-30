@@ -36,9 +36,15 @@ public class ChartWebSocketHandler implements WebSocketHandler {
             // 유저가 연결되었을 때, 가장 젊은 게임 세션에 연결 (유저가 이미 세션에 속해 있다면 DTO의 세션만 교체)
             GameDto gameDto = gameManager.addUserToGameAndGetYoungestSession(
                     jwtUtil.getUserInfoFromToken(token), session);
-            // 게임 입장 처리 완료, 자신이 포함된 게임 참가 인원 수 클라이언트에 전달
-            if (session.isOpen()) session.sendMessage(new TextMessage("numberOfParticipation||"
-                            +gameDto.getGameParticipations().size()));
+            // 게임 입장 처리 완료, 자신이 포함된 게임 참가 인원 수 게임에 참여중인 모든 세션에 전달
+            gameDto.getChartSessions().values().forEach(s -> {
+            try {
+                if (s.isOpen()) s.sendMessage(new TextMessage("numberOfParticipation||"
+                        + gameDto.getGameParticipations().size()));
+            }catch (Exception e){
+                throw new RuntimeException("유저 참여 변동 사항 멀티캐스트 중 예외 발생!", e);
+            }
+        });
 
 
             // 해당 게임 세션에 할당된 집계 데이터를 순차적으로 웹소켓으로 전송
