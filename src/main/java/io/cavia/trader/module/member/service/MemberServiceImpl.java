@@ -1,6 +1,7 @@
 package io.cavia.trader.module.member.service;
 
 import io.cavia.trader.module.member.dto.GameParticipationDto;
+import io.cavia.trader.module.member.dto.UserRankingDto;
 import io.cavia.trader.module.member.dto.PasswordChangeRequestDto;
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.repository.GameParticipationRepository;
@@ -120,6 +121,24 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void createMember(Member member) {
         memberRepository.save(member);
+    }
+
+    @Override
+    public List<UserRankingDto> findAllOrderByCash(int limit , int offset) {
+        List<UserRankingDto> list = memberRepository.findAllOrderByCash(limit,offset);
+        if (list == null || list.size() == 0) {
+            throw new NotFoundException("게임 참여 이력이 없습니다");
+        }
+        return memberRepository.findAllOrderByCash(limit,offset);
+    }
+
+    @Override
+    public List<UserRankingDto> findAllOrderByTotalScore(int limit , int offset) {
+        List<UserRankingDto> list = memberRepository.findAllOrderByTotalScore(limit,offset);
+        if (list == null ||list.size() == 0) {
+            throw new NotFoundException("게임 참여 이력이 없습니다");
+        }
+        return memberRepository.findAllOrderByTotalScore(limit,offset);
     }
 
 }

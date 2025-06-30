@@ -2,10 +2,7 @@ package io.cavia.trader.module.member.controller;
 
 import io.cavia.trader.module.auth.security.UserDetailsImpl;
 import io.cavia.trader.module.auth.service.AuthService;
-import io.cavia.trader.module.member.dto.GameParticipationDto;
-import io.cavia.trader.module.member.dto.NicknameUpdateRequestDto;
-import io.cavia.trader.module.member.dto.PasswordChangeRequestDto;
-import io.cavia.trader.module.member.dto.PasswordVerificationRequestDto;
+import io.cavia.trader.module.member.dto.*;
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.service.MemberService;
 import io.cavia.trader.module.notice.exception.NoticeOperationFailedException;
@@ -77,4 +74,14 @@ public class MemberRestController {
         return ResponseEntity.status(200).body("회원 삭제완료");
     }
 
+    @GetMapping("/rank")
+    public ResponseEntity<List<UserRankingDto>> getRanking(@RequestParam String type){
+        if("cash".equals(type)){
+            return ResponseEntity.status(200).body(memberService.findAllOrderByCash(0,20));
+        }else if("totalScore".equals(type)){
+            return ResponseEntity.status(200).body(memberService.findAllOrderByTotalScore(0,20));
+        }else{
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
