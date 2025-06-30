@@ -8,6 +8,7 @@ import io.cavia.trader.module.member.dto.PasswordChangeRequestDto;
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.service.MemberService;
 import io.cavia.trader.module.notice.exception.NoticeOperationFailedException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -47,7 +48,7 @@ public class MemberRestController {
 
     @PatchMapping("/password")
     public ResponseEntity<String> changePassword(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                 @RequestBody PasswordChangeRequestDto requestDto) {
+                                                 @Valid @RequestBody PasswordChangeRequestDto requestDto) {
         memberService.changePassword(userDetails.getMember().getId(), requestDto);
         return ResponseEntity.ok("비밀번호 변경 완료");
     }
