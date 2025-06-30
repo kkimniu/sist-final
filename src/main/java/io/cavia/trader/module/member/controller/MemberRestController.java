@@ -5,7 +5,6 @@ import io.cavia.trader.module.auth.service.AuthService;
 import io.cavia.trader.module.member.dto.*;
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.service.MemberService;
-import io.cavia.trader.module.notice.exception.NoticeOperationFailedException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,14 +28,8 @@ public class MemberRestController {
 
     @GetMapping("/me")
     public ResponseEntity<Member> getMembersByEmail(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        try {
-            ResponseEntity.status(200).body(memberService.getMemberById(userDetails.getMember().getId()));
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-            return ResponseEntity.status(200).body(memberService.getMemberById(userDetails.getMember().getId()));
-        }
-        return ResponseEntity.status(200).body(memberService.getMemberById(userDetails.getMember().getId()));
+        Member member = memberService.getMemberById(userDetails.getMember().getId());
+        return ResponseEntity.status(200).body(member);
     }
 
     @GetMapping("/check-nickname")
@@ -73,11 +66,9 @@ public class MemberRestController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody String password) {
-
-        if (memberService.deleteMember(userDetails.getMember().getId(), password) <= 0) {
-            throw new NoticeOperationFailedException("회원 삭제를 실패했습니다");
-        }
+    public ResponseEntity<String> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                               @RequestBody PasswordVerificationRequestDto requestDto) {
+        memberService.withdrawMember(userDetails.getMember().getId(), requestDto.getCurrentPassword());
         return ResponseEntity.status(200).body("회원 삭제완료");
     }
 

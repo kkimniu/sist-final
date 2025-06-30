@@ -87,16 +87,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public int deleteMember(Long id, String password) {
-
-        Member member = memberRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
-        );
-
-        if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+    public void withdrawMember(Long id, String password) {
+        validatePassword(id, password);
+        if (memberMapper.delete(id) == 0) {
+            throw new IllegalStateException("회원 탈퇴 작업에 실패했습니다.");
         }
-        return memberMapper.delete(id);
     }
 
     @Override

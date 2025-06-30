@@ -23,7 +23,7 @@ public interface MemberService {
 
     void resetCash(Long id);
 
-    int deleteMember(Long id, String password);
+    void withdrawMember(Long id, String password);
 
     boolean isMemberByEmail(String email);
 
