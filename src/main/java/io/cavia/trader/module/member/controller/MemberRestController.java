@@ -1,7 +1,6 @@
 package io.cavia.trader.module.member.controller;
 
 import io.cavia.trader.module.auth.security.UserDetailsImpl;
-import io.cavia.trader.module.auth.service.AuthService;
 import io.cavia.trader.module.member.dto.*;
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.service.MemberService;
@@ -19,7 +18,6 @@ import java.util.List;
 public class MemberRestController {
 
     private final MemberService memberService;
-    private final AuthService authService;
 
     @GetMapping("/my-games")
     public ResponseEntity<List<GameParticipationDto>> getGameParticipationsByMemberId(@AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -32,11 +30,12 @@ public class MemberRestController {
         return ResponseEntity.status(200).body(member);
     }
 
-    @GetMapping("/check-nickname")
-    public ResponseEntity<String> getcheckNickname(@RequestParam String nickname) {
-        authService.validateDuplicateNickname(nickname);
-        return ResponseEntity.status(200).body("중복없음");
-    }
+//    TODO: 삭제예정 - 변경에서 중복체크 하고 있기 때문에 필요없는 엔드포인트, 김범희
+//    @GetMapping("/check-nickname")
+//    public ResponseEntity<String> getcheckNickname(@RequestParam String nickname) {
+//        authService.validateDuplicateNickname(nickname);
+//        return ResponseEntity.status(200).body("중복없음");
+//    }
 
     @PostMapping("/password-verification")
     public ResponseEntity<String> getcheckPassword(@AuthenticationPrincipal UserDetailsImpl userDetails,

@@ -22,18 +22,6 @@
                 return
             }
             try{
-                const checkRes = await fetch(`/api/mypage/check-nickname?nickname=${encodeURIComponent(nickname)}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + token
-                    }
-                });
-                //중복 검사
-                if(!checkRes.ok){
-                    message.innerText = '이미 사용중인 닉네임입니다';
-                    message.style.color = 'red';
-                    return;
-                }
                 //닉네임 변경
                 const res = await fetch('/api/mypage/nickname', {
                     method: 'PATCH',
