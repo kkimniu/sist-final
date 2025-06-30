@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/game/api")
@@ -26,7 +27,11 @@ public class GameRestController {
 
     @PostMapping("/verify")
     public ResponseEntity<?> validateAccess(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return new ResponseEntity<Member>(userDetails.getMember(), HttpStatus.OK);
+        try {
+            return new ResponseEntity<Member>(userDetails.getMember(), HttpStatus.OK);
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
     }
 
     @GetMapping("/stocks-holding")
@@ -39,7 +44,7 @@ public class GameRestController {
                             .getGameParticipations().get(memberId).getStocksHolding()), HttpStatus.OK);
 
         }catch (Exception e){
-            throw new RuntimeException("보유 주식 수 조회 실패", e);
+            throw new ResponseStatusException(HttpStatus.ㅎ);
         }
     }
 }
