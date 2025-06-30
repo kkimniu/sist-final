@@ -1,12 +1,15 @@
 package io.cavia.trader.module.game.controller;
 
+import io.cavia.trader.module.auth.security.UserDetailsImpl;
 import io.cavia.trader.module.game.dto.response.ResponseDto;
-import io.cavia.trader.module.game.entity.Member;
 import io.cavia.trader.module.game.service.GameManager;
 import io.cavia.trader.module.jwt.JwtUtil;
+import io.cavia.trader.module.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,37 +25,21 @@ public class GameRestController {
     private final GameManager gameManager;
 
     @PostMapping("/verify")
-    public ResponseEntity<?> validateAccess(@RequestHeader("Authorization") String authorizationHeader) {
-        String token = jwtUtil.substringToken(authorizationHeader);
-        if(jwtUtil.validateToken(token)){
-           return new ResponseEntity<Member>(
-                   gameManager.getUserInfo(
-                           jwtUtil.getUserInfoFromToken(token)
-                   ),
-                   HttpStatus.OK);
-        }else{
-            return new ResponseEntity<ResponseDto>(
-                    new ResponseDto("사용자 인증에 실패하였습니다."),
-                    HttpStatus.UNAUTHORIZED);
-        }
+    public ResponseEntity<?> validateAccess(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return new ResponseEntity<Member>(userDetails.getMember(), HttpStatus.OK);
     }
-    @GetMapping("/stocksHolding")
-    public ResponseEntity<?> getStocksHolding(@RequestHeader("Authorization") String authorizationHeader) {
-        String token = jwtUtil.substringToken(authorizationHeader);
-        if(jwtUtil.validateToken(token)){
-            long memberId = gameManager.getUserInfo(
-                            jwtUtil.getUserInfoFromToken(
-                                    token)).getId();
 
-        return new ResponseEntity<ResponseDto>(
-                new ResponseDto(""+gameManager.findGameSessionByUserId(memberId)
-                        .getGameParticipations()
-                        .get(memberId)
-                        .getStocksHolding()), HttpStatus.OK);
-        }else{
+    @GetMapping("/stocks-holding")
+    public ResponseEntity<?> getStocksHolding(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        try {
+            long memberId = userDetails.getMember().getId();
+
             return new ResponseEntity<ResponseDto>(
-                    new ResponseDto("사용자 인증에 실패하였습니다."),
-                    HttpStatus.UNAUTHORIZED);
+                    new ResponseDto("" + gameManager.findGameSessionByUserId(memberId)
+                            .getGameParticipations().get(memberId).getStocksHolding()), HttpStatus.OK);
+
+        }catch (Exception e){
+            throw new RuntimeException("보유 주식 수 조회 실패", e);
         }
     }
 }

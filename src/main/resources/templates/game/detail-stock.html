@@ -212,7 +212,7 @@
 </script>
 <script>
     async function getStocksHolding() {
-        const stocksHolding = await fetch("http://localhost:8081/game/api/stocksHolding", {
+        const stocksHolding = await fetch("http://localhost:8081/game/api/stocks-holding", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -443,7 +443,7 @@
 
         getStocksHolding()
             .then(data => {
-                document.getElementById("holdingStocks").innerText = data.message;
+                document.getElementById("stocksHolding").innerText = data.message;
             })
 
 
