@@ -72,7 +72,8 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void changePassword(Long id, PasswordChangeRequestDto requestDto) {
         validatePassword(id, requestDto.getCurrentPassword());
-        if (memberRepository.updatePassword(id, requestDto.getNewPassword(), LocalDateTime.now()) == 0) {
+        String newEncodedPassword = passwordEncoder.encode(requestDto.getNewPassword());
+        if (memberRepository.updatePassword(id, newEncodedPassword, LocalDateTime.now()) == 0) {
             throw new IllegalStateException("비밀번호 수정 작업이 실패했습니다.");
         }
     }

@@ -5,6 +5,7 @@ import io.cavia.trader.module.auth.service.AuthService;
 import io.cavia.trader.module.member.dto.GameParticipationDto;
 import io.cavia.trader.module.member.dto.NicknameUpdateRequestDto;
 import io.cavia.trader.module.member.dto.PasswordChangeRequestDto;
+import io.cavia.trader.module.member.dto.PasswordVerificationRequestDto;
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.service.MemberService;
 import io.cavia.trader.module.notice.exception.NoticeOperationFailedException;
@@ -41,8 +42,9 @@ public class MemberRestController {
     }
 
     @PostMapping("/password-verification")
-    public ResponseEntity<String> getcheckPassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody String password) {
-        memberService.validatePassword(userDetails.getMember().getId(), password);
+    public ResponseEntity<String> getcheckPassword(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                   @Valid @RequestBody PasswordVerificationRequestDto requestDto) {
+        memberService.validatePassword(userDetails.getMember().getId(), requestDto.getCurrentPassword());
         return ResponseEntity.status(200).body("비밀번호 일치함");
     }
 

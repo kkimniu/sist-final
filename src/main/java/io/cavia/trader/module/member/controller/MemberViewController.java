@@ -23,9 +23,9 @@ public class MemberViewController {
         return "member/mypage/nickname-edit";
     }
 
-    @GetMapping("/password-verification")
+    @GetMapping("/password-change")
     public String passwordVerification() {
-        return "member/mypage/password-verification";
+        return "member/mypage/password-change";
     }
 
     @GetMapping("/withdraw-verification")
