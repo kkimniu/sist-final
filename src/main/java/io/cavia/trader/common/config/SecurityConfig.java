@@ -2,7 +2,7 @@ package io.cavia.trader.common.config;
 
 import io.cavia.trader.module.jwt.JwtAuthenticationFilter;
 import io.cavia.trader.module.jwt.JwtUtil;
-import io.cavia.trader.module.auth.repository.MemberRepository;
+import io.cavia.trader.module.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
