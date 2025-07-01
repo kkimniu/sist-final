@@ -19,7 +19,7 @@
             </tr>
             <tr th:each="dto:${lists}">
                 <td>
-                    <a th:text="${dto.title}" th:href="@{/notices/{id}(id=${dto.id}, cp=${paging.cp})}"></a>
+                    <a th:text="${dto.title}" th:href="@{/notices/noticeDetail(id=${dto.id}, cp=${paging.cp})}"></a>
                 </td>
             </tr>
             </tbody>
@@ -27,23 +27,23 @@
     </div>
     <div>
         <a th:if="${paging.hasPrev}"
-           th:href="@{/notices(cp=${paging.firstPage})}">
+           th:href="@{/notices/noticeList(cp=${paging.firstPage})}">
             &laquo;&laquo;
         </a>
 
         <a th:if="${paging.hasPrev}"
-           th:href="@{/notices(cp=${paging.prevPage})}">
+           th:href="@{/notices/noticeList(cp=${paging.prevPage})}">
             &laquo;
         </a>
         <a th:each="list:${paging.pageList}"
-           th:href="@{/notices(cp=${list})}"
+           th:href="@{/notices/noticeList(cp=${list})}"
            th:text="${list}">1
         </a>
         <a th:if="${paging.hasNext}"
-           th:href="@{/notices(cp=${paging.nextPage})}">
+           th:href="@{/notices/noticeList(cp=${paging.nextPage})}">
             &raquo;
         </a>
-        <a th:href="@{/notices(cp=${paging.totalPage})}">
+        <a th:href="@{/notices/noticeList(cp=${paging.totalPage})}">
             &raquo;&raquo;
         </a>
     </div>
