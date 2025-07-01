@@ -62,27 +62,4 @@ public class GameAdministrationServiceImpl implements GameAdministrationService 
                 .getOutput();
     }
 
-    public int getMinutesBetween(GameDto gameDTO) {
-
-        // 현재 시간과 게임 시작 시간의 차이
-        int minutesBetween = (int) (
-                LocalDateTime.now()
-                        .atZone(ZoneId.systemDefault())
-                        .toInstant()
-                        .toEpochMilli()
-                        - gameDTO.getStartedAt()
-                        .atZone(ZoneId.systemDefault())
-                        .toInstant()
-                        .toEpochMilli());
-
-        // 시간이 0이면 바로 리턴
-        if (minutesBetween == 0) return minutesBetween;
-
-        // 밀리세컨드 단위 오차 제거
-        minutesBetween = minutesBetween % (1000 * 60) == 0 ?
-                minutesBetween / (1000 * 60)
-                : minutesBetween / (1000 * 60) + 1;
-
-        return minutesBetween;
-    }
 }
