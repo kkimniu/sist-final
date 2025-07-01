@@ -1,8 +1,8 @@
 package io.cavia.trader.module.member.service;
 
 import io.cavia.trader.module.member.dto.GameParticipationDto;
-import io.cavia.trader.module.member.dto.UserRankingDto;
 import io.cavia.trader.module.member.dto.PasswordChangeRequestDto;
+import io.cavia.trader.module.member.dto.UserRankingDto;
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.repository.GameParticipationRepository;
 import io.cavia.trader.module.member.repository.MemberMapper;
@@ -119,21 +119,21 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public List<UserRankingDto> findAllOrderByCash(int limit , int offset) {
-        List<UserRankingDto> list = memberRepository.findAllOrderByCash(limit,offset);
-        if (list == null || list.size() == 0) {
+    public List<UserRankingDto> findAllOrderByCash(Long limit, Long offset) {
+        List<UserRankingDto> list = memberRepository.findAllByOrderByCashDesc(limit, offset);
+        if (list == null || list.isEmpty()) {
             throw new NotFoundException("게임 참여 이력이 없습니다");
         }
-        return memberRepository.findAllOrderByCash(limit,offset);
+        return list;
     }
 
     @Override
-    public List<UserRankingDto> findAllOrderByTotalScore(int limit , int offset) {
-        List<UserRankingDto> list = memberRepository.findAllOrderByTotalScore(limit,offset);
-        if (list == null ||list.size() == 0) {
+    public List<UserRankingDto> findAllOrderByTotalScore(Long limit, Long offset) {
+        List<UserRankingDto> list = memberRepository.findAllByOrderByTotalScoreDesc(limit, offset);
+        if (list == null || list.isEmpty()) {
             throw new NotFoundException("게임 참여 이력이 없습니다");
         }
-        return memberRepository.findAllOrderByTotalScore(limit,offset);
+        return list;
     }
 
 }

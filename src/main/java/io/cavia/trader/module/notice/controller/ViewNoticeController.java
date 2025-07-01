@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -14,13 +15,13 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("notices")
+@RequestMapping("/notices")
 @RequiredArgsConstructor
 public class ViewNoticeController {
 
     private final NoticeService noticeService;
 
-    @GetMapping("/noticeList")
+    @GetMapping("/")
     public String noticeList(@RequestParam(value = "cp", defaultValue = "1") int cp, Model model) {
         int listSize = 30;
         int pageSize = 5;
@@ -30,14 +31,14 @@ public class ViewNoticeController {
 
         model.addAttribute("lists", list);
         model.addAttribute("paging", paging);
-        return "notices/noticeList";
+        return "notices/main";
     }
 
-    @GetMapping("/noticeDetail")
-    public String noticeDetail(@RequestParam(value = "id") int id,@RequestParam(value = "cp" , defaultValue = "1") int cp, Model model) {
+    @GetMapping("/{id}}")
+    public String noticeDetail(@PathVariable int id, @RequestParam(value = "cp", defaultValue = "1") int cp, Model model) {
         NoticeDto dto = noticeService.findById(id);
         model.addAttribute("dto", dto);
-        model.addAttribute("cp" , cp);
-        return "notices/noticeDetail";
+        model.addAttribute("cp", cp);
+        return "notices/details";
     }
 }

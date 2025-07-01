@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class GameSessionController {
 
-    @RequestMapping("/detail-stock")
+    @RequestMapping("/")
     public String testDetailPage() {
-        return "game/detail-stock";
+        return "game/main";
     }
 }

@@ -23,7 +23,7 @@
             }
             try{
                 //닉네임 변경
-                const res = await fetch('/api/mypage/nickname', {
+                const res = await fetch('/api/members/me/nickname', {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
@@ -37,7 +37,7 @@
                     throw new Error('닉네임 변경에 실패했습니다.');
                 }
                 alert('닉네임 변경에 성공했습니다.');
-                location.href = '/member/mypage/mypage-main';
+                location.href = '/members/me';
             }catch (error){
                 message.innerText = error.message;
                 message.style.color = 'red';

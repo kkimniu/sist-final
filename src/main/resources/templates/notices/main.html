@@ -2,24 +2,50 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layouts"
       layout:decorate="layouts/layout">
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
+<div th:replace="~{fragments/header :: header}"></div>
 <div>
-    <div>
-        <h2 th:text="${dto.title}">제목</h2>
-    </div>
-    <div>
-        <p th:text="${dto.content}">본문</p>
-    </div>
-    <div>
-        <a th:href="@{/notices/noticeList(cp=${cp})}">
-            <button type="button">목록</button>
-        </a>
-    </div>
+    <h2>공 지 사 항</h2>
+    <table>
+        <tbody>
+        <tr th:if="${lists == null or lists.isEmpty()}">
+            <td colspan="30" align="center">
+                등록된 사원이 없습니다.
+            </td>
+        </tr>
+        <tr th:each="dto:${lists}">
+            <td>
+                <a th:text="${dto.title}" th:href="@{/notices/{id}(id=${dto.id}, cp=${paging.cp})}"></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div>
+    <a th:if="${paging.hasPrev}"
+       th:href="@{/notices(cp=${paging.firstPage})}">
+        &laquo;&laquo;
+    </a>
+
+    <a th:if="${paging.hasPrev}"
+       th:href="@{/notices(cp=${paging.prevPage})}">
+        &laquo;
+    </a>
+    <a th:each="list:${paging.pageList}"
+       th:href="@{/notices(cp=${list})}"
+       th:text="${list}">1
+    </a>
+    <a th:if="${paging.hasNext}"
+       th:href="@{/notices(cp=${paging.nextPage})}">
+        &raquo;
+    </a>
+    <a th:href="@{/notices(cp=${paging.totalPage})}">
+        &raquo;&raquo;
+    </a>
 </div>
 </body>
 </html>

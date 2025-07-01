@@ -16,12 +16,12 @@
         <span id="message" style="display:block; margin-top:10px;"></span>
         <button type="submit">탈퇴하기</button>
     </form>
-    <button onclick="location.href='mypage-main'">돌아가기</button>
+    <button onclick="location.href='/members/me'">돌아가기</button>
 </div>
 
 <div id="step2-goodbye" style="display: none;">
     <h2>이용해주셔서 감사합니다. 탈퇴가 완료되었습니다</h2>
-    <div><input type="button" onclick="window.location.href='/login'" value="홈으로 이동하기"></div>
+    <div><input type="button" onclick="window.location.href='/'" value="홈으로 이동하기"></div>
 </div>
 </body>
 <script>
@@ -40,7 +40,7 @@
             return;
         }
         //비밀번호 검증
-        fetch(`/api/mypage/password-verification`, {
+        fetch(`/api/members/me/password/verify`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -56,7 +56,7 @@
                 return;
             }
             //리턴을 생략하고 fetch를하면 fetch는 실행됨 대신 .then()이 기다리지 않고 바로 실행
-            return fetch('/api/mypage/delete', {
+            return fetch('/api/members/me', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

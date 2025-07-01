@@ -17,7 +17,7 @@
         }
 
         // 토큰이 존재하면, 서버에 '내 정보 조회' API를 호출하여 토큰의 유효성을 검증합니다.
-        fetch('/api/mypage/me', { // ❗️ 내 정보 조회 API 경로
+        fetch('/api/auth/login-checker', { // ❗️ 내 정보 조회 API 경로
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + token

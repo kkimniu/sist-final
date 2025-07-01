@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -16,14 +16,14 @@
         <!--닉네임 등급 자산조회 등등-->
         <strong>닉네임</strong> <span id="nickname"></span>
         <strong>등급</strong> <span id="total-score"></span><br>
-        <input type="button" value="닉네임변경" onclick="location.href='nickname-edit'">
-        <input type="button" value="비밀번호변경" onclick="location.href='password-change'"><br>
+        <input type="button" value="닉네임변경" onclick="location.href='nickname'">
+        <input type="button" value="비밀번호변경" onclick="location.href='password'"><br>
         <h3>자산조회</h3> <span id="cash"></span><br>
         <input type="button" value="자산초기화" onclick="cashReset()"><br>
     </div>
 </div>
 <div>
-    <input type="button" value="회원탈퇴" onclick="location.href = 'withdraw-verification'"><br>
+    <input type="button" value="회원탈퇴" onclick="location.href = 'withdraw'"><br>
 </div>
 <script>
     window.onload = async function () {
@@ -33,7 +33,7 @@
             return;
         }
         try {
-            const res1 = await fetch(`/api/mypage/me`,{
+            const res1 = await fetch(`/api/members/me`,{
                 headers: {
                     'Authorization': 'Bearer ' + token
                 }
@@ -44,7 +44,7 @@
             document.getElementById('cash').innerText = member.cash;
             document.getElementById('total-score').innerText = member.totalScore;
 
-            const res2 = await fetch(`/api/mypage/my-games`, {
+            const res2 = await fetch(`/api/members/me/game-participations`, {
                 headers: {
                     'Authorization': 'Bearer ' + token
                 }
@@ -80,8 +80,8 @@
             return;
         }
         try {
-            const res = await fetch(`/api/mypage/cash-reset`,{
-                method: 'PATCH',
+            const res = await fetch(`/api/members/me/cash/reset`,{
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + token
@@ -91,7 +91,7 @@
                 throw new Error('자산 초기화 실패');
             }
             alert('자산 초기화 성공');
-            location.href = '/member/mypage/mypage-main';
+            location.href = '/members/me';
         }catch (error){
             alert(error.message);
         }

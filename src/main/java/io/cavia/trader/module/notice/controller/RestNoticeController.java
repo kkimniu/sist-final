@@ -163,7 +163,7 @@ public class RestNoticeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<NoticeDto> getNotices(@PathVariable int id) {
+    public ResponseEntity<NoticeDto> getNotice(@PathVariable int id) {
         return ResponseEntity.status(200).body(noticeService.findById(id));
     }
 }

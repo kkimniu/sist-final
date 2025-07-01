@@ -76,11 +76,11 @@ public interface MemberRepository {
     /**
      * 전체회원의 이름과 캐쉬를 내림차순
      */
-    List<UserRankingDto> findAllOrderByCash(int limit , int offset);
+    List<UserRankingDto> findAllByOrderByCashDesc(Long limit , Long offset);
 
     /**
      * 전체회원의 이름과 총점수를 내림차순
      */
-    List<UserRankingDto> findAllOrderByTotalScore(int limit , int offset);
+    List<UserRankingDto> findAllByOrderByTotalScoreDesc(Long limit , Long offset);
 
 }
