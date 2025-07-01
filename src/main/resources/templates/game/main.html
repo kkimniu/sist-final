@@ -249,7 +249,7 @@
 </script>
 <script>
     async function certificationToken() {
-        const response = await fetch("/game/api/verify", {
+        const response = await fetch("/api/game/verify", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -266,7 +266,7 @@
 </script>
 <script>
     async function getStocksHolding() {
-        const stocksHolding = await fetch("/game/api/stocks-holding", {
+        const stocksHolding = await fetch("/api/game/stocks-holding", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

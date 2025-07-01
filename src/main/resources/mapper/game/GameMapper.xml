@@ -42,7 +42,7 @@
         )
     </insert>
 
-    <select id="findMemberById" resultType="io.cavia.trader.module.game.entity.Member">
+    <select id="findMemberById" resultType="io.cavia.trader.module.member.entity.Member">
         SELECT
             id,
             email,

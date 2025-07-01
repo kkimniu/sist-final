@@ -4,8 +4,8 @@ import io.cavia.trader.module.client.dto.QuotesOutput;
 import io.cavia.trader.module.client.dto.TradesOutput;
 import io.cavia.trader.module.game.dto.GameDto;
 import io.cavia.trader.module.game.entity.GameParticipation;
-import io.cavia.trader.module.game.entity.Member;
-import io.cavia.trader.module.game.repository.GameMapper;
+import io.cavia.trader.module.game.repository.GameRepositoryImpl;
+import io.cavia.trader.module.member.entity.Member;
 import io.jsonwebtoken.Claims;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ import java.util.Map;
 public class GameManagerImpl implements GameManager {
 
     private final GameAdministrationService gameAdministrationService;
-    private final GameMapper gameMapper;
+    private final GameRepositoryImpl gameRepositoryImpl;
 
     private final int GAME_LIFE_CYCLE = 1000 * 60 * 1;
     public Deque<GameDto> gameDtos = new ArrayDeque<>();
@@ -51,7 +51,7 @@ public class GameManagerImpl implements GameManager {
                 // TODO 게임 세션 삭제 전 DB 저장 필요(game 객체는 세션 만들어 질때 저장 했음)
                 gameDTO.getGameParticipations().forEach((memberId, gameParticipation) -> {
                     gameParticipation.setEnteredAt(LocalDateTime.now());
-                    gameMapper.saveGameParticipation(gameParticipation);
+                    gameRepositoryImpl.saveGameParticipation(gameParticipation);
                 });
 
 
@@ -80,14 +80,14 @@ public class GameManagerImpl implements GameManager {
         // 게임 세션 1개 생성
         GameDto gameDTO = gameAdministrationService.createGame();
         gameDtos.add(gameDTO);
-        gameMapper.saveGame(gameDTO.getStockId(),
+        gameRepositoryImpl.saveGame(gameDTO.getStockId(),
                 gameDTO.getStartedAt());
-        gameDTO.setId(gameMapper.findLastGameId());
+        gameDTO.setId(gameRepositoryImpl.findLastGameId());
         System.out.println("Game Session Created, Games size: " + gameDtos.size());
     }
 
     public Member getUserInfo(Claims userInfo) {
-        return gameMapper.findMemberById(
+        return gameRepositoryImpl.findMemberById(
                 Long.parseLong(userInfo.getSubject()
                 )
         );
@@ -100,7 +100,7 @@ public class GameManagerImpl implements GameManager {
          * 조회 시점의 가장 젊은 세션에 유저 정보를 주입하기 때문에 정합성을 위해
          * 유저 정보 주입과 주입 세션 반환을 한 메서드에서 처리하였습니다
          */
-        Member member = getUserInfo(tokenToClaims);
+        io.cavia.trader.module.member.entity.Member member = getUserInfo(tokenToClaims);
 
         // 이미 참여중인 유저는 웹소켓 세션만 갈아 끼우고 연결
         if (findChartSessionKeyByUserId(member.getId())) {
@@ -149,7 +149,7 @@ public class GameManagerImpl implements GameManager {
          * 조회 시점의 가장 젊은 세션에 유저 정보를 주입하기 때문에 정합성을 위해
          * 유저 정보 주입과 주입 세션 반환을 한 메서드에서 처리하였습니다
          */
-        Member member = getUserInfo(tokenToClaims);
+        io.cavia.trader.module.member.entity.Member member = getUserInfo(tokenToClaims);
 
         // 이미 참여중인 유저는 웹소켓 세션만 갈아 끼우고 연결
         if (findChatSessionKeyByUserId(member.getId())) {
