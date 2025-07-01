@@ -128,8 +128,12 @@ public class GameManagerImpl implements GameManager {
                         .build()
                 );
             }
-            gameDto.getChartSessions().put(member.getId(), webSocketSession);
-            gameDto.getUserIdsInChartSessions().put(webSocketSession.getId(), member.getId());
+            synchronized (gameDto.getChartSessions()) {
+                gameDto.getChartSessions().put(member.getId(), webSocketSession);
+            }
+            synchronized (gameDto.getUserIdsInChartSessions()) {
+                gameDto.getUserIdsInChartSessions().put(webSocketSession.getId(), member.getId());
+            }
 
             return gameDto;
 
@@ -146,7 +150,6 @@ public class GameManagerImpl implements GameManager {
          * 유저 정보 주입과 주입 세션 반환을 한 메서드에서 처리하였습니다
          */
         Member member = getUserInfo(tokenToClaims);
-
 
         // 이미 참여중인 유저는 웹소켓 세션만 갈아 끼우고 연결
         if (findChatSessionKeyByUserId(member.getId())) {
@@ -200,11 +203,13 @@ public class GameManagerImpl implements GameManager {
     public void replaceChartSessionByUserId(long targetId, WebSocketSession newSession) {
         try {
             for (GameDto gameDto : gameDtos) {
-                if (gameDto.getChartSessions().containsKey(targetId)) {
-                    gameDto.getChartSessions().get(targetId).close();
-                    gameDto.getChartSessions().replace(targetId, newSession);
-                    gameDto.getUserIdsInChartSessions().put(newSession.getId(), targetId);
-                    return;
+                synchronized (gameDto.getChartSessions()) {
+                    if (gameDto.getChartSessions().containsKey(targetId)) {
+                        gameDto.getChartSessions().get(targetId).close();
+                        gameDto.getChartSessions().replace(targetId, newSession);
+                        gameDto.getUserIdsInChartSessions().put(newSession.getId(), targetId);
+                        return;
+                    }
                 }
             }
         } catch (Exception e) {
