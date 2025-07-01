@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class GameParticipation {
     private long memberId;
+    private String memberNickname;
     private Long gameId;
     private BigDecimal returnRate;
     private int stocksHolding;

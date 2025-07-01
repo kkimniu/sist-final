@@ -32,11 +32,11 @@ public class GameManagerImpl implements GameManager {
     private final GameAdministrationService gameAdministrationService;
     private final GameMapper gameMapper;
 
-    private final int GAME_LIFE_CYCLE = 1000 * 60 * 30;
+    private final int GAME_LIFE_CYCLE = 1000 * 60 * 1;
     public Deque<GameDto> gameDtos = new ArrayDeque<>();
 
     //@Scheduled(cron = "0 */10 * * * *")
-    @Scheduled(cron = "0 */10 * * * *")
+    @Scheduled(cron = "*/10 * * * * *")
     @Transactional
     @Override
     public void managementGameSessionsLifeCycle() {
@@ -44,7 +44,7 @@ public class GameManagerImpl implements GameManager {
         if (!gameDtos.isEmpty()) {
             // 현재시간 - 세션시작 시간을 분 단위로 치환한 값
             GameDto gameDTO = gameDtos.peekFirst();
-            long timesBetween = Duration.between(gameDTO.getStartedAt(), LocalDateTime.now()).toMinutes();
+            long timesBetween = Duration.between(gameDTO.getStartedAt(), LocalDateTime.now()).toMillis();
 
             // 세션의 생명 주기가 끝났으면 선입 세션 삭제
             if (timesBetween >= GAME_LIFE_CYCLE) {
@@ -55,9 +55,17 @@ public class GameManagerImpl implements GameManager {
                 });
 
 
-                gameDTO.getChartSessions().forEach((userId, chartSessions) -> {
+                gameDTO.getChartSessions().values().forEach(chartSessions -> {
                     try {
                         chartSessions.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+                gameDTO.getChatSessions().values().forEach(chatSessions -> {
+                    try {
+                        chatSessions.close();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -94,7 +102,6 @@ public class GameManagerImpl implements GameManager {
          */
         Member member = getUserInfo(tokenToClaims);
 
-
         // 이미 참여중인 유저는 웹소켓 세션만 갈아 끼우고 연결
         if (findChartSessionKeyByUserId(member.getId())) {
             replaceChartSessionByUserId(member.getId(), webSocketSession);
@@ -102,13 +109,15 @@ public class GameManagerImpl implements GameManager {
         }
 
         if (!gameDtos.isEmpty()) {
-            GameDto gameDTO = gameDtos.peekLast();
 
-            Map<Long, GameParticipation> gameParticipations = gameDTO.getGameParticipations();
+            GameDto gameDto = gameDtos.peekLast();
+
+            Map<Long, GameParticipation> gameParticipations = gameDto.getGameParticipations();
             if (gameParticipations != null) {
                 gameParticipations.put(member.getId(), GameParticipation.builder()
-                        .gameId(gameDTO.getId())
+                        .gameId(gameDto.getId())
                         .memberId(member.getId())
+                        .memberNickname(member.getNickname())
                         .stocksHolding(0)
                         .gameRank(member.getTotalScore())
                         .postCash(member.getCash())
@@ -119,10 +128,10 @@ public class GameManagerImpl implements GameManager {
                         .build()
                 );
             }
-            gameDTO.getChartSessions().put(member.getId(), webSocketSession);
-            gameDTO.getUserIdsInChartSessions().put(webSocketSession.getId(), member.getId());
+            gameDto.getChartSessions().put(member.getId(), webSocketSession);
+            gameDto.getUserIdsInChartSessions().put(webSocketSession.getId(), member.getId());
 
-            return gameDTO;
+            return gameDto;
 
         } else {
             throw new RuntimeException("현재 생성된 게임 세션이 존재하지 않습니다.");
@@ -147,10 +156,12 @@ public class GameManagerImpl implements GameManager {
 
         if (!gameDtos.isEmpty()) {
             GameDto gameDTO = gameDtos.peekLast();
-
-            gameDTO.getChatSessions().put(member.getId(), webSocketSession);
-            gameDTO.getUserIdsInChatSessions().put(webSocketSession.getId(), member.getId());
-
+            synchronized (gameDTO.getChatSessions()) {
+                gameDTO.getChatSessions().put(member.getId(), webSocketSession);
+            }
+            synchronized (gameDTO.getUserIdsInChatSessions()) {
+                gameDTO.getUserIdsInChatSessions().put(webSocketSession.getId(), member.getId());
+            }
             return gameDTO;
 
         } else {
@@ -177,7 +188,7 @@ public class GameManagerImpl implements GameManager {
     @Override
     public GameDto findGameSessionByUserId(Long memberId) {
         for (GameDto gameDTO : gameDtos) {
-            if (gameDTO.getGameParticipations().containsKey(memberId)){
+            if (gameDTO.getGameParticipations().containsKey(memberId)) {
                 return gameDTO;
             }
         }
@@ -205,11 +216,13 @@ public class GameManagerImpl implements GameManager {
     public void replaceChatSessionByUserId(long targetId, WebSocketSession newSession) {
         try {
             for (GameDto gameDto : gameDtos) {
-                if (gameDto.getChatSessions().containsKey(targetId)) {
-                    gameDto.getChatSessions().get(targetId).close();
-                    gameDto.getChatSessions().replace(targetId, newSession);
-                    gameDto.getUserIdsInChartSessions().put(newSession.getId(), targetId);
-                    return;
+                synchronized (gameDto.getChatSessions()) {
+                    if (gameDto.getChatSessions().containsKey(targetId)) {
+                        gameDto.getChatSessions().get(targetId).close();
+                        gameDto.getChatSessions().replace(targetId, newSession);
+                        gameDto.getUserIdsInChatSessions().put(newSession.getId(), targetId);
+                        return;
+                    }
                 }
             }
         } catch (Exception e) {
