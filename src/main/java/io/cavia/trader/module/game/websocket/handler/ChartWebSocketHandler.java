@@ -25,6 +25,8 @@ public class ChartWebSocketHandler implements WebSocketHandler {
     private final ObjectMapper objectMapper;
     private final JwtUtil jwtUtil;
 
+    private GameDto gameDto;
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
     }
@@ -34,7 +36,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
         String token = message.getPayload().toString();
         if(jwtUtil.validateToken(token)){
             // 유저가 연결되었을 때, 가장 젊은 게임 세션에 연결 (유저가 이미 세션에 속해 있다면 DTO의 세션만 교체)
-            GameDto gameDto = gameManager.addUserToGameAndGetYoungestSession(
+            gameDto = gameManager.addChartSessionToGameAndGetYoungestSession(
                     jwtUtil.getUserInfoFromToken(token), session);
             // 게임 입장 처리 완료, 자신이 포함된 게임 참가 인원 수 게임에 참여중인 모든 세션에 전달
             gameDto.getChartSessions().values().forEach(s -> {
@@ -184,6 +186,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
+        throw new RuntimeException("웹소켓 통신 중 예외 발생: " + exception.getMessage(), exception);
     }
 
     @Override
