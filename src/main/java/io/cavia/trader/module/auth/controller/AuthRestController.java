@@ -26,8 +26,8 @@ import java.util.Map;
 public class AuthRestController {
 
     private final AuthService authService;
-    
-    @PostMapping("/login")
+
+    @PostMapping("/api/auth/login")
     public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
 
         try {

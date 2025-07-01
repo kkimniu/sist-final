@@ -82,11 +82,12 @@
     <!--
         전체 회원을 캐쉬로 내림차순
     -->
-    <select id="findAllByOrderByCashDesc" resultType="io.cavia.trader.module.member.entity.Member">
+    <select id="findAllByOrderByCashDesc" resultType="io.cavia.trader.module.member.dto.UserRankingDto">
         SELECT
         id,
         nickname,
-        cash
+        cash,
+        total_score
         FROM
         members
         ORDER BY cash DESC
@@ -96,10 +97,11 @@
     <!--
         전체 회원을 총점수로 내림차순
     -->
-    <select id="findAllByOrderByTotalScoreDesc" resultType="io.cavia.trader.module.member.entity.Member">
+    <select id="findAllByOrderByTotalScoreDesc" resultType="io.cavia.trader.module.member.dto.UserRankingDto">
         SELECT
         id,
         nickname,
+        cash,
         total_score
         FROM
         members

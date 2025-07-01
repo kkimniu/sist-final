@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
+<div th:replace="~{fragments/header :: header}"></div>
 <div>
     <h1>마이 페이지</h1>
     <div>
@@ -16,15 +17,21 @@
         <!--닉네임 등급 자산조회 등등-->
         <strong>닉네임</strong> <span id="nickname"></span>
         <strong>등급</strong> <span id="total-score"></span><br>
-        <input type="button" value="닉네임변경" onclick="location.href='nickname'">
-        <input type="button" value="비밀번호변경" onclick="location.href='password'"><br>
+        <input type="button" value="닉네임변경" onclick="location.href= window.location.pathname + '/nickname'"/>
+        <input type="button" value="비밀번호변경" onclick="location.href= window.location.pathname + '/password'"/><br>
         <h3>자산조회</h3> <span id="cash"></span><br>
         <input type="button" value="자산초기화" onclick="cashReset()"><br>
     </div>
 </div>
+
 <div>
-    <input type="button" value="회원탈퇴" onclick="location.href = 'withdraw'"><br>
+    <a href="#" id="logout-link" class="nav-button logout-button">로그아웃</a>
 </div>
+
+<div>
+    <input type="button" value="회원탈퇴" onclick="location.href = window.location.pathname + '/withdraw'"><br>
+</div>
+<script src="/js/header.js"></script>
 <script>
     window.onload = async function () {
         const token = localStorage.getItem('jwt-token');
@@ -94,6 +101,18 @@
             location.href = '/members/me';
         }catch (error){
             alert(error.message);
+        }
+    }
+        // 로그아웃 기능 설정 함수
+    function setupLogout() {
+        const logoutLink = document.getElementById('logout-link');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', function(event) {
+                event.preventDefault();
+                localStorage.removeItem('jwt-token');
+                alert('로그아웃 되었습니다.');
+                window.location.href = '/';
+            });
         }
     }
 </script>

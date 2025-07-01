@@ -9,15 +9,16 @@
 
 <div id="message"></div>
 <div id="ranking">
-    <button onclick="loadRanking('asset')">총 자산순</button>
-    <button onclick="loadRanking('score')">점수순</button>
+    <button onclick="loadRanking('cash')">총 자산순</button>
+    <button onclick="loadRanking('total-score')">점수순</button>
     <div id="rankingList">
     </div>
 </div>
 <div>
-    <input type="button" value="주식게임" onclick="location.href = '/game/detail-stock'">
+    <input type="button" value="주식게임" onclick="location.href = '/game'">
 </div>
 </body>
+<script src="/js/header.js"></script>
 <script>
     // 페이지 로드 시 기본으로 자산순 랭킹 보여주기
     window.onload = function () {
@@ -27,7 +28,7 @@
             return;
         }
         // 기본: 자산순 로딩
-        loadRanking('asset');
+        loadRanking('cash');
     }
 
     async function loadRanking(type) {
@@ -40,7 +41,7 @@
             return;
         }
         try {
-            const res1 = await fetch(`/api/main/rank?type=${type}`, {
+            const res1 = await fetch(`/api/rankings/${type}`, {
                 headers: {
                     'Authorization': 'Bearer ' + token
                 }
@@ -58,16 +59,15 @@
 
         rankings.forEach((user, i) => {
             const div = document.createElement('div');
-            div.innerText = `${i + 1}위 - ${user.username} | 자산: ${user.asset} | 점수: ${user.score}`;
+            div.innerText = `${i + 1}위 - ${user.nickname} | 자산: ${user.cash} | 점수: ${user.totalScore}`;
             list.appendChild(div);
         });
 
-        message.innerText = type === 'asset' ? '총 자산순 랭킹입니다.' : '점수순 랭킹입니다.';
+        message.innerText = type === 'cash' ? '총 자산순 랭킹입니다.' : '점수순 랭킹입니다.';
 
         }catch(err) {
             message.innerText = '에러 발생: ' + err.message;
         }
     }
 </script>
-<script src="/js/header.js"></script>
 </html>

@@ -56,16 +56,3 @@
             authenticatedHeader.style.display = 'none';
         });
     }
-
-    // 로그아웃 기능 설정 함수
-    function setupLogout() {
-        const logoutLink = document.getElementById('logout-link');
-        if (logoutLink) {
-            logoutLink.addEventListener('click', function(event) {
-                event.preventDefault();
-                localStorage.removeItem('jwt-token');
-                alert('로그아웃 되었습니다.');
-                window.location.href = '/';
-            });
-        }
-    }
