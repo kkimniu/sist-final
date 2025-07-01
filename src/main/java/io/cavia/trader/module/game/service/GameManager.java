@@ -17,15 +17,21 @@ public interface GameManager {
 
     Member getUserInfo(Claims userInfo);
 
-    Deque<GameDto> getGameDtos();
+    GameDto addChartSessionToGameAndGetYoungestSession(Claims tokenToClaims, WebSocketSession webSocketSession);
 
-    GameDto addUserToGameAndGetYoungestSession(Claims tokenToClaims, WebSocketSession webSocketSession);
+    GameDto addChatSessionToGameAndGetYoungestSession(Claims tokenToClaims, WebSocketSession webSocketSession);
 
     boolean findChartSessionKeyByUserId(Long userId);
 
+    boolean findChatSessionKeyByUserId(Long userId);
+
     void replaceChartSessionByUserId(long targetId, WebSocketSession newSession);
 
+    void replaceChatSessionByUserId(long targetId, WebSocketSession newSession);
+
     void removeChartSession(WebSocketSession session);
+
+    void removeChatSession(WebSocketSession session);
 
     GameDto findGameSessionByUserId(Long userId);
 

@@ -2,6 +2,7 @@ package io.cavia.trader.module.game.service;
 
 import io.cavia.trader.module.client.connector.RestWebClientImpl;
 import io.cavia.trader.module.client.dto.StocksOutput;
+import io.cavia.trader.module.game.dto.ChatLog;
 import io.cavia.trader.module.game.dto.GameDto;
 import io.cavia.trader.module.game.entity.GameParticipation;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +51,7 @@ public class GameAdministrationServiceImpl implements GameAdministrationService 
         gameDTO.setUserIdsInChartSessions(new ConcurrentHashMap<String, Long>());
         gameDTO.setChartSessions(new ConcurrentHashMap<Long, WebSocketSession>());
         gameDTO.setUserIdsInChatSessions(new ConcurrentHashMap<String, Long>());
+        gameDTO.setChatLogs(new ConcurrentLinkedQueue<ChatLog>());
         gameDTO.setStartedAt(LocalDateTime.now());
 
         return gameDTO;

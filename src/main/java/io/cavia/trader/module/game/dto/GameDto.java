@@ -9,6 +9,7 @@ import org.springframework.web.socket.WebSocketSession;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,5 +27,6 @@ public class GameDto {
     private Map<String, Long> UserIdsInChartSessions;
     private Map<Long, WebSocketSession> chatSessions;
     private Map<String, Long> UserIdsInChatSessions;
+    private Queue<ChatLog> chatLogs;
     private LocalDateTime startedAt;
 }
