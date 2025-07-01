@@ -13,7 +13,7 @@ public class GameParticipationMybatisRepository implements GameParticipationRepo
     private final GameParticipationMapper gameParticipationMapper;
 
     @Override
-    public List<GameParticipationDto> findByMemberId(int memberId) {
+    public List<GameParticipationDto> findByMemberId(Long memberId) {
         return gameParticipationMapper.findByMemberId(memberId);
     }
 }

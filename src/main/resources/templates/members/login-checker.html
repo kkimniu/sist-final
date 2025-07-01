@@ -41,8 +41,7 @@
         document.getElementById('jwt-display').innerText = token;
         document.getElementById('result-area').style.display = 'block';
 
-        // ❗️ 새로 만든 /login-checker/me 엔드포인트를 호출합니다.
-        fetch('/login-checker/me', {
+        fetch('/api/auth/login-checker', {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + token

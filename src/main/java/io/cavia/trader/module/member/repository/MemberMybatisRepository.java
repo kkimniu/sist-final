@@ -66,12 +66,12 @@ public class MemberMybatisRepository implements MemberRepository {
     }
 
     @Override
-    public List<UserRankingDto> findAllOrderByCash(int limit , int offset) {
-        return memberMapper.findAllOrderByCash(limit,offset);
+    public List<UserRankingDto> findAllByOrderByCashDesc(Long limit, Long offset) {
+        return memberMapper.findAllByOrderByCashDesc(limit, offset);
     }
 
     @Override
-    public List<UserRankingDto> findAllOrderByTotalScore(int limit , int offset) {
-        return memberMapper.findAllOrderByTotalScore(limit,offset);
+    public List<UserRankingDto> findAllByOrderByTotalScoreDesc(Long limit, Long offset) {
+        return memberMapper.findAllByOrderByTotalScoreDesc(limit, offset);
     }
 }

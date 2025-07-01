@@ -7,6 +7,7 @@
     <title>Title</title>
 </head>
 <body>
+<div th:replace="~{fragments/header :: header}"></div>
 <div>
     <h2>공 지 사 항</h2>
     <table>
@@ -18,7 +19,7 @@
         </tr>
         <tr th:each="dto:${lists}">
             <td>
-                <a th:text="${dto.title}" th:href="@{/notices/noticeDetail(id=${dto.id}, cp=${paging.cp})}"></a>
+                <a th:text="${dto.title}" th:href="@{/notices/{id}(id=${dto.id}, cp=${paging.cp})}"></a>
             </td>
         </tr>
         </tbody>
@@ -26,14 +27,24 @@
 </div>
 <div>
     <a th:if="${paging.hasPrev}"
-       th:href="@{/notices/noticeList(cp=${paging.prevPage})}">
+       th:href="@{/notices(cp=${paging.firstPage})}">
+        &laquo;&laquo;
+    </a>
+
+    <a th:if="${paging.hasPrev}"
+       th:href="@{/notices(cp=${paging.prevPage})}">
+        &laquo;
     </a>
     <a th:each="list:${paging.pageList}"
-       th:href="@{/notices/noticeList(cp=${list})}"
+       th:href="@{/notices(cp=${list})}"
        th:text="${list}">1
     </a>
     <a th:if="${paging.hasNext}"
-       th:href="@{/notices/noticeList(cp=${paging.nextPage})}">
+       th:href="@{/notices(cp=${paging.nextPage})}">
+        &raquo;
+    </a>
+    <a th:href="@{/notices(cp=${paging.totalPage})}">
+        &raquo;&raquo;
     </a>
 </div>
 </body>

@@ -32,7 +32,7 @@ formStep1.addEventListener('submit', async (e) => {
     try {
         // 서버의 @RequestBody String password는 JSON 문자열을 기대합니다.
         // 따라서 문자열 자체를 JSON.stringify로 감싸서 보냅니다.
-        const response = await fetch('/api/mypage/password-verification', {
+        const response = await fetch('/api/members/me/password/verify', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ formStep2.addEventListener('submit', async (e) => {
     };
 
     try {
-        const response = await fetch('/api/mypage/password', {
+        const response = await fetch('/api/members/me/password', {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ formStep2.addEventListener('submit', async (e) => {
         if (response.ok) {
             alert('비밀번호가 성공적으로 변경되었습니다.');
             // 성공 시 마이페이지 메인 등으로 이동
-            window.location.href = '/member/mypage/mypage-main';
+            window.location.href = '/members/me';
         } else {
             const errorData = await response.json();
             // @Valid에서 발생한 에러의 경우, 상세 에러 메시지를 표시

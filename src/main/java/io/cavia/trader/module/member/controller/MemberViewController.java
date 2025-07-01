@@ -7,35 +7,30 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("member/mypage")
+@RequestMapping("/members")
 @RequiredArgsConstructor
 public class MemberViewController {
 
     private final MemberService memberService;
 
-    @GetMapping("/mypage-main")
+    @GetMapping("/me")
     public String myPage() {
-        return "member/mypage/mypage-main";
+        return "members/me/main";
     }
 
-    @GetMapping("/nickname-edit")
+    @GetMapping("/me/nickname")
     public String nicknameUpdate() {
-        return "member/mypage/nickname-edit";
+        return "members/me/nickname-change";
     }
 
-    @GetMapping("/password-change")
+    @GetMapping("/me/password")
     public String passwordVerification() {
-        return "member/mypage/password-change";
+        return "members/me/password-change";
     }
 
-    @GetMapping("/withdraw-verification")
-    public String withdrawVerification() {
-        return "member/mypage/withdraw-verification";
-    }
-
-    @GetMapping("/withdraw")
-    public String withdrawn() {
-        return "member/mypage/withdraw";
+    @GetMapping("/me/withdraw")
+    public String withdraw() {
+        return "members/me/withdraw";
     }
 
 }
