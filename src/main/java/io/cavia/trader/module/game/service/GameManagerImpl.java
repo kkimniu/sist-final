@@ -36,7 +36,7 @@ public class GameManagerImpl implements GameManager {
     public Deque<GameDto> gameDtos = new ArrayDeque<>();
 
     //@Scheduled(cron = "0 */10 * * * *")
-    @Scheduled(cron = "*/10 * * * * *")
+    @Scheduled(cron = "0 */10 * * * *")
     @Transactional
     @Override
     public void managementGameSessionsLifeCycle() {
@@ -86,7 +86,7 @@ public class GameManagerImpl implements GameManager {
     }
 
     @Override
-    public GameDto addUserToGameAndGetYoungestSession(Claims tokenToClaims, WebSocketSession webSocketSession) {
+    public GameDto addChartSessionToGameAndGetYoungestSession(Claims tokenToClaims, WebSocketSession webSocketSession) {
         /**
          * 인자로 받은 Cliaims로 유저 정보를 조회해서 GameSession에 유저 정보를 주입하는 메서드 입니다.
          * 조회 시점의 가장 젊은 세션에 유저 정보를 주입하기 때문에 정합성을 위해
@@ -130,9 +130,46 @@ public class GameManagerImpl implements GameManager {
     }
 
     @Override
+    public GameDto addChatSessionToGameAndGetYoungestSession(Claims tokenToClaims, WebSocketSession webSocketSession) {
+        /**
+         * 인자로 받은 Cliaims로 유저 정보를 조회해서 GameSession에 유저 정보를 주입하는 메서드 입니다.
+         * 조회 시점의 가장 젊은 세션에 유저 정보를 주입하기 때문에 정합성을 위해
+         * 유저 정보 주입과 주입 세션 반환을 한 메서드에서 처리하였습니다
+         */
+        Member member = getUserInfo(tokenToClaims);
+
+
+        // 이미 참여중인 유저는 웹소켓 세션만 갈아 끼우고 연결
+        if (findChatSessionKeyByUserId(member.getId())) {
+            replaceChatSessionByUserId(member.getId(), webSocketSession);
+            return findGameSessionByUserId(member.getId());
+        }
+
+        if (!gameDtos.isEmpty()) {
+            GameDto gameDTO = gameDtos.peekLast();
+
+            gameDTO.getChatSessions().put(member.getId(), webSocketSession);
+            gameDTO.getUserIdsInChatSessions().put(webSocketSession.getId(), member.getId());
+
+            return gameDTO;
+
+        } else {
+            throw new RuntimeException("현재 생성된 게임 세션이 존재하지 않습니다.");
+        }
+    }
+
+    @Override
     public boolean findChartSessionKeyByUserId(Long memberId) {
         for (GameDto gameDTO : gameDtos) {
             if (gameDTO.getChartSessions().containsKey(memberId)) return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean findChatSessionKeyByUserId(Long memberId) {
+        for (GameDto gameDTO : gameDtos) {
+            if (gameDTO.getChatSessions().containsKey(memberId)) return true;
         }
         return false;
     }
@@ -165,6 +202,22 @@ public class GameManagerImpl implements GameManager {
     }
 
     @Override
+    public void replaceChatSessionByUserId(long targetId, WebSocketSession newSession) {
+        try {
+            for (GameDto gameDto : gameDtos) {
+                if (gameDto.getChatSessions().containsKey(targetId)) {
+                    gameDto.getChatSessions().get(targetId).close();
+                    gameDto.getChatSessions().replace(targetId, newSession);
+                    gameDto.getUserIdsInChartSessions().put(newSession.getId(), targetId);
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("세션 교체 중 예외 발생: 세션에서 해당 유저를 찾을 수 없습니다.", e);
+        }
+    }
+
+    @Override
     public void removeChartSession(WebSocketSession session) {
         try {
             for (GameDto gameDTO : gameDtos) {
@@ -175,6 +228,26 @@ public class GameManagerImpl implements GameManager {
                             .get(session.getId());
 
                     gameDTO.getUserIdsInChartSessions()
+                            .remove(session.getId());
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("세션 삭제 중 예외 발생: 세션을 찾을 수 없습니다.", e);
+        }
+    }
+
+    @Override
+    public void removeChatSession(WebSocketSession session) {
+        try {
+            for (GameDto gameDTO : gameDtos) {
+                if (gameDTO.getUserIdsInChatSessions()
+                        .containsKey(session.getId())) {
+
+                    long targetId = gameDTO.getUserIdsInChatSessions()
+                            .get(session.getId());
+
+                    gameDTO.getUserIdsInChatSessions()
                             .remove(session.getId());
                     return;
                 }
