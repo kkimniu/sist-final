@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/game/api")
+@RequestMapping("/api/game")
 @RequiredArgsConstructor
 public class GameRestController {
     /**
@@ -22,7 +22,6 @@ public class GameRestController {
      * validateAccess(String authorizationHeader) 사용자가 토큰을 포함해 요청을 보내면 인증 후 개인 정보가 담긴 Cliaims 객체를 반환합니다.
      */
 
-    private final JwtUtil jwtUtil;
     private final GameManager gameManager;
 
     @PostMapping("/verify")
