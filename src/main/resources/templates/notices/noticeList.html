@@ -7,34 +7,46 @@
     <title>Title</title>
 </head>
 <body>
-<div>
-    <h2>공 지 사 항</h2>
-    <table>
-        <tbody>
-        <tr th:if="${lists == null or lists.isEmpty()}">
-            <td colspan="30" align="center">
-                등록된 사원이 없습니다.
-            </td>
-        </tr>
-        <tr th:each="dto:${lists}">
-            <td>
-                <a th:text="${dto.title}" th:href="@{/notices/noticeDetail(id=${dto.id}, cp=${paging.cp})}"></a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-<div>
-    <a th:if="${paging.hasPrev}"
-       th:href="@{/notices/noticeList(cp=${paging.prevPage})}">
-    </a>
-    <a th:each="list:${paging.pageList}"
-       th:href="@{/notices/noticeList(cp=${list})}"
-       th:text="${list}">1
-    </a>
-    <a th:if="${paging.hasNext}"
-       th:href="@{/notices/noticeList(cp=${paging.nextPage})}">
-    </a>
-</div>
+<div th:replace="~{fragments/header :: header}"></div>
+    <div>
+        <h2>공 지 사 항</h2>
+        <table>
+            <tbody>
+            <tr th:if="${lists == null or lists.isEmpty()}">
+                <td colspan="30" align="center">
+                    등록된 사원이 없습니다.
+                </td>
+            </tr>
+            <tr th:each="dto:${lists}">
+                <td>
+                    <a th:text="${dto.title}" th:href="@{/notices/noticeDetail(id=${dto.id}, cp=${paging.cp})}"></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <a th:if="${paging.hasPrev}"
+           th:href="@{/notices/noticeList(cp=${paging.firstPage})}">
+            &laquo;&laquo;
+        </a>
+
+        <a th:if="${paging.hasPrev}"
+           th:href="@{/notices/noticeList(cp=${paging.prevPage})}">
+            &laquo;
+        </a>
+        <a th:each="list:${paging.pageList}"
+           th:href="@{/notices/noticeList(cp=${list})}"
+           th:text="${list}">1
+        </a>
+        <a th:if="${paging.hasNext}"
+           th:href="@{/notices/noticeList(cp=${paging.nextPage})}">
+            &raquo;
+        </a>
+        <a th:href="@{/notices/noticeList(cp=${paging.totalPage})}">
+            &raquo;&raquo;
+        </a>
+    </div>
+<script src="/js/header.js"></script>
 </body>
 </html>
