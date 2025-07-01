@@ -32,7 +32,7 @@ public class GameManagerImpl implements GameManager {
     private final GameAdministrationService gameAdministrationService;
     private final GameMapper gameMapper;
 
-    private final int GAME_LIFE_CYCLE = 2;
+    private final int GAME_LIFE_CYCLE = 1000 * 60 * 30;
     public Deque<GameDto> gameDtos = new ArrayDeque<>();
 
     //@Scheduled(cron = "0 */10 * * * *")
@@ -44,10 +44,10 @@ public class GameManagerImpl implements GameManager {
         if (!gameDtos.isEmpty()) {
             // 현재시간 - 세션시작 시간을 분 단위로 치환한 값
             GameDto gameDTO = gameDtos.peekFirst();
-            int minutesBetween = gameAdministrationService.getMinutesBetween(gameDTO);
+            long timesBetween = Duration.between(gameDTO.getStartedAt(), LocalDateTime.now()).toMinutes();
 
             // 세션의 생명 주기가 끝났으면 선입 세션 삭제
-            if (minutesBetween >= GAME_LIFE_CYCLE) {
+            if (timesBetween >= GAME_LIFE_CYCLE) {
                 // TODO 게임 세션 삭제 전 DB 저장 필요(game 객체는 세션 만들어 질때 저장 했음)
                 gameDTO.getGameParticipations().forEach((memberId, gameParticipation) -> {
                     gameParticipation.setEnteredAt(LocalDateTime.now());
