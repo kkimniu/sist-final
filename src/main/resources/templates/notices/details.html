@@ -8,6 +8,7 @@
     <title>Title</title>
 </head>
 <body>
+<div th:replace="~{fragments/header :: header}"></div>
 <div>
     <div>
         <h2 th:text="${dto.title}">제목</h2>
@@ -16,10 +17,11 @@
         <p th:text="${dto.content}">본문</p>
     </div>
     <div>
-        <a th:href="@{/notices/noticeList(cp=${cp})}">
+        <a th:href="@{/notices(cp=${cp})}">
             <button type="button">목록</button>
         </a>
     </div>
 </div>
+<script src="/js/header.js"></script>
 </body>
 </html>
