@@ -22,12 +22,14 @@ public class ViewNoticeController {
     private final NoticeService noticeService;
 
     @GetMapping("")
-    public String noticeList(@RequestParam(value = "cp", defaultValue = "1") int cp, Model model) {
-        int listSize = 30;
+    public String noticeList(@RequestParam(defaultValue = "1") int cp,
+                             @RequestParam(defaultValue = "20") int listSize,
+                             Model model) {
         int pageSize = 5;
         int countNotice = noticeService.noticeCount();
         List<NoticeDto> list = noticeService.noticeList(cp, listSize);
-        Map<String, Object> paging = PagingUtil.makePaging("notices/main", countNotice, listSize, pageSize, cp);
+        Map<String, Object> paging = PagingUtil
+                .makePaging("notices/main", countNotice, listSize, pageSize, cp);
 
         model.addAttribute("lists", list);
         model.addAttribute("paging", paging);
@@ -35,7 +37,9 @@ public class ViewNoticeController {
     }
 
     @GetMapping("/{id}")
-    public String noticeDetail(@PathVariable int id, @RequestParam(value = "cp", defaultValue = "1") int cp, Model model) {
+    public String noticeDetail(@PathVariable int id,
+                               @RequestParam(defaultValue = "1") int cp,
+                               Model model) {
         NoticeDto dto = noticeService.findById(id);
         model.addAttribute("dto", dto);
         model.addAttribute("cp", cp);
