@@ -30,8 +30,7 @@ public class GameAdministrationServiceImpl implements GameAdministrationService 
         GameDto gameDTO = new GameDto();
 
         gameDTO.setStockId(stocks
-                .get((int)(Math.random() * stocks.size())
-                )
+                .get((int)(Math.random() * stocks.size()))
                 .getId()
         );
 
