@@ -1,8 +1,8 @@
 package io.cavia.trader.module.member.service;
 
 import io.cavia.trader.module.member.dto.GameParticipationDto;
-import io.cavia.trader.module.member.dto.UserRankingDto;
 import io.cavia.trader.module.member.dto.PasswordChangeRequestDto;
+import io.cavia.trader.module.member.dto.UserRankingDto;
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.repository.GameParticipationRepository;
 import io.cavia.trader.module.member.repository.MemberMapper;
@@ -30,9 +30,9 @@ public class MemberServiceImpl implements MemberService {
     private Long memberCashReset;
 
     @Override
-    public List<GameParticipationDto> getGameParticipationByMemberId(int memberId) {
+    public List<GameParticipationDto> getGameParticipationByMemberId(Long memberId) {
         List<GameParticipationDto> list = gameParticipationRepository.findByMemberId(memberId);
-        if (list == null || list.size() == 0) {
+        if (list == null || list.isEmpty()) {
             throw new NotFoundException("게임 참여 이력이 없습니다");
         }
         return list;
@@ -87,16 +87,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public int deleteMember(Long id, String password) {
-
-        Member member = memberRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
-        );
-
-        if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+    public void withdrawMember(Long id, String password) {
+        validatePassword(id, password);
+        if (memberMapper.delete(id) == 0) {
+            throw new IllegalStateException("회원 탈퇴 작업에 실패했습니다.");
         }
-        return memberMapper.delete(id);
     }
 
     @Override
@@ -124,21 +119,21 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public List<UserRankingDto> findAllOrderByCash(int limit , int offset) {
-        List<UserRankingDto> list = memberRepository.findAllOrderByCash(limit,offset);
-        if (list == null || list.size() == 0) {
+    public List<UserRankingDto> findAllOrderByCash(Long limit, Long offset) {
+        List<UserRankingDto> list = memberRepository.findAllByOrderByCashDesc(limit, offset);
+        if (list == null || list.isEmpty()) {
             throw new NotFoundException("게임 참여 이력이 없습니다");
         }
-        return memberRepository.findAllOrderByCash(limit,offset);
+        return list;
     }
 
     @Override
-    public List<UserRankingDto> findAllOrderByTotalScore(int limit , int offset) {
-        List<UserRankingDto> list = memberRepository.findAllOrderByTotalScore(limit,offset);
-        if (list == null ||list.size() == 0) {
+    public List<UserRankingDto> findAllOrderByTotalScore(Long limit, Long offset) {
+        List<UserRankingDto> list = memberRepository.findAllByOrderByTotalScoreDesc(limit, offset);
+        if (list == null || list.isEmpty()) {
             throw new NotFoundException("게임 참여 이력이 없습니다");
         }
-        return memberRepository.findAllOrderByTotalScore(limit,offset);
+        return list;
     }
 
 }

@@ -38,7 +38,7 @@ formStep1.addEventListener('submit', (e) => {
     step2Div.style.display = 'block';
 
     // --- 2. API 요청은 백그라운드에서 조용히 실행 ---
-    fetch('/auth/send-email', {
+    fetch('/api/auth/verification/send-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: userEmail })
@@ -81,7 +81,7 @@ formStep2.addEventListener('submit', (e) => {
         return;
     }
 
-    fetch('/auth/verification', {
+    fetch('/api/auth/verification/verify-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: userEmail, authKey: userAuthKey })
@@ -127,8 +127,8 @@ formStep3.addEventListener('submit', (e) => {
         password: newPassword
     };
 
-    fetch('/auth/password', {
-        method: 'PATCH',
+    fetch('/api/auth/password-reset', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody)
     })

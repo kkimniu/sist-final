@@ -33,7 +33,7 @@ public class SignupController {
     public String showTermsForm() {
 
         //TODO: 약관 파일을 불러와 넣어줘야함
-        return "member/signup/terms";
+        return "members/signup/terms";
     }
 
     @PostMapping("/terms")
@@ -41,7 +41,7 @@ public class SignupController {
                                @Validated(SignupForm.ValidationGroups.TermsGroup.class) SignupForm signupForm,
                                BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "member/signup/terms";
+            return "members/signup/terms";
         }
         //TODO: 약관 동의를 검증하고, 동의한 날짜와 약관 버전을 임시 저장해놔야 함.
         return "redirect:/signup/email";
@@ -58,7 +58,7 @@ public class SignupController {
                                BindingResult bindingResult) {
         System.out.println("signupForm = " + signupForm);
         if (bindingResult.hasErrors()) {
-            return "member/signup/email";
+            return "members/signup/email";
         }
         try {
             authService.validateDuplicateEmail(signupForm.getEmail());
@@ -66,7 +66,7 @@ public class SignupController {
             authService.sendVerificationEmail(signupForm.getEmail());
         } catch (RuntimeException e) {
             bindingResult.rejectValue("email", "runtimeError", e.getMessage());
-            return "member/signup/email";
+            return "members/signup/email";
         }
         return "redirect:/signup/verify";
     }
@@ -82,13 +82,13 @@ public class SignupController {
                                  BindingResult bindingResult) {
         System.out.println("signupForm = " + signupForm);
         if (bindingResult.hasErrors()) {
-            return "member/signup/verify";
+            return "members/signup/verify";
         }
         try {
             authService.verifyAuthKey(signupForm.getEmail(), signupForm.getAuthKey());
         } catch (RuntimeException e) {
             bindingResult.rejectValue("authKey", "runtimeError", e.getMessage());
-            return "member/signup/verify";
+            return "members/signup/verify";
         }
         return "redirect:/signup/nickname";
     }
@@ -104,20 +104,20 @@ public class SignupController {
                                   BindingResult bindingResult) {
         System.out.println("signupForm = " + signupForm);
         if (bindingResult.hasErrors()) {
-            return "member/signup/nickname";
+            return "members/signup/nickname";
         }
         try {
             authService.validateDuplicateNickname(signupForm.getNickname());
         } catch (RuntimeException e) {
             bindingResult.rejectValue("nickname", "runtimeError", e.getMessage());
-            return "member/signup/nickname";
+            return "members/signup/nickname";
         }
         return "redirect:/signup/password";
     }
 
     @GetMapping("/password")
     public String showPasswordForm() {
-        return "member/signup/password";
+        return "members/signup/password";
     }
 
     /**
@@ -137,7 +137,7 @@ public class SignupController {
             bindingResult.rejectValue("passwordConfirm", "password.mismatch", "비밀번호가 일치하지 않습니다.");
         }
         if (bindingResult.hasErrors()) {
-            return "member/signup/password";
+            return "members/signup/password";
         }
         try {
             System.out.println("회원가입 시도시 signupForm = " + signupForm);
@@ -145,7 +145,7 @@ public class SignupController {
         } catch (RuntimeException e) {
             bindingResult.rejectValue("passwordConfirm", "runtimeError", e.getMessage());
             e.printStackTrace();
-            return "member/signup/password";
+            return "members/signup/password";
         }
         return "redirect:/signup/welcome";
     }
@@ -153,6 +153,6 @@ public class SignupController {
     @GetMapping("/welcome")
     public String showWelcomePage(SessionStatus sessionStatus) {
         sessionStatus.setComplete();
-        return "member/signup/welcome";
+        return "members/signup/welcome";
     }
 }

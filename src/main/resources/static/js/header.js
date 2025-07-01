@@ -17,7 +17,7 @@
         }
 
         // 토큰이 존재하면, 서버에 '내 정보 조회' API를 호출하여 토큰의 유효성을 검증합니다.
-        fetch('/api/mypage/me', { // ❗️ 내 정보 조회 API 경로
+        fetch('/api/auth/login-checker', { // ❗️ 내 정보 조회 API 경로
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + token
@@ -41,9 +41,6 @@
 
             anonymousHeader.style.display = 'none';
             authenticatedHeader.style.display = 'flex';
-
-            // 로그아웃 링크에 이벤트 리스너를 설정합니다. (성공 시에만 설정)
-            setupLogout();
         })
         .catch(error => {
             // ❗️ API 호출 실패 시 (네트워크 에러, 401 등): 로그아웃 상태로 처리합니다.
@@ -55,17 +52,4 @@
             anonymousHeader.style.display = 'block';
             authenticatedHeader.style.display = 'none';
         });
-    }
-
-    // 로그아웃 기능 설정 함수
-    function setupLogout() {
-        const logoutLink = document.getElementById('logout-link');
-        if (logoutLink) {
-            logoutLink.addEventListener('click', function(event) {
-                event.preventDefault();
-                localStorage.removeItem('jwt-token');
-                alert('로그아웃 되었습니다.');
-                window.location.href = '/';
-            });
-        }
     }

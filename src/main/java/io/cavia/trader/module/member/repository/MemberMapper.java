@@ -37,17 +37,21 @@ public interface MemberMapper {
     /**
      * 전체회원의 이름과 캐쉬를 내림차순
      */
-    List<UserRankingDto> findAllOrderByCash(int limit , int offset);
+    List<UserRankingDto> findAllByOrderByCashDesc(@Param("limit") Long limit,
+                                                  @Param("offset") Long offset);
 
     /**
      * 전체회원의 이름과 총점수를 내림차순
      */
-    List<UserRankingDto> findAllOrderByTotalScore(int limit , int offset);
+    List<UserRankingDto> findAllByOrderByTotalScoreDesc(@Param("limit") Long limit,
+                                                        @Param("offset") Long offset);
 
     /**
      * 닉네임을 수정합니다.
      */
-    int updateNickname(@Param("id") Long id, @Param("nickname") String nickname, @Param("nicknameUpdatedAt") LocalDateTime nicknameUpdatedAt);
+    int updateNickname(@Param("id") Long id,
+                       @Param("nickname") String nickname,
+                       @Param("nicknameUpdatedAt") LocalDateTime nicknameUpdatedAt);
 
     /**
      * 비밀번호를 수정합니다.

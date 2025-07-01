@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface MemberService {
 
-    List<GameParticipationDto> getGameParticipationByMemberId(int memberId);
+    List<GameParticipationDto> getGameParticipationByMemberId(Long memberId);
 
     Member getMemberById(Long id);
 
@@ -23,7 +23,7 @@ public interface MemberService {
 
     void resetCash(Long id);
 
-    int deleteMember(Long id, String password);
+    void withdrawMember(Long id, String password);
 
     boolean isMemberByEmail(String email);
 
@@ -33,8 +33,8 @@ public interface MemberService {
 
     void createMember(Member member);
 
-    List<UserRankingDto> findAllOrderByCash(int limit , int offset);
+    List<UserRankingDto> findAllOrderByCash(Long limit , Long offset);
 
-    List<UserRankingDto> findAllOrderByTotalScore(int limit , int offset);
+    List<UserRankingDto> findAllOrderByTotalScore(Long limit , Long offset);
 
 }
