@@ -4,7 +4,7 @@ import io.cavia.trader.module.client.dto.QuotesOutput;
 import io.cavia.trader.module.client.dto.TradesOutput;
 import io.cavia.trader.module.game.dto.GameDto;
 import io.cavia.trader.module.game.entity.GameParticipation;
-import io.cavia.trader.module.game.repository.GameRepository;
+import io.cavia.trader.module.game.repository.GameRepositoryImpl;
 import io.cavia.trader.module.member.entity.Member;
 import io.jsonwebtoken.Claims;
 import lombok.Getter;
@@ -30,7 +30,7 @@ import java.util.Map;
 public class GameManagerImpl implements GameManager {
 
     private final GameAdministrationService gameAdministrationService;
-    private final GameRepository gameRepository;
+    private final GameRepositoryImpl gameRepositoryImpl;
 
     private final int GAME_LIFE_CYCLE = 1000 * 60 * 1;
     public Deque<GameDto> gameDtos = new ArrayDeque<>();
@@ -51,7 +51,7 @@ public class GameManagerImpl implements GameManager {
                 // TODO 게임 세션 삭제 전 DB 저장 필요(game 객체는 세션 만들어 질때 저장 했음)
                 gameDTO.getGameParticipations().forEach((memberId, gameParticipation) -> {
                     gameParticipation.setEnteredAt(LocalDateTime.now());
-                    gameRepository.saveGameParticipation(gameParticipation);
+                    gameRepositoryImpl.saveGameParticipation(gameParticipation);
                 });
 
 
@@ -80,14 +80,14 @@ public class GameManagerImpl implements GameManager {
         // 게임 세션 1개 생성
         GameDto gameDTO = gameAdministrationService.createGame();
         gameDtos.add(gameDTO);
-        gameRepository.saveGame(gameDTO.getStockId(),
+        gameRepositoryImpl.saveGame(gameDTO.getStockId(),
                 gameDTO.getStartedAt());
-        gameDTO.setId(gameRepository.findLastGameId());
+        gameDTO.setId(gameRepositoryImpl.findLastGameId());
         System.out.println("Game Session Created, Games size: " + gameDtos.size());
     }
 
     public Member getUserInfo(Claims userInfo) {
-        return gameRepository.findMemberById(
+        return gameRepositoryImpl.findMemberById(
                 Long.parseLong(userInfo.getSubject()
                 )
         );
