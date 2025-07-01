@@ -1,7 +1,6 @@
 package io.cavia.trader.module.game.entity;
 
 import lombok.*;
-import org.springframework.security.core.Transient;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
