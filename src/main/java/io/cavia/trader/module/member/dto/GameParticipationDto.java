@@ -13,7 +13,7 @@ public class GameParticipationDto {
     private Long id;
     private int memberId;
     private int gameId;
-    private float returnId;
+    private float returnRate;
     private int gameRank;
     private int earnedScore;
     private int postScore;

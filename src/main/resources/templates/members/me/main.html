@@ -66,9 +66,9 @@
                 gameParticipation.forEach(game => {
                     const li = document.createElement('li');
                     const date = new Date(game.enteredAt);
-                    const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                    const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}   ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
                     li.innerText = `날짜: ${formatted}
-                   | 수익률: ${game.returnId}%
+                   | 수익률: ${game.returnRate}%
                    | 순위: ${game.gameRank}위
                    | 점수: ${game.earnedScore} → ${game.postScore}
                    | 캐시: ${game.earnedCash} → ${game.postCash}`;
