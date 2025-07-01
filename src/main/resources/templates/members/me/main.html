@@ -46,6 +46,7 @@
                 }
             });
             if(!res1.ok) throw new Error('회원 정보를 불러오지 못했습니다');
+            setupLogout();
             const member = await res1.json();
             document.getElementById('nickname').innerText = member.nickname;
             document.getElementById('cash').innerText = member.cash;

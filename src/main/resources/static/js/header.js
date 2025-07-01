@@ -41,9 +41,6 @@
 
             anonymousHeader.style.display = 'none';
             authenticatedHeader.style.display = 'flex';
-
-            // 로그아웃 링크에 이벤트 리스너를 설정합니다. (성공 시에만 설정)
-            setupLogout();
         })
         .catch(error => {
             // ❗️ API 호출 실패 시 (네트워크 에러, 401 등): 로그아웃 상태로 처리합니다.

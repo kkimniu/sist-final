@@ -22,12 +22,6 @@
 <script>
     // 페이지 로드 시 기본으로 자산순 랭킹 보여주기
     window.onload = function () {
-        const token = localStorage.getItem('jwt-token');
-        if (!token) {
-            document.getElementById('message').innerText = '로컬 스토리지에 토큰이 없습니다. 먼저 로그인을 해주세요.';
-            return;
-        }
-        // 기본: 자산순 로딩
         loadRanking('cash');
     }
 
@@ -36,14 +30,11 @@
         const list = document.getElementById('rankingList');
         const message = document.getElementById('message');
 
-        if (!token) {
-            message.innerText = '로그인이 필요합니다.';
-            return;
-        }
         try {
             const res1 = await fetch(`/api/rankings/${type}`, {
+                method: 'GET',
                 headers: {
-                    'Authorization': 'Bearer ' + token
+                    'Content-Type': 'application/json'
                 }
             });
             if(!res1.ok) throw new Error('게임 기록을 불러오지 못했습니다');
