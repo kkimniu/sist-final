@@ -17,6 +17,6 @@
         entered_at as enteredAt
         from game_participations
         where member_id = #{memberId}
-        order by entered_at ASC
+        order by entered_at DESC
     </select>
 </mapper>
