@@ -151,10 +151,11 @@ public class GameManagerImpl implements GameManager {
     @Override
     public void replaceChartSessionByUserId(long targetId, WebSocketSession newSession) {
         try {
-            for (GameDto gameDTO : gameDtos) {
-                if (gameDTO.getChartSessions().containsKey(targetId)) {
-                    gameDTO.getChartSessions().replace(targetId, newSession);
-                    gameDTO.getUserIdsInChartSessions().put(newSession.getId(), targetId);
+            for (GameDto gameDto : gameDtos) {
+                if (gameDto.getChartSessions().containsKey(targetId)) {
+                    gameDto.getChartSessions().get(targetId).close();
+                    gameDto.getChartSessions().replace(targetId, newSession);
+                    gameDto.getUserIdsInChartSessions().put(newSession.getId(), targetId);
                     return;
                 }
             }
