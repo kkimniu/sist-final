@@ -43,9 +43,11 @@
        th:href="@{/notices(cp=${paging.nextPage})}">
         &raquo;
     </a>
-    <a th:href="@{/notices(cp=${paging.totalPage})}">
+    <a th:if="${paging.hasNext}"
+       th:href="@{/notices(cp=${paging.totalPage})}">
         &raquo;&raquo;
     </a>
 </div>
+<script src="/js/header.js"></script>
 </body>
 </html>
