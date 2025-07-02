@@ -81,3 +81,59 @@
   color: #333;
   text-decoration: none;
 }
+.paging a:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+/*해당 페이지면 색깔 고정*/
+.paging a.active {
+  background-color: #4285f4;
+  color: white;
+  font-weight: bold;
+  border-radius: 4px;
+}
+
+/*상세페이지에 작성일*/
+.created-at {
+  text-align: left;
+  color: #e0e0e0;
+  font-size: 15px;
+}
+
+/*상세페이지에 제목*/
+.title {
+  text-align: left;
+  font-size: 30px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/*상세페이제에 본문*/
+.content {
+  text-align: left;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/*상세페이지에 목록버튼 오른쪽 이동*/
+.notice-back-btn {
+    text-align: right;
+}
+
+/*목록 버튼 및 클릭 시 색깔 강조*/
+.notice-back-btn button {
+  padding: 10px 20px;
+  margin: 0 1px;
+  border: 1px solid #ddd;
+  background-color: #f1f3f5;
+  color: #343a40;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+}
+.notice-back-btn button:hover {
+  background-color: #007bff;
+  color: white;
+}
