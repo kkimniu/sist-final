@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
-public class SignupForm {
+public class SignupDto {
 
     // --- Validation Groups ---
     // 한 파일 내에서 관리할 수 있도록 static inner class로 포함시켰습니다.
@@ -25,10 +25,6 @@ public class SignupForm {
         }
 
         public interface SignupGroup extends TermsGroup, EmailGroup, AuthKeyGroup, NicknameGroup, PasswordGroup {
-        }
-
-        public interface EmailVerificationGroup extends EmailGroup, AuthKeyGroup {
-
         }
     }
 

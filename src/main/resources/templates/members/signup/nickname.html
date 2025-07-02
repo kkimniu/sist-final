@@ -21,7 +21,7 @@
         <p>사용하실 닉네임을 입력해주세요.</p>
     </div>
 
-    <form th:action="@{/signup/nickname}" th:object="${signupForm}" method="post">
+    <form th:action="@{/signup/nickname}" th:object="${signupDto}" method="post">
 
         <input type="text" id="nickname" name="nickname"
                minlength="1" maxlength="16" pattern="^[가-힣a-zA-Z0-9]{1,16}$"
