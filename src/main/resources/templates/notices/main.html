@@ -36,7 +36,7 @@
         <div class="paging">
             <a th:if="${paging.hasPrev}" th:href="@{/notices(cp=${paging.firstPage})}">&laquo;</a>
             <a th:if="${paging.hasPrev}" th:href="@{/notices(cp=${paging.prevPage})}">&lt;</a>
-            <a th:each="list:${paging.pageList}" th:href="@{/notices(cp=${list})}" th:text="${list}">1</a>
+            <a th:each="list:${paging.pageList}" th:href="@{/notices(cp=${list})}" th:text="${list}" th:classappend="${list} == ${paging.cp} ? 'active' : ''">1</a>
             <a th:if="${paging.hasNext}" th:href="@{/notices(cp=${paging.nextPage})}">&gt;</a>
             <a th:if="${paging.hasNext}" th:href="@{/notices(cp=${paging.totalPage})}">&raquo;</a>
         </div>
