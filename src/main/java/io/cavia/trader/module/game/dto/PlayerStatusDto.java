@@ -1,6 +1,5 @@
-package io.cavia.trader.module.game.entity;
+package io.cavia.trader.module.game.dto;
 
-import io.cavia.trader.module.game.dto.Order;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -12,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @Builder
-public class GameParticipation {
+public class PlayerStatusDto {
     private long memberId;
     private String memberNickname;
     private Long gameId;

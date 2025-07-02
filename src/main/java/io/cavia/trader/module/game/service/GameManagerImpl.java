@@ -3,8 +3,9 @@ package io.cavia.trader.module.game.service;
 import io.cavia.trader.module.client.dto.QuotesOutput;
 import io.cavia.trader.module.client.dto.TradesOutput;
 import io.cavia.trader.module.game.dto.GameDto;
-import io.cavia.trader.module.game.entity.GameParticipation;
+import io.cavia.trader.module.game.dto.PlayerStatusDto;
 import io.cavia.trader.module.game.repository.GameRepositoryImpl;
+import io.cavia.trader.module.member.entity.GameParticipation;
 import io.cavia.trader.module.member.entity.Member;
 import io.jsonwebtoken.Claims;
 import lombok.Getter;
@@ -49,9 +50,21 @@ public class GameManagerImpl implements GameManager {
             // 세션의 생명 주기가 끝났으면 선입 세션 삭제
             if (timesBetween >= GAME_LIFE_CYCLE) {
                 // TODO 게임 세션 삭제 전 DB 저장 필요(game 객체는 세션 만들어 질때 저장 했음)
-                gameDTO.getGameParticipations().forEach((memberId, gameParticipation) -> {
-                    gameParticipation.setEnteredAt(LocalDateTime.now());
-                    gameRepositoryImpl.saveGameParticipation(gameParticipation);
+                gameDTO.getPlayerStatusDtos().forEach((memberId, playerStatusDto) -> {
+
+
+                    gameRepositoryImpl.saveGameParticipation(
+                            GameParticipation.builder()
+                                    .gameId(playerStatusDto.getGameId())
+                                    .memberId(playerStatusDto.getMemberId())
+                                    .gameRank(playerStatusDto.getGameRank())
+                                    .postCash(playerStatusDto.getPostCash())
+                                    .earnedCash(playerStatusDto.getEarnedCash())
+                                    .postScore(playerStatusDto.getPostScore())
+                                    .earnedScore(playerStatusDto.getEarnedScore())
+                                    .returnRate(playerStatusDto.getReturnRate())
+                                    .enteredAt(LocalDateTime.now())
+                                    .build());
                 });
 
 
@@ -112,9 +125,9 @@ public class GameManagerImpl implements GameManager {
 
             GameDto gameDto = gameDtos.peekLast();
 
-            Map<Long, GameParticipation> gameParticipations = gameDto.getGameParticipations();
-            if (gameParticipations != null) {
-                gameParticipations.put(member.getId(), GameParticipation.builder()
+            Map<Long, PlayerStatusDto> playerStatusDtos = gameDto.getPlayerStatusDtos();
+            if (playerStatusDtos != null) {
+                playerStatusDtos.put(member.getId(), PlayerStatusDto.builder()
                         .gameId(gameDto.getId())
                         .memberId(member.getId())
                         .memberNickname(member.getNickname())
@@ -125,7 +138,6 @@ public class GameManagerImpl implements GameManager {
                         .postScore(member.getTotalScore())
                         .earnedScore(member.getTotalScore())
                         .returnRate(new BigDecimal(0))
-                                .
                         .build()
                 );
             }
@@ -192,7 +204,7 @@ public class GameManagerImpl implements GameManager {
     @Override
     public GameDto findGameSessionByUserId(Long memberId) {
         for (GameDto gameDTO : gameDtos) {
-            if (gameDTO.getGameParticipations().containsKey(memberId)) {
+            if (gameDTO.getPlayerStatusDtos().containsKey(memberId)) {
                 return gameDTO;
             }
         }

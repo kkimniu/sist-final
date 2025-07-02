@@ -3,13 +3,11 @@ package io.cavia.trader.module.game.controller;
 import io.cavia.trader.module.auth.security.UserDetailsImpl;
 import io.cavia.trader.module.game.dto.response.ResponseDto;
 import io.cavia.trader.module.game.service.GameManager;
-import io.cavia.trader.module.jwt.JwtUtil;
 import io.cavia.trader.module.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -40,7 +38,7 @@ public class GameRestController {
 
             return new ResponseEntity<ResponseDto>(
                     new ResponseDto("" + gameManager.findGameSessionByUserId(memberId)
-                            .getGameParticipations().get(memberId).getStocksHolding()), HttpStatus.OK);
+                            .getPlayerStatusDtos().get(memberId).getStocksHolding()), HttpStatus.OK);
 
         }catch (Exception e){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);

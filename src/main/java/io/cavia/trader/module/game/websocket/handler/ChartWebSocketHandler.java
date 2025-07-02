@@ -50,7 +50,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
             gameDto.getChartSessions().values().forEach(s -> {
                 try {
                     if (s.isOpen()) s.sendMessage(new TextMessage("numberOfParticipation||"
-                            + gameDto.getGameParticipations().size()));
+                            + gameDto.getPlayerStatusDtos().size()));
                 } catch (Exception e) {
                     throw new RuntimeException("유저 참여 변동 사항 멀티캐스트 중 예외 발생!", e);
                 }
@@ -105,16 +105,16 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                             //TODO 체결가가 바뀌는 시점. 사용자 거래 요청 목록을 보고 체결가와 맞는 항목의 거래를 발생시킨다
                             AtomicInteger tradeIndex = new AtomicInteger(i);
 
-                            gameDto.getGameParticipations().values().forEach(gameMemberDto -> {
+                            gameDto.getPlayerStatusDtos().values().forEach(playerStatusDto -> {
                                 // 매번 전부 돌긴 그러니까 확인할 필요가 없는 상황이면 순회를 하지 않도록 해야 함
                                 // 언제 확인이 필요 없을까?
                                 // 매도 주문이 있을 때, 매수 주문이 있을 때, 시장가 매도 주문이 있을 때, 시장가 매수 주문이 있을 때
                                 // 주문 자체를 검증하는 건 service계층에서
 
-                                Map<Price, Integer> sellDeals = gameMemberDto.getOrder().getSellDeals();
-                                Map<Price, Integer> buyDeals = gameMemberDto.getOrder().getBuyDeals();
-                                int quantityOfMarketSell = gameMemberDto.getOrder().getQuantityOfMarketSell();
-                                int quantityOfMarketBuy = gameMemberDto.getOrder().getQuantityOfMarketBuy();
+                                Map<Price, Integer> sellDeals = playerStatusDto.getOrder().getSellDeals();
+                                Map<Price, Integer> buyDeals = playerStatusDto.getOrder().getBuyDeals();
+                                int quantityOfMarketSell = playerStatusDto.getOrder().getQuantityOfMarketSell();
+                                int quantityOfMarketBuy = playerStatusDto.getOrder().getQuantityOfMarketBuy();
 
                                 // 같은 조건으로 두 번 비교하는 이유
                                 // and 조건 불만족시 점프
@@ -126,14 +126,20 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                         // 매도 주문이면 반대로 비싸거나 같을 때 number만큼 보유 주식 차감
                                         sellDeals.forEach(((price, number) -> {
                                             if (trades.get(tradeIndex.get()).getStckPrpr() >= price.getPrice()) {
-                                                // 마찬가지로 보유 주식 변동 후 주문 삭제
-                                                gameMemberDto.setStocksHolding(
-                                                        gameMemberDto.getStocksHolding() - number);
+                                                // 보유 주식 변동
+                                                playerStatusDto.setStocksHolding(
+                                                        playerStatusDto.getStocksHolding() - number);
 
+                                                // 보유 자산 변동
+                                                playerStatusDto.setEarnedCash(
+                                                        playerStatusDto.getEarnedCash() + number * price.getPrice()
+                                                );
+
+                                                // 매도 거래 삭제
                                                 sellDeals.remove(price);
 
-                                                // 삭제 후 로그 추가(매도니까 가격은 음수로 바꿔서 구분)
-                                                Queue<TradeLog> tradeLog = gameMemberDto.getOrder().getTradeLogs();
+                                                // 로그 추가
+                                                Queue<TradeLog> tradeLog = playerStatusDto.getOrder().getTradeLogs();
                                                 tradeLog.add(
                                                         TradeLog.builder()
                                                                 .Id(tradeLog.size() + 1)
@@ -151,13 +157,20 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                         // 매수 주문이면 주문가가 체결가보다 싸거나 같을 때 number만큼 보유 주식 증감
                                         buyDeals.forEach(((price, number) -> {
                                             if (trades.get(tradeIndex.get()).getStckPrpr() <= price.getPrice()) {
-                                                // 보유 주식 변동 후 주문 삭제
-                                                gameMemberDto.setStocksHolding(
-                                                        gameMemberDto.getStocksHolding() + number);
+                                                // 보유 주식 변동
+                                                playerStatusDto.setStocksHolding(
+                                                        playerStatusDto.getStocksHolding() + number);
 
-                                                // 삭제 후 로그 추가
+                                                // 보유 자산 수정
+                                                playerStatusDto.setEarnedCash(
+                                                        playerStatusDto.getEarnedCash() - number * price.getPrice()
+                                                );
+
+                                                // 매수 거래 삭제
                                                 buyDeals.remove(price);
-                                                Queue<TradeLog> tradeLog = gameMemberDto.getOrder().getTradeLogs();
+
+                                                // 로그 추가
+                                                Queue<TradeLog> tradeLog = playerStatusDto.getOrder().getTradeLogs();
                                                 tradeLog.add(
                                                         TradeLog.builder()
                                                                 .Id(tradeLog.size() + 1)
@@ -173,13 +186,20 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                                     // 시장가 매도주문이 존재할 경우 현재 체결가로 주문 처리
                                     if (quantityOfMarketSell != 0) {
-                                        gameMemberDto.setStocksHolding(
-                                                gameMemberDto.getStocksHolding() - quantityOfMarketSell
+                                        playerStatusDto.setStocksHolding(
+                                                playerStatusDto.getStocksHolding() - quantityOfMarketSell
                                         );
-                                        gameMemberDto.getOrder().setQuantityOfMarketSell(0);
+
+
+                                        playerStatusDto.setEarnedCash(
+                                                playerStatusDto.getEarnedCash() + quantityOfMarketSell * (long) trades.get(tradeIndex.get()).getStckPrpr()
+                                        );
+
+                                        playerStatusDto.getOrder().setQuantityOfMarketSell(0);
+
 
                                         // 로그 추가 해야겠지?
-                                        Queue<TradeLog> tradeLog = gameMemberDto.getOrder().getTradeLogs();
+                                        Queue<TradeLog> tradeLog = playerStatusDto.getOrder().getTradeLogs();
                                         tradeLog.add(
                                                 TradeLog.builder()
                                                         .Id(tradeLog.size() + 1)
@@ -191,13 +211,18 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                                     // 시장가 매수주문이 존재할 경우 현재 체결가로 주문 처리
                                     if (quantityOfMarketBuy != 0) {
-                                        gameMemberDto.setStocksHolding(
-                                                gameMemberDto.getStocksHolding() - quantityOfMarketBuy
+                                        playerStatusDto.setStocksHolding(
+                                                playerStatusDto.getStocksHolding() - quantityOfMarketBuy
                                         );
-                                        gameMemberDto.getOrder().setQuantityOfMarketBuy(0);
+
+                                        playerStatusDto.setEarnedCash(
+                                                playerStatusDto.getEarnedCash() - quantityOfMarketSell * (long) trades.get(tradeIndex.get()).getStckPrpr()
+                                        );
+
+                                        playerStatusDto.getOrder().setQuantityOfMarketBuy(0);
 
                                         // 로그 추가 해야겠지?
-                                        Queue<TradeLog> tradeLog = gameMemberDto.getOrder().getTradeLogs();
+                                        Queue<TradeLog> tradeLog = playerStatusDto.getOrder().getTradeLogs();
                                         tradeLog.add(
                                                 TradeLog.builder()
                                                         .Id(tradeLog.size() + 1)
@@ -209,9 +234,9 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                                     // 거래가 발생했으니 새로고침 된 데이터를 전송
                                     try {
-                                        String orderJson = objectMapper.writeValueAsString(gameMemberDto.getOrder());
+                                        String orderJson = objectMapper.writeValueAsString(playerStatusDto.getOrder());
                                         synchronized (chartSession) {
-                                            chartSession.sendMessage(new TextMessage("order||" + orderJson));
+                                            chartSession.sendMessage(new TextMessage("||" + orderJson));
                                         }
                                     } catch (Exception e) {
                                         throw new RuntimeException("유저 거래 변동 사항 멀티캐스트 중 예외 발생!", e);

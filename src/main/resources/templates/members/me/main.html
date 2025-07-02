@@ -58,12 +58,12 @@
                 }
             });
             if(!res2.ok) throw new Error('게임 기록을 불러오지 못했습니다');
-            const gameParticipation = await res2.json();
+            const playerStatusDto = await res2.json();
             const list = document.getElementById('game-list');
-            if(gameParticipation.length === 0 ) {
+            if(playerStatusDto.length === 0 ) {
                 list.innerHTML = '<li>참여한 게임이 없습니다.</li>'
             }else{
-                gameParticipation.forEach(game => {
+                playerStatusDto.forEach(game => {
                     const li = document.createElement('li');
                     const date = new Date(game.enteredAt);
                     const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}   ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
