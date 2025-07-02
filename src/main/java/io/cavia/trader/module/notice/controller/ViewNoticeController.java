@@ -41,6 +41,12 @@ public class ViewNoticeController {
                                @RequestParam(defaultValue = "1") int cp,
                                Model model) {
         NoticeDto dto = noticeService.findById(id);
+        String content = dto.getContent();
+        if(content==null){
+            dto.setContent("");
+        }else{
+            dto.setContent(content.replace("\n","<br/>"));
+        }
         model.addAttribute("dto", dto);
         model.addAttribute("cp", cp);
         return "notices/details";
