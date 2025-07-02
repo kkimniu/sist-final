@@ -1,11 +1,11 @@
 package io.cavia.trader.module.member.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import io.cavia.trader.common.validation.ValidPassword;
 import lombok.Getter;
 
 @Getter
 public class PasswordVerificationRequestDto {
 
-    @NotEmpty(message = "비밀번호를 입력해주세요.")
+    @ValidPassword
     String currentPassword;
 }

@@ -36,10 +36,6 @@ public class SignupForm {
         public interface EmailVerificationGroup extends EmailGroup, AuthKeyGroup {
 
         }
-
-        public interface ResetPasswordGroup extends EmailVerificationGroup, PasswordGroup {
-
-        }
     }
 
     /**
