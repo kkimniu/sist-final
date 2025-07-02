@@ -116,55 +116,63 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                 int quantityOfMarketSell = gameMemberDto.getOrder().getQuantityOfMarketSell();
                                 int quantityOfMarketBuy = gameMemberDto.getOrder().getQuantityOfMarketBuy();
 
-                                if(sellDeals.isEmpty() && buyDeals.isEmpty() && quantityOfMarketSell == 0 && quantityOfMarketBuy == 0) {
+                                // 같은 조건으로 두 번 비교하는 이유
+                                // and 조건 불만족시 점프
+                                // 각각 조건의 만족할 때만 컬렉션 내부 순회
+                                // 수정은 각각의 조건문 내부에서 메세지 전송은 1회만
+                                if (!sellDeals.isEmpty() || !buyDeals.isEmpty() || quantityOfMarketSell != 0 || quantityOfMarketBuy != 0) {
 
-                                    // 매도 주문이면 반대로 비싸거나 같을 때 number만큼 보유 주식 차감
-                                    sellDeals.forEach(((price, number) -> {
-                                        if (trades.get(tradeIndex.get()).getStckPrpr() >= price.getPrice()) {
-                                            // 마찬가지로 보유 주식 변동 후 주문 삭제
-                                            gameMemberDto.setStocksHolding(
-                                                    gameMemberDto.getStocksHolding() - number);
+                                    if (!sellDeals.isEmpty()) {
+                                        // 매도 주문이면 반대로 비싸거나 같을 때 number만큼 보유 주식 차감
+                                        sellDeals.forEach(((price, number) -> {
+                                            if (trades.get(tradeIndex.get()).getStckPrpr() >= price.getPrice()) {
+                                                // 마찬가지로 보유 주식 변동 후 주문 삭제
+                                                gameMemberDto.setStocksHolding(
+                                                        gameMemberDto.getStocksHolding() - number);
 
-                                            sellDeals.remove(price);
+                                                sellDeals.remove(price);
 
-                                            // 삭제 후 로그 추가(매도니까 가격은 음수로 바꿔서 구분)
-                                            Queue<TradeLog> tradeLog = gameMemberDto.getOrder().getTradeLogs();
-                                            tradeLog.add(
-                                                    TradeLog.builder()
-                                                            .Id(tradeLog.size() + 1)
-                                                            .price(-Math.abs(price.getPrice()))
-                                                            .quantity(number)
-                                                            .build()
-                                            );
-
-
-                                        }
-                                    }));
-
-                                    // 매수 주문이면 주문가가 체결가보다 싸거나 같을 때 number만큼 보유 주식 증감
-                                    buyDeals.forEach(((price, number) -> {
-                                        if (trades.get(tradeIndex.get()).getStckPrpr() <= price.getPrice()) {
-                                            // 보유 주식 변동 후 주문 삭제
-                                            gameMemberDto.setStocksHolding(
-                                                    gameMemberDto.getStocksHolding() + number);
-
-                                            // 삭제 후 로그 추가
-                                            buyDeals.remove(price);
-                                            Queue<TradeLog> tradeLog = gameMemberDto.getOrder().getTradeLogs();
-                                            tradeLog.add(
-                                                    TradeLog.builder()
-                                                            .Id(tradeLog.size() + 1)
-                                                            .price(price.getPrice())
-                                                            .quantity(number)
-                                                            .build()
-                                            );
+                                                // 삭제 후 로그 추가(매도니까 가격은 음수로 바꿔서 구분)
+                                                Queue<TradeLog> tradeLog = gameMemberDto.getOrder().getTradeLogs();
+                                                tradeLog.add(
+                                                        TradeLog.builder()
+                                                                .Id(tradeLog.size() + 1)
+                                                                .price(-Math.abs(price.getPrice()))
+                                                                .quantity(number)
+                                                                .build()
+                                                );
 
 
-                                        }
-                                    }));
+                                            }
+                                        }));
+                                    }
+
+                                    if (!buyDeals.isEmpty()) {
+                                        // 매수 주문이면 주문가가 체결가보다 싸거나 같을 때 number만큼 보유 주식 증감
+                                        buyDeals.forEach(((price, number) -> {
+                                            if (trades.get(tradeIndex.get()).getStckPrpr() <= price.getPrice()) {
+                                                // 보유 주식 변동 후 주문 삭제
+                                                gameMemberDto.setStocksHolding(
+                                                        gameMemberDto.getStocksHolding() + number);
+
+                                                // 삭제 후 로그 추가
+                                                buyDeals.remove(price);
+                                                Queue<TradeLog> tradeLog = gameMemberDto.getOrder().getTradeLogs();
+                                                tradeLog.add(
+                                                        TradeLog.builder()
+                                                                .Id(tradeLog.size() + 1)
+                                                                .price(price.getPrice())
+                                                                .quantity(number)
+                                                                .build()
+                                                );
+
+
+                                            }
+                                        }));
+                                    }
 
                                     // 시장가 매도주문이 존재할 경우 현재 체결가로 주문 처리
-                                    if (quantityOfMarketSell != 0){
+                                    if (quantityOfMarketSell != 0) {
                                         gameMemberDto.setStocksHolding(
                                                 gameMemberDto.getStocksHolding() - quantityOfMarketSell
                                         );
@@ -182,7 +190,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                     }
 
                                     // 시장가 매수주문이 존재할 경우 현재 체결가로 주문 처리
-                                    if (quantityOfMarketBuy != 0){
+                                    if (quantityOfMarketBuy != 0) {
                                         gameMemberDto.setStocksHolding(
                                                 gameMemberDto.getStocksHolding() - quantityOfMarketBuy
                                         );
@@ -202,9 +210,10 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                     // 거래가 발생했으니 새로고침 된 데이터를 전송
                                     try {
                                         String orderJson = objectMapper.writeValueAsString(gameMemberDto.getOrder());
-
-                                        chartSession.sendMessage(new TextMessage("order||" + orderJson));
-                                    }catch (Exception e){
+                                        synchronized (chartSession) {
+                                            chartSession.sendMessage(new TextMessage("order||" + orderJson));
+                                        }
+                                    } catch (Exception e) {
                                         throw new RuntimeException("유저 거래 변동 사항 멀티캐스트 중 예외 발생!", e);
                                     }
                                 }
