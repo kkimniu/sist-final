@@ -1,15 +1,9 @@
 package io.cavia.trader.module.auth.dto;
 
 import jakarta.validation.constraints.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
-@Setter
-@Getter
-@NoArgsConstructor
-@ToString
+@Data
 public class SignupForm {
 
     // --- Validation Groups ---
