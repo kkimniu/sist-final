@@ -3,7 +3,8 @@ package io.cavia.trader.module.game.service;
 import io.cavia.trader.module.client.dto.QuotesOutput;
 import io.cavia.trader.module.client.dto.TradesOutput;
 import io.cavia.trader.module.game.dto.GameDto;
-import io.cavia.trader.module.game.dto.Order;
+import io.cavia.trader.module.game.dto.GameSessionDto;
+import io.cavia.trader.module.game.dto.OrderDto;
 import io.cavia.trader.module.game.dto.PlayerStatusDto;
 import io.cavia.trader.module.game.repository.GameRepositoryImpl;
 import io.cavia.trader.module.member.entity.GameParticipation;
@@ -21,8 +22,6 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
@@ -33,9 +32,9 @@ public class GameManagerImpl implements GameManager {
 
     private final GameAdministrationService gameAdministrationService;
     private final GameRepositoryImpl gameRepositoryImpl;
+    private final GameSessionDto gameSessionDto;
 
     private final int GAME_LIFE_CYCLE = 1000 * 60 * 1;
-    public Deque<GameDto> gameDtos = new ArrayDeque<>();
 
     //@Scheduled(cron = "0 */10 * * * *")
     @Scheduled(cron = "*/10 * * * * *")
@@ -43,9 +42,9 @@ public class GameManagerImpl implements GameManager {
     @Override
     public void managementGameSessionsLifeCycle() {
 
-        if (!gameDtos.isEmpty()) {
+        if (!gameSessionDto.getGameDtos().isEmpty()) {
             // 현재시간 - 세션시작 시간을 분 단위로 치환한 값
-            GameDto gameDTO = gameDtos.peekFirst();
+            GameDto gameDTO = gameSessionDto.getGameDtos().peekFirst();
             long timesBetween = Duration.between(gameDTO.getStartedAt(), LocalDateTime.now()).toMillis();
 
             // 세션의 생명 주기가 끝났으면 선입 세션 삭제
@@ -86,18 +85,18 @@ public class GameManagerImpl implements GameManager {
                 });
 
 
-                gameDtos.removeFirst();
-                System.out.println("Game Session Closed, Games size: " + gameDtos.size());
+                gameSessionDto.getGameDtos().removeFirst();
+                System.out.println("Game Session Closed, Games size: " + gameSessionDto.getGameDtos().size());
             }
         }
 
         // 게임 세션 1개 생성
         GameDto gameDTO = gameAdministrationService.createGame();
-        gameDtos.add(gameDTO);
+        gameSessionDto.getGameDtos().add(gameDTO);
         gameRepositoryImpl.saveGame(gameDTO.getStockId(),
                 gameDTO.getStartedAt());
         gameDTO.setId(gameRepositoryImpl.findLastGameId());
-        System.out.println("Game Session Created, Games size: " + gameDtos.size());
+        System.out.println("Game Session Created, Games size: " + gameSessionDto.getGameDtos().size());
     }
 
     public Member getUserInfo(Claims userInfo) {
@@ -122,9 +121,9 @@ public class GameManagerImpl implements GameManager {
             return findGameSessionByUserId(member.getId());
         }
 
-        if (!gameDtos.isEmpty()) {
+        if (!gameSessionDto.getGameDtos().isEmpty()) {
 
-            GameDto gameDto = gameDtos.peekLast();
+            GameDto gameDto = gameSessionDto.getGameDtos().peekLast();
 
             Map<Long, PlayerStatusDto> playerStatusDtos = gameDto.getPlayerStatusDtos();
             if (playerStatusDtos != null) {
@@ -138,7 +137,7 @@ public class GameManagerImpl implements GameManager {
                         .earnedCash(member.getCash())
                         .postScore(member.getTotalScore())
                         .earnedScore(member.getTotalScore())
-                        .order(Order.builder().build())
+                        .orderDto(OrderDto.builder().build())
                         .returnRate(new BigDecimal(0))
                         .build()
                 );
@@ -172,8 +171,8 @@ public class GameManagerImpl implements GameManager {
             return findGameSessionByUserId(member.getId());
         }
 
-        if (!gameDtos.isEmpty()) {
-            GameDto gameDTO = gameDtos.peekLast();
+        if (!gameSessionDto.getGameDtos().isEmpty()) {
+            GameDto gameDTO = gameSessionDto.getGameDtos().peekLast();
             synchronized (gameDTO.getChatSessions()) {
                 gameDTO.getChatSessions().put(member.getId(), webSocketSession);
             }
@@ -189,7 +188,7 @@ public class GameManagerImpl implements GameManager {
 
     @Override
     public boolean findChartSessionKeyByUserId(Long memberId) {
-        for (GameDto gameDTO : gameDtos) {
+        for (GameDto gameDTO : gameSessionDto.getGameDtos()) {
             if (gameDTO.getChartSessions().containsKey(memberId)) return true;
         }
         return false;
@@ -197,7 +196,7 @@ public class GameManagerImpl implements GameManager {
 
     @Override
     public boolean findChatSessionKeyByUserId(Long memberId) {
-        for (GameDto gameDTO : gameDtos) {
+        for (GameDto gameDTO : gameSessionDto.getGameDtos()) {
             if (gameDTO.getChatSessions().containsKey(memberId)) return true;
         }
         return false;
@@ -205,7 +204,7 @@ public class GameManagerImpl implements GameManager {
 
     @Override
     public GameDto findGameSessionByUserId(Long memberId) {
-        for (GameDto gameDTO : gameDtos) {
+        for (GameDto gameDTO : gameSessionDto.getGameDtos()) {
             if (gameDTO.getPlayerStatusDtos().containsKey(memberId)) {
                 return gameDTO;
             }
@@ -217,7 +216,7 @@ public class GameManagerImpl implements GameManager {
     @Override
     public void replaceChartSessionByUserId(long targetId, WebSocketSession newSession) {
         try {
-            for (GameDto gameDto : gameDtos) {
+            for (GameDto gameDto : gameSessionDto.getGameDtos()) {
                 synchronized (gameDto.getChartSessions()) {
                     if (gameDto.getChartSessions().containsKey(targetId)) {
                         gameDto.getChartSessions().get(targetId).close();
@@ -235,7 +234,7 @@ public class GameManagerImpl implements GameManager {
     @Override
     public void replaceChatSessionByUserId(long targetId, WebSocketSession newSession) {
         try {
-            for (GameDto gameDto : gameDtos) {
+            for (GameDto gameDto : gameSessionDto.getGameDtos()) {
                 synchronized (gameDto.getChatSessions()) {
                     if (gameDto.getChatSessions().containsKey(targetId)) {
                         gameDto.getChatSessions().get(targetId).close();
@@ -253,7 +252,7 @@ public class GameManagerImpl implements GameManager {
     @Override
     public void removeChartSession(WebSocketSession session) {
         try {
-            for (GameDto gameDTO : gameDtos) {
+            for (GameDto gameDTO : gameSessionDto.getGameDtos()) {
                 if (gameDTO.getUserIdsInChartSessions()
                         .containsKey(session.getId())) {
 
@@ -273,7 +272,7 @@ public class GameManagerImpl implements GameManager {
     @Override
     public void removeChatSession(WebSocketSession session) {
         try {
-            for (GameDto gameDTO : gameDtos) {
+            for (GameDto gameDTO : gameSessionDto.getGameDtos()) {
                 if (gameDTO.getUserIdsInChatSessions()
                         .containsKey(session.getId())) {
 

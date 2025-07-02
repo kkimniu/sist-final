@@ -9,11 +9,9 @@ import java.util.*;
 @Getter
 @Setter
 @Builder
-public class Order {
+public class OrderDto {
     @Builder.Default
-    private Map<Price, Integer> buyDeals = new HashMap<>();
-    @Builder.Default
-    private Map<Price, Integer> sellDeals = new HashMap<>();
+    private Queue<OrderTableDto> orderTableDto = new LinkedList<>();
     @Builder.Default
     private Queue<TradeLog> tradeLogs = new LinkedList<>();
     private int QuantityOfMarketBuy;

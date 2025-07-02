@@ -22,6 +22,6 @@ public class PlayerStatusDto {
     private int postScore;
     private long earnedCash;
     private long postCash;
-    private Order order;
+    private OrderDto orderDto;
     private LocalDateTime enteredAt;
 }

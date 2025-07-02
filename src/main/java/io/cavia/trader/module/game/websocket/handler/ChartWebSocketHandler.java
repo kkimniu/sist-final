@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cavia.trader.module.client.dto.QuotesOutput;
 import io.cavia.trader.module.client.dto.TradesOutput;
 import io.cavia.trader.module.game.dto.GameDto;
-import io.cavia.trader.module.game.dto.Price;
+import io.cavia.trader.module.game.dto.OrderTableDto;
 import io.cavia.trader.module.game.dto.TradeLog;
 import io.cavia.trader.module.game.service.GameManager;
 import io.cavia.trader.module.jwt.JwtUtil;
@@ -16,7 +16,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -103,6 +102,8 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                             Thread.sleep(timeDifference);
 
                             //TODO 체결가가 바뀌는 시점. 사용자 거래 요청 목록을 보고 체결가와 맞는 항목의 거래를 발생시킨다
+                            gameDto.setCurrentPriceIn10Second(trades.get(i).getStckPrpr());
+
                             AtomicInteger tradeIndex = new AtomicInteger(i);
 
                             gameDto.getPlayerStatusDtos().values().forEach(playerStatusDto -> {
@@ -111,76 +112,59 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                 // 매도 주문이 있을 때, 매수 주문이 있을 때, 시장가 매도 주문이 있을 때, 시장가 매수 주문이 있을 때
                                 // 주문 자체를 검증하는 건 service계층에서
 
-                                Map<Price, Integer> sellDeals = playerStatusDto.getOrder().getSellDeals();
-                                Map<Price, Integer> buyDeals = playerStatusDto.getOrder().getBuyDeals();
-                                int quantityOfMarketSell = playerStatusDto.getOrder().getQuantityOfMarketSell();
-                                int quantityOfMarketBuy = playerStatusDto.getOrder().getQuantityOfMarketBuy();
+                                Queue<OrderTableDto> Deals = playerStatusDto.getOrderDto().getOrderTableDto();
+
+                                int quantityOfMarketSell = playerStatusDto.getOrderDto().getQuantityOfMarketSell();
+                                int quantityOfMarketBuy = playerStatusDto.getOrderDto().getQuantityOfMarketBuy();
 
                                 // 같은 조건으로 두 번 비교하는 이유
                                 // and 조건 불만족시 점프
                                 // 각각 조건의 만족할 때만 컬렉션 내부 순회
                                 // 수정은 각각의 조건문 내부에서 메세지 전송은 1회만
-                                if (!sellDeals.isEmpty() || !buyDeals.isEmpty() || quantityOfMarketSell != 0 || quantityOfMarketBuy != 0) {
+                                if (!Deals.isEmpty() || quantityOfMarketSell != 0 || quantityOfMarketBuy != 0) {
 
-                                    if (!sellDeals.isEmpty()) {
-                                        // 매도 주문이면 반대로 비싸거나 같을 때 number만큼 보유 주식 차감
-                                        sellDeals.forEach(((price, quantity) -> {
-                                            if (trades.get(tradeIndex.get()).getStckPrpr() >= price.getPrice()) {
-                                                // 보유 주식 변동
-                                                playerStatusDto.setStocksHolding(
-                                                        playerStatusDto.getStocksHolding() - quantity);
+                                    if (!Deals.isEmpty()) {
+                                        // 매수, 매도 음수 양수로 구분하여 체결가와 주문가 비교하여 거래 발생시키기(미체결 거래가 한 테이블에 모여있어야 해서 수정함)
+                                        Deals.forEach(((orderTableDto) -> {
 
-                                                // 보유 자산 변동
-                                                playerStatusDto.setEarnedCash(
-                                                        playerStatusDto.getEarnedCash() + (long) quantity * price.getPrice()
-                                                );
+                                            if (orderTableDto.getPrice() < 0) {
+                                                if (trades.get(tradeIndex.get()).getStckPrpr() >= Math.abs(orderTableDto.getPrice())) {
 
-                                                // 매도 거래 삭제
-                                                sellDeals.remove(price);
+                                                    playerStatusDto.setStocksHolding(
+                                                            playerStatusDto.getStocksHolding() + orderTableDto.getQuantity());
 
-                                                // 로그 추가
-                                                Queue<TradeLog> tradeLog = playerStatusDto.getOrder().getTradeLogs();
-                                                tradeLog.add(
-                                                        TradeLog.builder()
-                                                                .Id(tradeLog.size() + 1)
-                                                                .price(-Math.abs(price.getPrice()))
-                                                                .quantity(quantity)
-                                                                .build()
-                                                );
+                                                    // 보유 자산 변동
+                                                    playerStatusDto.setEarnedCash(
+                                                            playerStatusDto.getEarnedCash() + (long) orderTableDto.getQuantity() * orderTableDto.getPrice()
+                                                    );
 
+                                                    // 매도 거래 삭제
+                                                    Deals.remove(orderTableDto);
+                                                }
+                                            }else{
+                                                if (trades.get(tradeIndex.get()).getStckPrpr() <= Math.abs(orderTableDto.getPrice())) {
 
+                                                    playerStatusDto.setStocksHolding(
+                                                            playerStatusDto.getStocksHolding() + orderTableDto.getQuantity());
+
+                                                    // 보유 자산 변동
+                                                    playerStatusDto.setEarnedCash(
+                                                            playerStatusDto.getEarnedCash() + (long) orderTableDto.getQuantity() * orderTableDto.getPrice()
+                                                    );
+
+                                                    // 매도 거래 삭제
+                                                    Deals.remove(orderTableDto);
+                                                }
                                             }
-                                        }));
-                                    }
-
-                                    if (!buyDeals.isEmpty()) {
-                                        // 매수 주문이면 주문가가 체결가보다 싸거나 같을 때 number만큼 보유 주식 증감
-                                        buyDeals.forEach(((price, quantity) -> {
-                                            if (trades.get(tradeIndex.get()).getStckPrpr() <= price.getPrice()) {
-                                                // 보유 주식 변동
-                                                playerStatusDto.setStocksHolding(
-                                                        playerStatusDto.getStocksHolding() + quantity);
-
-                                                // 보유 자산 수정
-                                                playerStatusDto.setEarnedCash(
-                                                        playerStatusDto.getEarnedCash() - (long) quantity * price.getPrice()
-                                                );
-
-                                                // 매수 거래 삭제
-                                                buyDeals.remove(price);
-
-                                                // 로그 추가
-                                                Queue<TradeLog> tradeLog = playerStatusDto.getOrder().getTradeLogs();
-                                                tradeLog.add(
-                                                        TradeLog.builder()
-                                                                .Id(tradeLog.size() + 1)
-                                                                .price(price.getPrice())
-                                                                .quantity(quantity)
-                                                                .build()
-                                                );
-
-
-                                            }
+                                            // 로그 추가
+                                            Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
+                                            tradeLog.add(
+                                                    TradeLog.builder()
+                                                            .Id(tradeLog.size() + 1)
+                                                            .price(Math.abs(orderTableDto.getPrice()))
+                                                            .quantity(orderTableDto.getQuantity())
+                                                            .build()
+                                            );
                                         }));
                                     }
 
@@ -195,11 +179,11 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                 playerStatusDto.getEarnedCash() + quantityOfMarketSell * (long) trades.get(tradeIndex.get()).getStckPrpr()
                                         );
 
-                                        playerStatusDto.getOrder().setQuantityOfMarketSell(0);
+                                        playerStatusDto.getOrderDto().setQuantityOfMarketSell(0);
 
 
                                         // 로그 추가 해야겠지?
-                                        Queue<TradeLog> tradeLog = playerStatusDto.getOrder().getTradeLogs();
+                                        Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
                                         tradeLog.add(
                                                 TradeLog.builder()
                                                         .Id(tradeLog.size() + 1)
@@ -219,10 +203,10 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                 playerStatusDto.getEarnedCash() - quantityOfMarketSell * (long) trades.get(tradeIndex.get()).getStckPrpr()
                                         );
 
-                                        playerStatusDto.getOrder().setQuantityOfMarketBuy(0);
+                                        playerStatusDto.getOrderDto().setQuantityOfMarketBuy(0);
 
                                         // 로그 추가 해야겠지?
-                                        Queue<TradeLog> tradeLog = playerStatusDto.getOrder().getTradeLogs();
+                                        Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
                                         tradeLog.add(
                                                 TradeLog.builder()
                                                         .Id(tradeLog.size() + 1)
@@ -234,7 +218,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                                     // 거래가 발생했으니 새로고침 된 데이터를 전송
                                     try {
-                                        String orderJson = objectMapper.writeValueAsString(playerStatusDto.getOrder());
+                                        String orderJson = objectMapper.writeValueAsString(playerStatusDto.getOrderDto());
                                         synchronized (chartSession) {
                                             chartSession.sendMessage(new TextMessage("playerStatus||" + orderJson));
                                         }
