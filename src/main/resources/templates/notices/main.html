@@ -8,9 +8,15 @@
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
-<div>
+<div class="notice-container">
     <h2>공 지 사 항</h2>
-    <table>
+    <table class="notice-table">
+        <thead>
+            <tr>
+                <th>제목</th>
+                <th>등록일</th>
+            </tr>
+        </thead>
         <tbody>
         <tr th:if="${lists == null or lists.isEmpty()}">
             <td colspan="30" align="center">
@@ -21,6 +27,7 @@
             <td>
                 <a th:text="${dto.title}" th:href="@{/notices/{id}(id=${dto.id}, cp=${paging.cp})}"></a>
             </td>
+            <td th:text="${#temporals.format(dto.createdAt, 'yyyy-MM-dd')}"></td>
         </tr>
         </tbody>
     </table>
