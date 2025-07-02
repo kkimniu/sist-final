@@ -58,20 +58,20 @@
                 }
             });
             if(!res2.ok) throw new Error('게임 기록을 불러오지 못했습니다');
-            const playerStatusDto = await res2.json();
-            const list = document.getElementById('game-list');
-            if(playerStatusDto.length === 0 ) {
+            const gameParticipation = await res2.json();
+            const list = document.getElementById('gameDTO-list');
+            if(gameParticipation.length === 0 ) {
                 list.innerHTML = '<li>참여한 게임이 없습니다.</li>'
             }else{
-                playerStatusDto.forEach(game => {
+                gameParticipation.forEach(gameDTO => {
                     const li = document.createElement('li');
-                    const date = new Date(game.enteredAt);
-                    const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}   ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+                    const date = new Date(gameDTO.enteredAt);
+                    const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
                     li.innerText = `날짜: ${formatted}
-                   | 수익률: ${game.returnRate}%
-                   | 순위: ${game.gameRank}위
-                   | 점수: ${game.earnedScore} → ${game.postScore}
-                   | 캐시: ${game.earnedCash} → ${game.postCash}`;
+                   | 수익률: ${gameDTO.returnId}%
+                   | 순위: ${gameDTO.gameRank}위
+                   | 점수: ${gameDTO.earnedScore} → ${gameDTO.postScore}
+                   | 캐시: ${gameDTO.earnedCash} → ${gameDTO.postCash}`;
                     list.appendChild(li);
                 });
             }

@@ -42,13 +42,95 @@
         top: 0;
     }
 
+
+    #orderContainer {
+        display: flex;
+    }
+
+    #orderBookLayout {
+        width: 40%;
+        height: 100%;
+        float: left;
+    }
+
+    #orderPanelLayout {
+        width: 50%;
+        height: 50%;
+        border-left: 1px solid black;
+        border-right: 1px solid black;
+        float: right;
+    }
+
+    #chatLayout {
+        clear: right;
+        display: flex;
+        align-items: center;
+        align-content: center;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: center;
+        width: 50%;
+        height: 50%;
+        border-left: 1px solid black;
+        border-right: 1px solid black;
+        border-bottom: 1px solid black;
+    }
+
     #orderBook {
+        width: 100%;
+        height: 100%;
         td {
             text-align: center;
             vertical-align: middle;
         }
     }
 
+    #tabLayout {
+        display: flex;
+        align-items: center;
+        align-content: center;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
+        width: 100%;
+        height: 20%;
+        border-bottom: 1px solid black;
+        border-top: 1px solid black;
+    }
+
+    #PanelLayout {
+        display: flex;
+        align-items: center;
+        align-content: center;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
+        width: 100%;
+        height: 80%;
+        border-bottom: 1px solid black;
+        border-top: 1px solid black;
+
+        #sellPanel {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            border-right: 1px solid black;
+        }
+
+        #buyPanel {
+            display: none;
+            width: 100%;
+            height: 100%;
+            border-right: 1px solid black;
+        }
+
+        #promisePanel {
+            display: none;
+            width: 100%;
+            height: 100%;
+            border-right: 1px solid black;
+        }
+    }
     #chatLog {
         height: 100px;
         overflow-y: scroll;
@@ -77,123 +159,134 @@
         <canvas id="tradeVolumeChartWriter"></canvas>
     </div>
 </div>
-
-<div id="orderBookLayout">
-    <table id="orderBook">
-        <tr>
-            <td id="buy10"></td>
-            <td id="buyPrice10"></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td id="buy9"></td>
-            <td id="buyPrice9"></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td id="buy8"></td>
-            <td id="buyPrice8"></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td id="buy7"></td>
-            <td id="buyPrice7"></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td id="buy6"></td>
-            <td id="buyPrice6"></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td id="buy5"></td>
-            <td id="buyPrice5"></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td id="buy4"></td>
-            <td id="buyPrice4"></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td id="buy3"></td>
-            <td id="buyPrice3"></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td id="buy2"></td>
-            <td id="buyPrice2"></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td id="buy1"></td>
-            <td id="buyPrice1"></td>
-            <td id="buyAll"></td>
-        </tr>
-        <tr>
-            <td id="sellAll"></td>
-            <td id="sell1"></td>
-            <td id="sellPrice1"></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td id="sell2"></td>
-            <td id="sellPrice2"></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td id="sell3"></td>
-            <td id="sellPrice3"></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td id="sell4"></td>
-            <td id="sellPrice4"></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td id="sell5"></td>
-            <td id="sellPrice5"></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td id="sell6"></td>
-            <td id="sellPrice6"></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td id="sell7"></td>
-            <td id="sellPrice7"></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td id="sell8"></td>
-            <td id="sellPrice8"></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td id="sell9"></td>
-            <td id="selPrice9"></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td id="sel10"></td>
-            <td id="sellPrice10"></td>
-        </tr>
-    </table>
-</div>
-
-<div id="orderPanelLayout">
-
-</div>
-
-<div id="chatLayout">
-    <div id="chatLog">
-
+<div id="orderContainer">
+    <div id="orderBookLayout">
+        <table id="orderBook">
+            <tr>
+                <td id="buy10"></td>
+                <td id="buyPrice10"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td id="buy9"></td>
+                <td id="buyPrice9"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td id="buy8"></td>
+                <td id="buyPrice8"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td id="buy7"></td>
+                <td id="buyPrice7"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td id="buy6"></td>
+                <td id="buyPrice6"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td id="buy5"></td>
+                <td id="buyPrice5"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td id="buy4"></td>
+                <td id="buyPrice4"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td id="buy3"></td>
+                <td id="buyPrice3"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td id="buy2"></td>
+                <td id="buyPrice2"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td id="buy1"></td>
+                <td id="buyPrice1"></td>
+                <td id="buyAll"></td>
+            </tr>
+            <tr>
+                <td id="sellAll"></td>
+                <td id="sell1"></td>
+                <td id="sellPrice1"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td id="sell2"></td>
+                <td id="sellPrice2"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td id="sell3"></td>
+                <td id="sellPrice3"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td id="sell4"></td>
+                <td id="sellPrice4"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td id="sell5"></td>
+                <td id="sellPrice5"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td id="sell6"></td>
+                <td id="sellPrice6"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td id="sell7"></td>
+                <td id="sellPrice7"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td id="sell8"></td>
+                <td id="sellPrice8"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td id="sell9"></td>
+                <td id="sellPrice9"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td id="sell10"></td>
+                <td id="sellPrice10"></td>
+            </tr>
+        </table>
     </div>
-    <label for="chatInput"></label><input type="text" id="chatInput" placeholder="메세지 입력"/>
-    <input type="submit" id="chatSend" value="보내기"/>
+
+    <div id="orderPanelLayout">
+        <div id="tabLayout">
+            <div id="sellTab">매도</div>
+            <div id="buyTab">매수</div>
+            <div id="promiseTab">미체결</div>
+        </div>
+        <div id="PanelLayout">
+            <div id="sellPanel"></div>
+            <div id="buyPanel"></div>
+            <div id="promisePanel"></div>
+        </div>
+    </div>
+
+    <div id="chatLayout">
+        <div id="chatLog">
+
+        </div>
+        <label for="chatInput"></label><input type="text" id="chatInput" placeholder="메세지 입력"/>
+        <input type="submit" id="chatSend" value="보내기"/>
+    </div>
 </div>
+
 <script>
     // 채팅 관련 컴포넌트 캐시
     const chatLayout = document.getElementById("chatLayout");
@@ -228,7 +321,7 @@
 
         chatSocket.onmessage = function (event) {
             let msgJson = JSON.parse(event.data);
-            chatLog.innerText = chatLog.innerText + "\n" +msgJson.memberNickname + ": " + msgJson.msg;
+            chatLog.innerText = chatLog.innerText + "\n" + msgJson.memberNickname + ": " + msgJson.msg;
         }
         chatSocket.onclose = function (event) {
             console.log("채팅 연결 종료!");
@@ -864,7 +957,7 @@
                     document.getElementById("buyPrice" + i).innerText = stockData["askp" + i];
                     document.getElementById("buyAll").innerText = stockData.total_askp_rsqn_icdc;
 
-                    document.getElementById("sel" + i).innerText = stockData["bidp" + i];
+                    document.getElementById("sell" + i).innerText = stockData["bidp" + i];
                     document.getElementById("selPrice" + i).innerText = stockData["bidp_rsqn" + i];
                     document.getElementById("selAll").innerText = stockData.total_bidp_rsqn_icdc;
                 }
@@ -1008,13 +1101,15 @@
                     document.getElementById("buyPrice" + i).innerText = value["askp" + i];
                     document.getElementById("buyAll").innerText = value.total_askp_rsqn_icdc;
 
-                    document.getElementById("sel" + i).innerText = value["bidp" + i];
-                    document.getElementById("selPrice" + i).innerText = value["bidp_rsqn" + i];
-                    document.getElementById("selAll").innerText = value.total_bidp_rsqn_icdc;
+                    document.getElementById("sell" + i).innerText = value["bidp" + i];
+                    document.getElementById("sellPrice" + i).innerText = value["bidp_rsqn" + i];
+                    document.getElementById("sellAll").innerText = value.total_bidp_rsqn_icdc;
                 }
             } else if (DataHead === "numberOfParticipation") {
                 document.getElementById("numberOfParticipation").innerText = stockData + "명";
             } else if (DataHead === "timeLeft") {
+                document.getElementById("timeLeft").innerText = Math.floor(stockData / 60) + "분 " + (stockData % 60) + "초";
+            } else if (DataHead === "playerStatus") {
                 document.getElementById("timeLeft").innerText = Math.floor(stockData / 60) + "분 " + (stockData % 60) + "초";
             } else {
                 alert("에러 발생: 정제 되지 않은 데이터 수신!!", event);

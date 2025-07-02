@@ -3,6 +3,7 @@ package io.cavia.trader.module.game.service;
 import io.cavia.trader.module.client.dto.QuotesOutput;
 import io.cavia.trader.module.client.dto.TradesOutput;
 import io.cavia.trader.module.game.dto.GameDto;
+import io.cavia.trader.module.game.dto.Order;
 import io.cavia.trader.module.game.dto.PlayerStatusDto;
 import io.cavia.trader.module.game.repository.GameRepositoryImpl;
 import io.cavia.trader.module.member.entity.GameParticipation;
@@ -137,6 +138,7 @@ public class GameManagerImpl implements GameManager {
                         .earnedCash(member.getCash())
                         .postScore(member.getTotalScore())
                         .earnedScore(member.getTotalScore())
+                        .order(Order.builder().build())
                         .returnRate(new BigDecimal(0))
                         .build()
                 );
