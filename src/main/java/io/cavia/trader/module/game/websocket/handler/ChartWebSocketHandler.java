@@ -124,15 +124,15 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                                     if (!sellDeals.isEmpty()) {
                                         // 매도 주문이면 반대로 비싸거나 같을 때 number만큼 보유 주식 차감
-                                        sellDeals.forEach(((price, number) -> {
+                                        sellDeals.forEach(((price, quantity) -> {
                                             if (trades.get(tradeIndex.get()).getStckPrpr() >= price.getPrice()) {
                                                 // 보유 주식 변동
                                                 playerStatusDto.setStocksHolding(
-                                                        playerStatusDto.getStocksHolding() - number);
+                                                        playerStatusDto.getStocksHolding() - quantity);
 
                                                 // 보유 자산 변동
                                                 playerStatusDto.setEarnedCash(
-                                                        playerStatusDto.getEarnedCash() + number * price.getPrice()
+                                                        playerStatusDto.getEarnedCash() + (long) quantity * price.getPrice()
                                                 );
 
                                                 // 매도 거래 삭제
@@ -144,7 +144,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                         TradeLog.builder()
                                                                 .Id(tradeLog.size() + 1)
                                                                 .price(-Math.abs(price.getPrice()))
-                                                                .quantity(number)
+                                                                .quantity(quantity)
                                                                 .build()
                                                 );
 
@@ -155,15 +155,15 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                                     if (!buyDeals.isEmpty()) {
                                         // 매수 주문이면 주문가가 체결가보다 싸거나 같을 때 number만큼 보유 주식 증감
-                                        buyDeals.forEach(((price, number) -> {
+                                        buyDeals.forEach(((price, quantity) -> {
                                             if (trades.get(tradeIndex.get()).getStckPrpr() <= price.getPrice()) {
                                                 // 보유 주식 변동
                                                 playerStatusDto.setStocksHolding(
-                                                        playerStatusDto.getStocksHolding() + number);
+                                                        playerStatusDto.getStocksHolding() + quantity);
 
                                                 // 보유 자산 수정
                                                 playerStatusDto.setEarnedCash(
-                                                        playerStatusDto.getEarnedCash() - number * price.getPrice()
+                                                        playerStatusDto.getEarnedCash() - (long) quantity * price.getPrice()
                                                 );
 
                                                 // 매수 거래 삭제
@@ -175,7 +175,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                         TradeLog.builder()
                                                                 .Id(tradeLog.size() + 1)
                                                                 .price(price.getPrice())
-                                                                .quantity(number)
+                                                                .quantity(quantity)
                                                                 .build()
                                                 );
 
@@ -236,7 +236,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                     try {
                                         String orderJson = objectMapper.writeValueAsString(playerStatusDto.getOrder());
                                         synchronized (chartSession) {
-                                            chartSession.sendMessage(new TextMessage("||" + orderJson));
+                                            chartSession.sendMessage(new TextMessage("playerStatus||" + orderJson));
                                         }
                                     } catch (Exception e) {
                                         throw new RuntimeException("유저 거래 변동 사항 멀티캐스트 중 예외 발생!", e);
