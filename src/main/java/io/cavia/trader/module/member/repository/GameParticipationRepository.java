@@ -1,9 +1,9 @@
 package io.cavia.trader.module.member.repository;
 
-import io.cavia.trader.module.member.dto.GameParticipationDto;
+import io.cavia.trader.module.member.entity.GameParticipation;
 
 import java.util.List;
 
 public interface GameParticipationRepository {
-    List<GameParticipationDto> findByMemberId(Long memberId);
+    List<GameParticipation> findByMemberId(Long memberId);
 }

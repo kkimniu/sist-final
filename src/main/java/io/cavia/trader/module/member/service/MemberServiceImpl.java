@@ -1,6 +1,6 @@
 package io.cavia.trader.module.member.service;
 
-import io.cavia.trader.module.member.dto.GameParticipationDto;
+import io.cavia.trader.module.member.entity.GameParticipation;
 import io.cavia.trader.module.member.dto.PasswordChangeRequestDto;
 import io.cavia.trader.module.member.dto.UserRankingDto;
 import io.cavia.trader.module.member.entity.Member;
@@ -30,8 +30,8 @@ public class MemberServiceImpl implements MemberService {
     private Long memberCashReset;
 
     @Override
-    public List<GameParticipationDto> getGameParticipationByMemberId(Long memberId) {
-        List<GameParticipationDto> list = gameParticipationRepository.findByMemberId(memberId);
+    public List<GameParticipation> getGameParticipationByMemberId(Long memberId) {
+        List<GameParticipation> list = gameParticipationRepository.findByMemberId(memberId);
         if (list == null || list.isEmpty()) {
             throw new NotFoundException("게임 참여 이력이 없습니다");
         }

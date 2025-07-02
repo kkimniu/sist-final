@@ -1,6 +1,6 @@
 package io.cavia.trader.module.member.repository;
 
-import io.cavia.trader.module.member.dto.GameParticipationDto;
+import io.cavia.trader.module.member.entity.GameParticipation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +13,7 @@ public class GameParticipationMybatisRepository implements GameParticipationRepo
     private final GameParticipationMapper gameParticipationMapper;
 
     @Override
-    public List<GameParticipationDto> findByMemberId(Long memberId) {
+    public List<GameParticipation> findByMemberId(Long memberId) {
         return gameParticipationMapper.findByMemberId(memberId);
     }
 }
