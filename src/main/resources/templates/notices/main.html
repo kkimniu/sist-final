@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="/css/notices.css">
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
@@ -32,7 +33,7 @@
         </tbody>
     </table>
 </div>
-<div>
+<div class="paging">
     <a th:if="${paging.hasPrev}"
        th:href="@{/notices(cp=${paging.firstPage})}">
         &laquo;&laquo;
