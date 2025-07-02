@@ -125,6 +125,7 @@ public class GameManagerImpl implements GameManager {
                         .postScore(member.getTotalScore())
                         .earnedScore(member.getTotalScore())
                         .returnRate(new BigDecimal(0))
+                                .
                         .build()
                 );
             }

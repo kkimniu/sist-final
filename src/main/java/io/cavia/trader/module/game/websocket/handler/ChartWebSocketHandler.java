@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cavia.trader.module.client.dto.QuotesOutput;
 import io.cavia.trader.module.client.dto.TradesOutput;
 import io.cavia.trader.module.game.dto.GameDto;
+import io.cavia.trader.module.game.dto.Price;
+import io.cavia.trader.module.game.dto.TradeLog;
 import io.cavia.trader.module.game.service.GameManager;
 import io.cavia.trader.module.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,9 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
 
@@ -97,6 +102,113 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                             stockBaseTime.set(relTime);
                             Thread.sleep(timeDifference);
 
+                            //TODO 체결가가 바뀌는 시점. 사용자 거래 요청 목록을 보고 체결가와 맞는 항목의 거래를 발생시킨다
+                            AtomicInteger tradeIndex = new AtomicInteger(i);
+
+                            gameDto.getGameParticipations().values().forEach(gameMemberDto -> {
+                                // 매번 전부 돌긴 그러니까 확인할 필요가 없는 상황이면 순회를 하지 않도록 해야 함
+                                // 언제 확인이 필요 없을까?
+                                // 매도 주문이 있을 때, 매수 주문이 있을 때, 시장가 매도 주문이 있을 때, 시장가 매수 주문이 있을 때
+                                // 주문 자체를 검증하는 건 service계층에서
+
+                                Map<Price, Integer> sellDeals = gameMemberDto.getOrder().getSellDeals();
+                                Map<Price, Integer> buyDeals = gameMemberDto.getOrder().getBuyDeals();
+                                int quantityOfMarketSell = gameMemberDto.getOrder().getQuantityOfMarketSell();
+                                int quantityOfMarketBuy = gameMemberDto.getOrder().getQuantityOfMarketBuy();
+
+                                if(sellDeals.isEmpty() && buyDeals.isEmpty() && quantityOfMarketSell == 0 && quantityOfMarketBuy == 0) {
+
+                                    // 매도 주문이면 반대로 비싸거나 같을 때 number만큼 보유 주식 차감
+                                    sellDeals.forEach(((price, number) -> {
+                                        if (trades.get(tradeIndex.get()).getStckPrpr() >= price.getPrice()) {
+                                            // 마찬가지로 보유 주식 변동 후 주문 삭제
+                                            gameMemberDto.setStocksHolding(
+                                                    gameMemberDto.getStocksHolding() - number);
+
+                                            sellDeals.remove(price);
+
+                                            // 삭제 후 로그 추가(매도니까 가격은 음수로 바꿔서 구분)
+                                            Queue<TradeLog> tradeLog = gameMemberDto.getOrder().getTradeLogs();
+                                            tradeLog.add(
+                                                    TradeLog.builder()
+                                                            .Id(tradeLog.size() + 1)
+                                                            .price(-Math.abs(price.getPrice()))
+                                                            .quantity(number)
+                                                            .build()
+                                            );
+
+
+                                        }
+                                    }));
+
+                                    // 매수 주문이면 주문가가 체결가보다 싸거나 같을 때 number만큼 보유 주식 증감
+                                    buyDeals.forEach(((price, number) -> {
+                                        if (trades.get(tradeIndex.get()).getStckPrpr() <= price.getPrice()) {
+                                            // 보유 주식 변동 후 주문 삭제
+                                            gameMemberDto.setStocksHolding(
+                                                    gameMemberDto.getStocksHolding() + number);
+
+                                            // 삭제 후 로그 추가
+                                            buyDeals.remove(price);
+                                            Queue<TradeLog> tradeLog = gameMemberDto.getOrder().getTradeLogs();
+                                            tradeLog.add(
+                                                    TradeLog.builder()
+                                                            .Id(tradeLog.size() + 1)
+                                                            .price(price.getPrice())
+                                                            .quantity(number)
+                                                            .build()
+                                            );
+
+
+                                        }
+                                    }));
+
+                                    // 시장가 매도주문이 존재할 경우 현재 체결가로 주문 처리
+                                    if (quantityOfMarketSell != 0){
+                                        gameMemberDto.setStocksHolding(
+                                                gameMemberDto.getStocksHolding() - quantityOfMarketSell
+                                        );
+                                        gameMemberDto.getOrder().setQuantityOfMarketSell(0);
+
+                                        // 로그 추가 해야겠지?
+                                        Queue<TradeLog> tradeLog = gameMemberDto.getOrder().getTradeLogs();
+                                        tradeLog.add(
+                                                TradeLog.builder()
+                                                        .Id(tradeLog.size() + 1)
+                                                        .price(-Math.abs(trades.get(tradeIndex.get()).getStckPrpr()))
+                                                        .quantity(quantityOfMarketSell)
+                                                        .build()
+                                        );
+                                    }
+
+                                    // 시장가 매수주문이 존재할 경우 현재 체결가로 주문 처리
+                                    if (quantityOfMarketBuy != 0){
+                                        gameMemberDto.setStocksHolding(
+                                                gameMemberDto.getStocksHolding() - quantityOfMarketBuy
+                                        );
+                                        gameMemberDto.getOrder().setQuantityOfMarketBuy(0);
+
+                                        // 로그 추가 해야겠지?
+                                        Queue<TradeLog> tradeLog = gameMemberDto.getOrder().getTradeLogs();
+                                        tradeLog.add(
+                                                TradeLog.builder()
+                                                        .Id(tradeLog.size() + 1)
+                                                        .price(trades.get(tradeIndex.get()).getStckPrpr())
+                                                        .quantity(quantityOfMarketBuy)
+                                                        .build()
+                                        );
+                                    }
+
+                                    // 거래가 발생했으니 새로고침 된 데이터를 전송
+                                    try {
+                                        String orderJson = objectMapper.writeValueAsString(gameMemberDto.getOrder());
+
+                                        chartSession.sendMessage(new TextMessage("order||" + orderJson));
+                                    }catch (Exception e){
+                                        throw new RuntimeException("유저 거래 변동 사항 멀티캐스트 중 예외 발생!", e);
+                                    }
+                                }
+                            });
 
                             String tradesJson = objectMapper.writeValueAsString(trades.get(i));
                             // 메시지 전송 부분 동기화

@@ -1,5 +1,6 @@
 package io.cavia.trader.module.game.entity;
 
+import io.cavia.trader.module.game.dto.Order;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -22,5 +23,6 @@ public class GameParticipation {
     private int postScore;
     private long earnedCash;
     private long postCash;
+    private Order order;
     private LocalDateTime enteredAt;
 }
