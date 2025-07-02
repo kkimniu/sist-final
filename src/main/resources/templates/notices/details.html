@@ -19,7 +19,7 @@
             <h2 th:text="${dto.title}">제목</h2>
         </div>
         <div class="content">
-            <p th:utext="${#strings.replace(dto.content,'\u000A', '<br/>')}"></p>
+            <p th:utext="${#strings.replace(dto.content,'\n', '<br/>')}"></p>
         </div>
         <div class="notice-back-btn">
             <a th:href="@{/notices(cp=${cp})}">
