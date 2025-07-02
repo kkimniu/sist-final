@@ -109,28 +109,29 @@
         height: 80%;
         border-bottom: 1px solid black;
         border-top: 1px solid black;
-
-        #sellPanel {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            border-right: 1px solid black;
-        }
-
-        #buyPanel {
-            display: none;
-            width: 100%;
-            height: 100%;
-            border-right: 1px solid black;
-        }
-
-        #promisePanel {
-            display: none;
-            width: 100%;
-            height: 100%;
-            border-right: 1px solid black;
-        }
     }
+
+    #sellPanel {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        border-right: 1px solid black;
+    }
+
+    #buyPanel {
+        display: none;
+        width: 100%;
+        height: 100%;
+        border-right: 1px solid black;
+    }
+
+    #promisePanel {
+        display: none;
+        width: 100%;
+        height: 100%;
+        border-right: 1px solid black;
+    }
+
     #chatLog {
         height: 100px;
         overflow-y: scroll;
@@ -272,7 +273,11 @@
             <div id="promiseTab">미체결</div>
         </div>
         <div id="PanelLayout">
-            <div id="sellPanel"></div>
+            <div id="sellPanel">
+                <input type="text" id="sellOrderVolume" placeholder="매도 수량"/>
+                <input type="text" id="sellPrice" placeholder="매도 가격"/>
+                <input type="button" id="sellO" value="매도"/>
+            </div>
             <div id="buyPanel"></div>
             <div id="promisePanel"></div>
         </div>
@@ -958,8 +963,8 @@
                     document.getElementById("buyAll").innerText = stockData.total_askp_rsqn_icdc;
 
                     document.getElementById("sell" + i).innerText = stockData["bidp" + i];
-                    document.getElementById("selPrice" + i).innerText = stockData["bidp_rsqn" + i];
-                    document.getElementById("selAll").innerText = stockData.total_bidp_rsqn_icdc;
+                    document.getElementById("sellPrice" + i).innerText = stockData["bidp_rsqn" + i];
+                    document.getElementById("sellAll").innerText = stockData.total_bidp_rsqn_icdc;
                 }
             } else if (DataHead === "previewersTrades") {
                 for (let value of stockData) {
