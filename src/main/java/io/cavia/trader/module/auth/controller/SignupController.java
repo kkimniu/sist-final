@@ -49,7 +49,7 @@ public class SignupController {
 
     @GetMapping("/email")
     public String showEmailForm() {
-        return "member/signup/email";
+        return "members/signup/email";
     }
 
     @PostMapping("/email")
