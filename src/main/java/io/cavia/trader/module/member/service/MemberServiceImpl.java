@@ -1,5 +1,7 @@
 package io.cavia.trader.module.member.service;
 
+import io.cavia.trader.common.exception.ApiException;
+import io.cavia.trader.common.exception.ErrorCode;
 import io.cavia.trader.module.member.dto.GameParticipationDto;
 import io.cavia.trader.module.member.dto.PasswordChangeRequestDto;
 import io.cavia.trader.module.member.dto.UserRankingDto;
@@ -41,13 +43,13 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Member getMemberById(Long id) {
         return memberRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("회원번호로 조회된 회원이 없습니다."));
+                () -> new ApiException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     @Override
     public Member getMemberByEmail(String email) {
-        return memberMapper.findByEmail(email).orElseThrow(
-                () -> new IllegalArgumentException("이메일로 조회된 회원이 없습니다."));
+        return memberRepository.findByEmail(email).orElseThrow(
+                () -> new ApiException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     @Override
@@ -57,6 +59,13 @@ public class MemberServiceImpl implements MemberService {
         }
         if (memberRepository.updateNickname(id, nickname, LocalDateTime.now()) <= 0) {
             throw new InvalidNoticeRequestException("닉네임 변경 실패");
+        }
+    }
+
+    @Override
+    public void verifyMember(String rawPassword, Member member) {
+        if (!passwordEncoder.matches(rawPassword, member.getPassword())) {
+            throw new ApiException(ErrorCode.INCORRECT_PASSWORD);
         }
     }
 

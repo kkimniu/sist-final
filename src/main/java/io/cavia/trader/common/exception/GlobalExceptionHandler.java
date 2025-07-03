@@ -3,10 +3,12 @@ package io.cavia.trader.common.exception;
 import io.cavia.trader.common.response.ApiResponse;
 import io.cavia.trader.common.response.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -16,7 +18,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
  * @author KimBeomhee
  */
 @Slf4j
-@RestControllerAdvice
+@RestControllerAdvice(annotations = RestController.class)
 public class GlobalExceptionHandler {
 
     /**
@@ -29,9 +31,9 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ApiResponse<?>> handleCustomException(ApiException e) {
 
         ErrorCode errorCode = e.getErrorCode();
-        log.warn("Business Exception Occurred: {}", e.getMessage());
+        log.warn("Business Exception Occurred: {}", errorCode.getMessage());
 
-        return ApiResponses.of(errorCode.getHttpStatus(), e.getMessage());
+        return ApiResponses.of(errorCode.getHttpStatus(), errorCode.getMessage());
     }
 
     /**
@@ -60,6 +62,21 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleValidationExceptions(NoResourceFoundException e) {
 
         return ApiResponses.of(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    /**
+     * Repository 계층에서 발생한 예외를 처리합니다.
+     *
+     * @param e DataAccessException
+     * @return ApiResponse가 담긴 ResponseEntity
+     */
+    @ExceptionHandler(DataAccessException.class)
+    protected ResponseEntity<ApiResponse<?>> handleException(DataAccessException e) {
+
+        ErrorCode errorCode = ErrorCode.DATABASE_OPERATION_FAILED;
+        log.error("Data Access Exception Occurred", e);
+
+        return ApiResponses.of(errorCode.getHttpStatus(), errorCode.getMessage());
     }
 
     /**

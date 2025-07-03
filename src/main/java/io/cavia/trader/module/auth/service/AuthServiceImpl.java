@@ -1,6 +1,8 @@
 package io.cavia.trader.module.auth.service;
 
 import io.cavia.trader.common.email.EmailService;
+import io.cavia.trader.common.exception.ApiException;
+import io.cavia.trader.common.exception.ErrorCode;
 import io.cavia.trader.module.auth.dto.LoginRequestDto;
 import io.cavia.trader.module.auth.dto.ResetPasswordRequestDto;
 import io.cavia.trader.module.auth.dto.SignupDto;
@@ -63,10 +65,6 @@ public class AuthServiceImpl implements AuthService {
         memberService.validateDuplicateNickname(nickname);
     }
 
-    public void validateTermsAgreement() {
-
-    }
-
     @Override
     public void join(SignupDto signupDto) {
 
@@ -85,33 +83,20 @@ public class AuthServiceImpl implements AuthService {
     }
 
     /**
-     * 로그인 비즈니스 로G직
+     * 로그인 비즈니스 로직
      *
      * @param requestDto 로그인 요청 정보
      * @return 생성된 JWT
      */
     @Override
     public String login(LoginRequestDto requestDto) {
-        String username = requestDto.getUsername();
-        String password = requestDto.getPassword();
-
-        // 1. 사용자 확인
-        // .orElseThrow() : Optional 객체가 비어있을 경우 예외를 던짐
-        Member member = memberService.getMemberByEmail(username);
-
-        // 2. 비밀번호 확인
-        // passwordEncoder.matches(평문, 암호화된 비밀번호)
-        if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        try {
+            Member member = memberService.getMemberByEmail(requestDto.getEmail());
+            memberService.verifyMember(requestDto.getPassword(), member);
+            return jwtUtil.createToken(member.getId(), member.getRole());
+        } catch (ApiException e) {
+            throw new ApiException(ErrorCode.LOGIN_FAILED);
         }
-
-        // 3. JWT 생성 및 반환
-        return jwtUtil.createToken(member.getId(), member.getRole());
-    }
-
-    @Override
-    public Member getMemberById(Long id) {
-        return memberService.getMemberById(id);
     }
 
     /**

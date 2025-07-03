@@ -1,5 +1,7 @@
 package io.cavia.trader.module.auth.controller;
 
+import io.cavia.trader.common.response.ApiResponse;
+import io.cavia.trader.common.response.ApiResponses;
 import io.cavia.trader.module.auth.dto.LoginRequestDto;
 import io.cavia.trader.module.auth.dto.ResetPasswordRequestDto;
 import io.cavia.trader.module.auth.dto.SendCodeRequestDto;
@@ -28,21 +30,11 @@ public class AuthRestController {
     private final AuthService authService;
 
     @PostMapping("/api/auth/login")
-    public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
-
-        try {
-            String token = authService.login(requestDto);
-
-            // JWT를 클라이언트에게 전달하는 가장 표준적인 방법: 응답 헤더에 추가
-            // JwtUtil에 상수로 정의해둔 헤더 키와 접두사를 사용
-            response.setHeader(JwtUtil.AUTHORIZATION_HEADER, JwtUtil.BEARER_PREFIX + token);
-
-            System.out.println(JwtUtil.AUTHORIZATION_HEADER + " : " + JwtUtil.BEARER_PREFIX + token);
-            return ResponseEntity.ok("로그인 성공");
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
+    public ResponseEntity<ApiResponse<?>> login(@Valid @RequestBody LoginRequestDto requestDto,
+                                                HttpServletResponse response) {
+        String token = authService.login(requestDto);
+        response.setHeader(JwtUtil.AUTHORIZATION_HEADER, JwtUtil.BEARER_PREFIX + token);
+        return ApiResponses.ok();
     }
 
     /**

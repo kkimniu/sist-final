@@ -1,8 +1,8 @@
 package io.cavia.trader.module.member.service;
 
 import io.cavia.trader.module.member.dto.GameParticipationDto;
-import io.cavia.trader.module.member.dto.UserRankingDto;
 import io.cavia.trader.module.member.dto.PasswordChangeRequestDto;
+import io.cavia.trader.module.member.dto.UserRankingDto;
 import io.cavia.trader.module.member.entity.Member;
 
 import java.util.List;
@@ -16,6 +16,8 @@ public interface MemberService {
     Member getMemberByEmail(String email);
 
     void changeNickname(Long id, String nickname);
+
+    void verifyMember(String rawPassword, Member member);
 
     void validatePassword(Long id, String password);
 
@@ -33,8 +35,8 @@ public interface MemberService {
 
     void createMember(Member member);
 
-    List<UserRankingDto> findAllOrderByCash(Long limit , Long offset);
+    List<UserRankingDto> findAllOrderByCash(Long limit, Long offset);
 
-    List<UserRankingDto> findAllOrderByTotalScore(Long limit , Long offset);
+    List<UserRankingDto> findAllOrderByTotalScore(Long limit, Long offset);
 
 }

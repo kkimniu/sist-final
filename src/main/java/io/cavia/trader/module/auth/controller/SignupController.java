@@ -11,7 +11,7 @@ import org.springframework.web.bind.support.SessionStatus;
 
 @Controller
 @RequestMapping("/signup")
-@SessionAttributes("signupForm") //signupForm 이라는 객체가 모델에 들어갈 때 세션에도 복제함
+@SessionAttributes("signupDto") //signupForm 이라는 객체가 모델에 들어갈 때 세션에도 복제함
 @RequiredArgsConstructor
 public class SignupController {
 
@@ -19,8 +19,8 @@ public class SignupController {
 
     //  요청이 들어오면 제일 먼저 실행되는 메서드. 빈 signupForm 객체가 모델에 있음을 보장함. 만약 다른 메서드 파라미터에
 //  @ModelAttribute 로 signupForm을 먼저 세션에서 찾으면 이 메서드는 실행되지 않음.
-    @ModelAttribute("signupForm")
-    public SignupDto createSignupForm() {
+    @ModelAttribute("signupDto")
+    public SignupDto createSignupDto() {
         return new SignupDto();
     }
 
@@ -37,7 +37,7 @@ public class SignupController {
     }
 
     @PostMapping("/terms")
-    public String processTerms(@ModelAttribute("signupForm")
+    public String processTerms(@ModelAttribute("signupDto")
                                @Validated(SignupDto.ValidationGroups.TermsGroup.class) SignupDto signupDto,
                                BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -53,10 +53,10 @@ public class SignupController {
     }
 
     @PostMapping("/email")
-    public String processEmail(@ModelAttribute("signupForm")
+    public String processEmail(@ModelAttribute("signupDto")
                                @Validated(SignupDto.ValidationGroups.EmailGroup.class) SignupDto signupDto,
                                BindingResult bindingResult) {
-        System.out.println("signupForm = " + signupDto);
+        System.out.println("signupDto = " + signupDto);
         if (bindingResult.hasErrors()) {
             return "members/signup/email";
         }
@@ -73,14 +73,14 @@ public class SignupController {
 
     @GetMapping("/verify")
     public String showAuthKeyForm() {
-        return "member/signup/verify";
+        return "members/signup/verify";
     }
 
     @PostMapping("/verify")
-    public String processAuthKey(@ModelAttribute("signupForm")
+    public String processAuthKey(@ModelAttribute("signupDto")
                                  @Validated(SignupDto.ValidationGroups.AuthKeyGroup.class) SignupDto signupDto,
                                  BindingResult bindingResult) {
-        System.out.println("signupForm = " + signupDto);
+        System.out.println("signupDto = " + signupDto);
         if (bindingResult.hasErrors()) {
             return "members/signup/verify";
         }
@@ -95,14 +95,14 @@ public class SignupController {
 
     @GetMapping("/nickname")
     public String showNicknameForm() {
-        return "member/signup/nickname";
+        return "members/signup/nickname";
     }
 
     @PostMapping("/nickname")
-    public String processNickname(@ModelAttribute("signupForm")
+    public String processNickname(@ModelAttribute("signupDto")
                                   @Validated(SignupDto.ValidationGroups.NicknameGroup.class) SignupDto signupDto,
                                   BindingResult bindingResult) {
-        System.out.println("signupForm = " + signupDto);
+        System.out.println("signupDto = " + signupDto);
         if (bindingResult.hasErrors()) {
             return "members/signup/nickname";
         }
@@ -123,12 +123,12 @@ public class SignupController {
     /**
      * 입력한 비밀번호를 검증하고, 전체 폼 클래스를 다시 검증함. 검증 통과하면 회원가입 시도
      *
-     * @param signupDto    세션에 있는 폼 클래스, 사용자가 입력한 정보들이 세션에 저장되어 있음
+     * @param signupDto     세션에 있는 폼 클래스, 사용자가 입력한 정보들이 세션에 저장되어 있음
      * @param bindingResult 폼 클래스 검증 결과
      * @return 다음 페이지 뷰
      */
     @PostMapping("/password")
-    public String processPassword(@ModelAttribute("signupForm")
+    public String processPassword(@ModelAttribute("signupDto")
                                   @Validated(SignupDto.ValidationGroups.SignupGroup.class) SignupDto signupDto,
                                   BindingResult bindingResult) {
 

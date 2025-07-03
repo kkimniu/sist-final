@@ -27,7 +27,7 @@ public enum ErrorCode {
 
 
     // ========== 404 NOT FOUND ==========
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다"),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다"),
     EMAIL_VERIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이메일의 인증 정보를 찾을 수 없습니다"),
     GAME_HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "게임 참여 이력을 찾을 수 없습니다"),
     USER_RANKING_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자 랭킹 정보를 찾을 수 없습니다"),
