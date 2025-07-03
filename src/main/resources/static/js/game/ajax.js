@@ -69,7 +69,7 @@ async function requestBuyOrder() {
     }
 }
 
-async function requestCancelOrder() {
+async function requestCancelOrder(orderId) {
     let responseBuyOrder = await fetch("/api/game/cancel", {
         method: "PATCH",
         headers: {
@@ -77,8 +77,7 @@ async function requestCancelOrder() {
             "Authorization": "Bearer " + localStorage.getItem("jwt-token")
         },
         body: JSON.stringify({
-            "price": document.getElementById("buyOrderPrice").value,
-            "quantity": document.getElementById("buyOrderQuantity").value
+            "orderId": orderId
         })
     });
     if (responseBuyOrder.status === 200) {

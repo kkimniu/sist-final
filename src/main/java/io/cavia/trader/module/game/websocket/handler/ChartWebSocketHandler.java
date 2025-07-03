@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
@@ -123,7 +122,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                 // 각각 조건의 만족할 때만 컬렉션 내부 순회
                                 // 수정은 각각의 조건문 내부에서 메세지 전송은 1회만
 
-                                if (!Deals.isEmpty() || quantityOfMarketSell != 0 || quantityOfMarketBuy != 0) {
+                                if (!Deals.isEmpty() || quantityOfMarketSell != 0 || quantityOfMarketBuy != 0 || playerStatusDto.isUpdated()) {
 
                                     if (!Deals.isEmpty()) {
                                         // 매수, 매도 음수 양수로 구분하여 체결가와 주문가 비교하여 거래 발생시키기(미체결 거래가 한 테이블에 모여있어야 해서 수정함)
@@ -154,7 +153,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                     // 매도 거래 삭제
                                                     Deals.remove(orderTableDto);
                                                 }
-                                            }else{
+                                            } else {
                                                 if (trades.get(tradeIndex.get()).getStckPrpr() <= Math.abs(orderTableDto.getPrice())) {
 
                                                     playerStatusDto.setStocksHolding(
@@ -234,15 +233,20 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                         );
                                     }
                                     // 거래가 발생했으니 새로고침 된 데이터를 전송
-                                    try {
-                                        String playerStatusJson = objectMapper.writeValueAsString(playerStatusDto);
-                                        synchronized (chartSession) {
-                                            chartSession.sendMessage(new TextMessage("playerStatus||" + playerStatusJson));
+                                    if (playerStatusDto.isUpdated()) {
+                                        try {
+                                            String playerStatusJson = objectMapper.writeValueAsString(playerStatusDto);
+                                            synchronized (chartSession) {
+                                                chartSession.sendMessage(new TextMessage("playerStatus||" + playerStatusJson));
+                                            }
+                                            playerStatusDto.setUpdated(false);
+                                        } catch (Exception e) {
+                                            throw new RuntimeException("유저 거래 변동 사항 멀티캐스트 중 예외 발생!", e);
                                         }
-                                    } catch (Exception e) {
-                                        throw new RuntimeException("유저 거래 변동 사항 멀티캐스트 중 예외 발생!", e);
                                     }
                                 }
+
+
                             });
 
                             String tradesJson = objectMapper.writeValueAsString(trades.get(i));

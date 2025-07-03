@@ -770,13 +770,26 @@ function updatePromiseTable(stockData) {
         rowData.push(row.quantity);
         rowData.push(createdAt);
 
+
+
         const tr = document.createElement('tr');
 
-        for(let i = 0; i < 4; i++){
+        for(let i = 0; i < rowData.length; i++){
             const td = document.createElement('td');
             td.innerText = rowData[i];
             tr.appendChild(td);
         }
+        const cancelButton = document.createElement("button");
+        cancelButton.addEventListener("click", () => {
+            requestCancelOrder(row.id);
+        });
+        cancelButton.innerText="주문취소";
+        const td = document.createElement('td');
+        td.appendChild(cancelButton);
+        tr.appendChild(td);
+
+
+
 
         promiseTable.appendChild(tr);
     });

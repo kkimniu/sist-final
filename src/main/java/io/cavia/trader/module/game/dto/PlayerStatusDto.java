@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @Builder
 public class PlayerStatusDto {
     private long memberId;
+    @Builder.Default
+    private boolean Updated = false;
     private String memberNickname;
     private Long gameId;
     private BigDecimal returnRate;
