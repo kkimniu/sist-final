@@ -3,7 +3,7 @@ package io.cavia.trader.module.auth.service;
 import io.cavia.trader.common.email.EmailService;
 import io.cavia.trader.module.auth.dto.LoginRequestDto;
 import io.cavia.trader.module.auth.dto.ResetPasswordRequestDto;
-import io.cavia.trader.module.auth.dto.SignupForm;
+import io.cavia.trader.module.auth.dto.SignupDto;
 import io.cavia.trader.module.auth.entity.EmailVerification;
 import io.cavia.trader.module.auth.repository.EmailVerificationRepository;
 import io.cavia.trader.module.jwt.JwtUtil;
@@ -68,18 +68,18 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void join(SignupForm signupForm) {
+    public void join(SignupDto signupDto) {
 
         Member member = Member.builder()
-                .email(signupForm.getEmail())
-                .nickname(signupForm.getNickname())
-                .password(passwordEncoder.encode(signupForm.getPassword()))
+                .email(signupDto.getEmail())
+                .nickname(signupDto.getNickname())
+                .password(passwordEncoder.encode(signupDto.getPassword()))
                 .cash(memberCashDefault)
                 .build();
 
-        memberService.validateDuplicateNickname(signupForm.getNickname());
-        memberService.validateDuplicateEmail(signupForm.getEmail());
-        verifyAuthKey(signupForm.getEmail(), signupForm.getAuthKey());
+        memberService.validateDuplicateNickname(signupDto.getNickname());
+        memberService.validateDuplicateEmail(signupDto.getEmail());
+        verifyAuthKey(signupDto.getEmail(), signupDto.getAuthKey());
         memberService.createMember(member);
         System.out.println("회원가입 완료시 member = " + member);
     }
