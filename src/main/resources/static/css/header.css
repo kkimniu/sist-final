@@ -1,0 +1,19 @@
+/*전체*/
+.nav-container {
+  background-color: #eef4fb;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  max-width: 900px;
+  margin: 30px auto;
+}
+
+/*로그인*/
+#header-anonymous {
+    background-color: #eef4fb;
+}
+
+/*로그인 후*/
+#header-authenticated {
+    background-color: #eef4fb;
+}
