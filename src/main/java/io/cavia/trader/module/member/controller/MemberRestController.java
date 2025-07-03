@@ -65,7 +65,7 @@ public class MemberRestController {
 
     @PatchMapping("/me/nickname")
     public ResponseEntity<String> updateNickname(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                 @RequestBody NicknameUpdateRequestDto requestDto) {
+                                                 @Valid @RequestBody NicknameUpdateRequestDto requestDto) {
         memberService.changeNickname(userDetails.getMember().getId(), requestDto.getNickname());
         return ResponseEntity.status(200).body("변경성공");
     }
