@@ -33,6 +33,7 @@ public class GameManagerImpl implements GameManager {
     private final GameAdministrationService gameAdministrationService;
     private final GameRepositoryImpl gameRepositoryImpl;
     private final GameSessionDto gameSessionDto;
+    private final ScoreUtil  scoreUtil;
 
     private final int GAME_LIFE_CYCLE = 1000 * 60 * 1;
 
@@ -57,12 +58,13 @@ public class GameManagerImpl implements GameManager {
                             GameParticipation.builder()
                                     .gameId(playerStatusDto.getGameId())
                                     .memberId(playerStatusDto.getMemberId())
-                                    .gameRank(playerStatusDto.getGameRank())
+                                    .gameRank(playerStatusDto.getPostScore()-playerStatusDto.getEarnedScore())
                                     .postCash(playerStatusDto.getPostCash())
                                     .earnedCash(playerStatusDto.getEarnedCash())
                                     .postScore(playerStatusDto.getPostScore())
                                     .earnedScore(playerStatusDto.getEarnedScore())
-                                    .returnRate(playerStatusDto.getReturnRate())
+                                    .returnRate(scoreUtil.getReturnRate(playerStatusDto.getPostCash(),
+                                            playerStatusDto.getEarnedCash()))
                                     .enteredAt(LocalDateTime.now())
                                     .build());
                 });

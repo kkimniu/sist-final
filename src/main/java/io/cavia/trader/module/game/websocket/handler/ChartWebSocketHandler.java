@@ -154,7 +154,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                     // 보유 자산 변동
                                                     // 가능한 안전하게 계산해봄
                                                     long tradeValue = (long) orderTableDto.getQuantity() * trades.get(tradeIndex.get()).getStckPrpr();
-                                                    BigDecimal tradeValueAmount = new BigDecimal(tradeValue+"");
+                                                    BigDecimal tradeValueAmount = new BigDecimal(tradeValue);
                                                     BigDecimal feeValue = tradeValueAmount.multiply(DEFAULT_FEE_RATE);
                                                     tradeValue = tradeValueAmount.subtract(feeValue).setScale(0, RoundingMode.HALF_UP).intValue();
 
@@ -215,7 +215,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                         );
 
                                         long tradeValue = (long) quantityOfMarketSell * trades.get(tradeIndex.get()).getStckPrpr();
-                                        BigDecimal tradeValueAmount = new BigDecimal(tradeValue+"");
+                                        BigDecimal tradeValueAmount = new BigDecimal(tradeValue);
                                         BigDecimal feeValue = tradeValueAmount.multiply(DEFAULT_FEE_RATE);
                                         tradeValue = tradeValueAmount.subtract(feeValue).setScale(0, RoundingMode.HALF_UP).intValue();
 
