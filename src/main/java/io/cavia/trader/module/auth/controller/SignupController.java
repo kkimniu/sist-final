@@ -1,6 +1,6 @@
 package io.cavia.trader.module.auth.controller;
 
-import io.cavia.trader.module.auth.dto.SignupForm;
+import io.cavia.trader.module.auth.dto.SignupDto;
 import io.cavia.trader.module.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -20,8 +20,8 @@ public class SignupController {
     //  요청이 들어오면 제일 먼저 실행되는 메서드. 빈 signupForm 객체가 모델에 있음을 보장함. 만약 다른 메서드 파라미터에
 //  @ModelAttribute 로 signupForm을 먼저 세션에서 찾으면 이 메서드는 실행되지 않음.
     @ModelAttribute("signupForm")
-    public SignupForm createSignupForm() {
-        return new SignupForm();
+    public SignupDto createSignupForm() {
+        return new SignupDto();
     }
 
     @GetMapping
@@ -38,7 +38,7 @@ public class SignupController {
 
     @PostMapping("/terms")
     public String processTerms(@ModelAttribute("signupForm")
-                               @Validated(SignupForm.ValidationGroups.TermsGroup.class) SignupForm signupForm,
+                               @Validated(SignupDto.ValidationGroups.TermsGroup.class) SignupDto signupDto,
                                BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "members/signup/terms";
@@ -49,21 +49,21 @@ public class SignupController {
 
     @GetMapping("/email")
     public String showEmailForm() {
-        return "member/signup/email";
+        return "members/signup/email";
     }
 
     @PostMapping("/email")
     public String processEmail(@ModelAttribute("signupForm")
-                               @Validated(SignupForm.ValidationGroups.EmailGroup.class) SignupForm signupForm,
+                               @Validated(SignupDto.ValidationGroups.EmailGroup.class) SignupDto signupDto,
                                BindingResult bindingResult) {
-        System.out.println("signupForm = " + signupForm);
+        System.out.println("signupForm = " + signupDto);
         if (bindingResult.hasErrors()) {
             return "members/signup/email";
         }
         try {
-            authService.validateDuplicateEmail(signupForm.getEmail());
+            authService.validateDuplicateEmail(signupDto.getEmail());
             //TODO: 이메일 전송 몇초 걸리고, 걸리는 동안 뷰 전환이 없어서, 발송 버튼을 계속 누를 수 있고 이메일도 계속 감.
-            authService.sendVerificationEmail(signupForm.getEmail());
+            authService.sendVerificationEmail(signupDto.getEmail());
         } catch (RuntimeException e) {
             bindingResult.rejectValue("email", "runtimeError", e.getMessage());
             return "members/signup/email";
@@ -78,14 +78,14 @@ public class SignupController {
 
     @PostMapping("/verify")
     public String processAuthKey(@ModelAttribute("signupForm")
-                                 @Validated(SignupForm.ValidationGroups.AuthKeyGroup.class) SignupForm signupForm,
+                                 @Validated(SignupDto.ValidationGroups.AuthKeyGroup.class) SignupDto signupDto,
                                  BindingResult bindingResult) {
-        System.out.println("signupForm = " + signupForm);
+        System.out.println("signupForm = " + signupDto);
         if (bindingResult.hasErrors()) {
             return "members/signup/verify";
         }
         try {
-            authService.verifyAuthKey(signupForm.getEmail(), signupForm.getAuthKey());
+            authService.verifyAuthKey(signupDto.getEmail(), signupDto.getAuthKey());
         } catch (RuntimeException e) {
             bindingResult.rejectValue("authKey", "runtimeError", e.getMessage());
             return "members/signup/verify";
@@ -100,14 +100,14 @@ public class SignupController {
 
     @PostMapping("/nickname")
     public String processNickname(@ModelAttribute("signupForm")
-                                  @Validated(SignupForm.ValidationGroups.NicknameGroup.class) SignupForm signupForm,
+                                  @Validated(SignupDto.ValidationGroups.NicknameGroup.class) SignupDto signupDto,
                                   BindingResult bindingResult) {
-        System.out.println("signupForm = " + signupForm);
+        System.out.println("signupForm = " + signupDto);
         if (bindingResult.hasErrors()) {
             return "members/signup/nickname";
         }
         try {
-            authService.validateDuplicateNickname(signupForm.getNickname());
+            authService.validateDuplicateNickname(signupDto.getNickname());
         } catch (RuntimeException e) {
             bindingResult.rejectValue("nickname", "runtimeError", e.getMessage());
             return "members/signup/nickname";
@@ -123,25 +123,25 @@ public class SignupController {
     /**
      * 입력한 비밀번호를 검증하고, 전체 폼 클래스를 다시 검증함. 검증 통과하면 회원가입 시도
      *
-     * @param signupForm    세션에 있는 폼 클래스, 사용자가 입력한 정보들이 세션에 저장되어 있음
+     * @param signupDto    세션에 있는 폼 클래스, 사용자가 입력한 정보들이 세션에 저장되어 있음
      * @param bindingResult 폼 클래스 검증 결과
      * @return 다음 페이지 뷰
      */
     @PostMapping("/password")
     public String processPassword(@ModelAttribute("signupForm")
-                                  @Validated(SignupForm.ValidationGroups.SignupGroup.class) SignupForm signupForm,
+                                  @Validated(SignupDto.ValidationGroups.SignupGroup.class) SignupDto signupDto,
                                   BindingResult bindingResult) {
 
-        if (signupForm.getPassword() != null && signupForm.getPasswordConfirm() != null
-                && !signupForm.getPassword().equals(signupForm.getPasswordConfirm())) {
+        if (signupDto.getPassword() != null && signupDto.getPasswordConfirm() != null
+                && !signupDto.getPassword().equals(signupDto.getPasswordConfirm())) {
             bindingResult.rejectValue("passwordConfirm", "password.mismatch", "비밀번호가 일치하지 않습니다.");
         }
         if (bindingResult.hasErrors()) {
             return "members/signup/password";
         }
         try {
-            System.out.println("회원가입 시도시 signupForm = " + signupForm);
-            authService.join(signupForm);
+            System.out.println("회원가입 시도시 signupForm = " + signupDto);
+            authService.join(signupDto);
         } catch (RuntimeException e) {
             bindingResult.rejectValue("passwordConfirm", "runtimeError", e.getMessage());
             e.printStackTrace();
