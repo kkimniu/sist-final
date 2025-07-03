@@ -84,6 +84,44 @@ async function requestCancelOrder(orderId) {
         return responseBuyOrder.json();
     } else {
         const errorData = await responseBuyOrder.text();
-        throw new Error("매수 요청 실패!" + errorData);
+        throw new Error("주문 취소 요청 실패!" + errorData);
+    }
+}
+
+async function requestMarketSellOrder() {
+    let responseSellOrder = await fetch("/api/game/market-sell", {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("jwt-token")
+        },
+        body: JSON.stringify({
+            "quantity": document.getElementById("sellOrderQuantity").value
+        })
+    });
+    if (responseSellOrder.status === 200) {
+        return responseSellOrder.json();
+    } else {
+        const errorData = await responseSellOrder.text();
+        throw new Error("시장가 매도 요청 실패!" + errorData);
+    }
+}
+
+async function requestMarketBuyOrder() {
+    let responseBuyOrder = await fetch("/api/game/market-buy", {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("jwt-token")
+        },
+        body: JSON.stringify({
+            "quantity": document.getElementById("buyOrderQuantity").value
+        })
+    });
+    if (responseBuyOrder.status === 200) {
+        return responseBuyOrder.json();
+    } else {
+        const errorData = await responseBuyOrder.text();
+        throw new Error("시장가 매수 요청 실패!" + errorData);
     }
 }

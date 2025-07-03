@@ -206,6 +206,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                         .Id(tradeLog.size() + 1)
                                                         .price(-Math.abs(trades.get(tradeIndex.get()).getStckPrpr()))
                                                         .quantity(quantityOfMarketSell)
+                                                        .createdAt(LocalDateTime.now())
                                                         .build()
                                         );
                                     }
@@ -215,10 +216,11 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                         playerStatusDto.setStocksHolding(
                                                 playerStatusDto.getStocksHolding() + quantityOfMarketBuy
                                         );
-
+                                        System.out.println("시장가 처리 전 가격: " + playerStatusDto.getEarnedCash());
                                         playerStatusDto.setEarnedCash(
-                                                playerStatusDto.getEarnedCash() - quantityOfMarketSell * (long) trades.get(tradeIndex.get()).getStckPrpr()
+                                                playerStatusDto.getEarnedCash() - quantityOfMarketBuy * (long) trades.get(tradeIndex.get()).getStckPrpr()
                                         );
+                                        System.out.println("시장가 처리 후 가격: " + playerStatusDto.getEarnedCash());
 
                                         playerStatusDto.getOrderDto().setQuantityOfMarketBuy(0);
 
@@ -229,6 +231,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                         .Id(tradeLog.size() + 1)
                                                         .price(trades.get(tradeIndex.get()).getStckPrpr())
                                                         .quantity(quantityOfMarketBuy)
+                                                        .createdAt(LocalDateTime.now())
                                                         .build()
                                         );
                                     }
