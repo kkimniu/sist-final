@@ -139,19 +139,20 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                             playerStatusDto.getEarnedCash() -
                                                                     (long) orderTableDto.getQuantity() * trades.get(tradeIndex.get()).getStckPrpr()
                                                     );
-                                                    // 매도 거래 삭제
-                                                    Deals.remove(orderTableDto);
 
                                                     // 로그 추가
                                                     Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
                                                     tradeLog.add(
                                                             TradeLog.builder()
                                                                     .Id(tradeLog.size() + 1)
-                                                                    .price(orderTableDto.getPrice())
+                                                                    .price(-Math.abs(trades.get(tradeIndex.get()).getStckPrpr()))
                                                                     .quantity(orderTableDto.getQuantity())
                                                                     .createdAt(LocalDateTime.now())
                                                                     .build()
                                                     );
+
+                                                    // 매도 거래 삭제
+                                                    Deals.remove(orderTableDto);
                                                 }
                                             }else{
                                                 if (trades.get(tradeIndex.get()).getStckPrpr() <= Math.abs(orderTableDto.getPrice())) {
@@ -164,19 +165,20 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                             playerStatusDto.getEarnedCash() -
                                                                     (long) orderTableDto.getQuantity() * trades.get(tradeIndex.get()).getStckPrpr()
                                                     );
-                                                    // 매수 거래 삭제
-                                                    Deals.remove(orderTableDto);
 
                                                     // 로그 추가
                                                     Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
                                                     tradeLog.add(
                                                             TradeLog.builder()
                                                                     .Id(tradeLog.size() + 1)
-                                                                    .price(orderTableDto.getPrice())
+                                                                    .price(trades.get(tradeIndex.get()).getStckPrpr())
                                                                     .quantity(orderTableDto.getQuantity())
                                                                     .createdAt(LocalDateTime.now())
                                                                     .build()
                                                     );
+
+                                                    // 매수 거래 삭제
+                                                    Deals.remove(orderTableDto);
                                                 }
                                             }
 

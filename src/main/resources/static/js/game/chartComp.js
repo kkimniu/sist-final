@@ -1,5 +1,7 @@
 let chartSocket;
 
+let holdingValue;
+
 const graphContainer = document.getElementById("graphContainer");
 
 const priceChartContainer = document.getElementById("priceChartContainer");
@@ -536,6 +538,20 @@ function chartSocketHandler() {
             }
 
             stockPrice.innerText = stockData.stck_prpr;
+            const num1 = document.getElementById("stocksHolding").innerText * stockData.stck_prpr;
+            let returnRate = document.getElementById("returnRate");
+            const rate = getRate(num1, holdingValue);
+            if (rate){
+                if (rate > 0) {
+                    returnRate.style.color = "red";
+                    returnRate.innerText = rate + "%";
+                }else {
+                    returnRate.style.color = "blue";
+                    returnRate.innerText = rate + "%";
+                }
+
+            }
+
         } else if (DataHead === "quotes") {
             for (let i = 1; i <= 10; i++) {
                 document.getElementById("buy" + i).innerText = stockData["askp_rsqn" + i];
@@ -701,7 +717,11 @@ function chartSocketHandler() {
             document.getElementById("cash").innerText = stockData.earnedCash;
             updatePromiseTable(stockData);
             updateTradeLogTable(stockData);
-
+            let sum = 0;
+            stockData.orderDto.tradeLogs.forEach(row => {
+                sum += row.price * row.quantity;
+            });
+             holdingValue = sum;
         } else {
             alert("에러 발생: 정제 되지 않은 데이터 수신!!", event);
         }
@@ -803,4 +823,8 @@ function updateTradeLogTable(stockData) {
 
         tradeLogTable.appendChild(tr);
     });
+}
+
+function getRate (number1, number2){
+    return (Math.round((number1 / number2 * 100 - 100) *100)/100)
 }
