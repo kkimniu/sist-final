@@ -10,5 +10,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CancelOrderDto {
-    private long orderId;
+    private Long orderId;
 }

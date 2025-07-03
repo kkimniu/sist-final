@@ -9,6 +9,7 @@ import java.util.*;
 @Getter
 @Setter
 @Builder
+@ToString
 public class OrderDto {
     @Builder.Default
     private Queue<OrderTableDto> orderTableDto = new LinkedList<>();

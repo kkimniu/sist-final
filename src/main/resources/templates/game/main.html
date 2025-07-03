@@ -79,6 +79,7 @@
     #orderBook {
         width: 100%;
         height: 100%;
+
         td {
             text-align: center;
             vertical-align: middle;
@@ -112,7 +113,7 @@
     }
 
     #sellPanel {
-        display: flex;
+        display: block;
         width: 100%;
         height: 100%;
         border-right: 1px solid black;
@@ -140,7 +141,6 @@
 
 </style>
 <body>
-
 <div id=gameInfoLayout>
     <label id=nickname></label><br>
     <label>보유 현금: </label><label id=cash></label><br>
@@ -269,18 +269,31 @@
 
     <div id="orderPanelLayout">
         <div id="tabLayout">
-            <div id="sellTab">매도</div>
-            <div id="buyTab">매수</div>
-            <div id="promiseTab">미체결</div>
+            <div id="sellTab" onclick="showSellPanel();">매도</div>
+            <div id="buyTab" onclick="showBuyPanel();">매수</div>
+            <div id="promiseTab" onclick="showPromisePanel();">미체결</div>
         </div>
         <div id="PanelLayout">
             <div id="sellPanel">
-                <input type="text" id="sellOrderVolume" placeholder="매도 수량"/>
-                <input type="text" id="sellPrice" placeholder="매도 가격"/>
-                <input type="button" id="sellO" value="매도"/>
+                <input type="text" id="sellOrderPrice" placeholder="매도 가격"/>
+                <input type="text" id="sellOrderQuantity" placeholder="매도 수량"/>
+                <input type="button" id="sellOrderButton" value="매도" onclick="requestSellOrder();"/>
             </div>
-            <div id="buyPanel"></div>
-            <div id="promisePanel"></div>
+            <div id="buyPanel">
+                <input type="text" id="buyOrderPrice" placeholder="매수 가격"/>
+                <input type="text" id="buyOrderQuantity" placeholder="매수 수량"/>
+                <input type="button" id="buyOrderButton" value="매수" onclick="requestBuyOrder();"/>
+            </div>
+            <div id="promisePanel">
+                <table id="promiseTable">
+                    <tr>
+                        <th>거래순번</th>
+                        <th>가격</th>
+                        <th>수량</th>
+                        <th>요청시간</th>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -292,9 +305,10 @@
         <input type="submit" id="chatSend" value="보내기"/>
     </div>
 </div>
-<script src = "/js/game/chatComp.js"></script>
-<script src = "/js/game/ajax.js"></script>
-<script src = "/js/game/orderBookComp.js"></script>
-<script src = "/js/game/chartComp.js"></script>
+<script src="/js/game/chatComp.js"></script>
+<script src="/js/game/ajax.js"></script>
+<script src="/js/game/orderBookComp.js"></script>
+<script src="/js/game/chartComp.js"></script>
+<script src="/js/game/orderPanelComp.js"></script>
 </body>
 </html>

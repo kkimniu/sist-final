@@ -28,3 +28,63 @@ async function getStocksHolding() {
         throw new Error("보유 종목 요청 실패!");
     }
 }
+
+async function requestSellOrder() {
+    let responseSellOrder = await fetch("/api/game/sell", {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("jwt-token")
+        },
+        body: JSON.stringify({
+            "price": document.getElementById("sellOrderPrice").value,
+            "quantity": document.getElementById("sellOrderQuantity").value
+        })
+    });
+    if (responseSellOrder.status === 200) {
+        return responseSellOrder.json();
+    } else {
+        const errorData = await responseSellOrder.text();
+        throw new Error("매도 요청 실패!" + errorData);
+    }
+}
+
+async function requestBuyOrder() {
+    let responseBuyOrder = await fetch("/api/game/buy", {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("jwt-token")
+        },
+        body: JSON.stringify({
+            "price": document.getElementById("buyOrderPrice").value,
+            "quantity": document.getElementById("buyOrderQuantity").value
+        })
+    });
+    if (responseBuyOrder.status === 200) {
+        return responseBuyOrder.json();
+    } else {
+        const errorData = await responseBuyOrder.text();
+        throw new Error("매수 요청 실패!" + errorData);
+    }
+}
+
+async function requestCancelOrder() {
+    let responseBuyOrder = await fetch("/api/game/cancel", {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("jwt-token")
+        },
+        body: JSON.stringify({
+            "price": document.getElementById("buyOrderPrice").value,
+            "quantity": document.getElementById("buyOrderQuantity").value
+        })
+    });
+    if (responseBuyOrder.status === 200) {
+        return responseBuyOrder.json();
+    } else {
+        const errorData = await responseBuyOrder.text();
+        throw new Error("매수 요청 실패!" + errorData);
+    }
+}

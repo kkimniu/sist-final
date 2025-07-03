@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -56,18 +57,23 @@ public class GameRestController {
     }
 
     @PatchMapping("/buy")
-    public ResponseEntity<?> placeBuyOrder(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody OrderTableDto orderTableDto) {
-        gameSessionDto.getGameDtos().forEach(game -> {
-            if (game.getPlayerStatusDtos().containsKey(userDetails.getMember().getId())) {
-                orderService.placeBuyOrder(game, orderTableDto, userDetails.getMember().getId());
+    public ResponseEntity<?> placeBuyOrder(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody OrderTableDto orderTableDto, BindingResult bindingResult) {
+            if(bindingResult.hasErrors()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, bindingResult.getAllErrors().get(0).getDefaultMessage());
             }
-            ;
-        });
+            gameSessionDto.getGameDtos().forEach(game -> {
+                if (game.getPlayerStatusDtos().containsKey(userDetails.getMember().getId())) {
+                    orderService.placeBuyOrder(game, orderTableDto, userDetails.getMember().getId());
+                }
+            });
         return ResponseEntity.status(200).body("주문 완료");
     }
 
     @PatchMapping("/sell")
-    public ResponseEntity<?> placeSellOrder(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody OrderTableDto orderTableDto) {
+    public ResponseEntity<?> placeSellOrder(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody OrderTableDto orderTableDto, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, bindingResult.getAllErrors().get(0).getDefaultMessage());
+        }
         orderTableDto.setPrice(-Math.abs(orderTableDto.getPrice()));
         gameSessionDto.getGameDtos().forEach(game -> {
             if (game.getPlayerStatusDtos().containsKey(userDetails.getMember().getId())) {

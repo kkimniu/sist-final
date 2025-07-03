@@ -11,5 +11,5 @@ import lombok.Setter;
 @Setter
 public class MarketOrderDto {
 
-    private int quantity;
+    private Integer quantity;
 }

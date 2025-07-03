@@ -30,15 +30,15 @@
             entered_at
         )
         VALUES (
-            #{playerStatusDto.memberId},
-            #{playerStatusDto.gameId},
-            #{playerStatusDto.returnRate},
-            #{playerStatusDto.gameRank},
-            #{playerStatusDto.earnedScore},
-            #{playerStatusDto.postScore},
-            #{playerStatusDto.earnedCash},
-            #{playerStatusDto.postCash},
-            #{playerStatusDto.enteredAt}
+            #{gameParticipation.memberId},
+            #{gameParticipation.gameId},
+            #{gameParticipation.returnRate},
+            #{gameParticipation.gameRank},
+            #{gameParticipation.earnedScore},
+            #{gameParticipation.postScore},
+            #{gameParticipation.earnedCash},
+            #{gameParticipation.postCash},
+            #{gameParticipation.enteredAt}
         )
     </insert>
 

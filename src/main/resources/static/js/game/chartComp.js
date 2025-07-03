@@ -1,4 +1,3 @@
-
 let chartSocket;
 
 const graphContainer = document.getElementById("graphContainer");
@@ -21,7 +20,6 @@ const tradeVolumeChartLayoutCtx = tradeVolumeChartLayout.getContext("2d");
 
 
 const graphLayout = document.getElementById("graphContainer");
-
 
 
 let autoScroll = true;
@@ -697,7 +695,11 @@ function chartSocketHandler() {
         } else if (DataHead === "timeLeft") {
             document.getElementById("timeLeft").innerText = Math.floor(stockData / 60) + "분 " + (stockData % 60) + "초";
         } else if (DataHead === "playerStatus") {
-            document.getElementById("timeLeft").innerText = Math.floor(stockData / 60) + "분 " + (stockData % 60) + "초";
+            console.log("입력 받은 플레이어스테이터스: " + JSON.stringify(stockData));
+            // 플레이어 스테이터스가 업데이트 됐을 때의 데이터를 처리해야 함
+            document.getElementById("stocksHolding").innerText = stockData.stocksHolding;
+            document.getElementById("cash").innerText = stockData.earnedCash;
+            updatePromiseTable(stockData);
         } else {
             alert("에러 발생: 정제 되지 않은 데이터 수신!!", event);
         }
@@ -713,3 +715,42 @@ function chartSocketHandler() {
 window.addEventListener("beforeunload", function (event) {
     chartSocket.close();
 });
+
+function updatePromiseTable(stockData) {
+    const promiseTable = document.getElementById("promiseTable");
+
+    const rows = promiseTable.querySelectorAll("tr");
+
+    rows.forEach((row, index) => {
+        if (index !== 0) {
+            row.remove();
+        }
+    });
+
+    stockData.orderTableDto.forEach(row => {
+        const rowData = [];
+
+        const id = row.id;
+        const price = row.price;
+        const quantity =  row.quantity;
+        const createdAtData = new Date(row.createdAt);
+        const createdAt = createdAtData.getHours()+"시"+
+            createdAtData.getMinutes()+"분"
+            +createdAtData.getSeconds()+"초"
+
+        rowData.push(row.id);
+        rowData.push(row.price);
+        rowData.push(row.quantity);
+        rowData.push(createdAt);
+
+        const tr = document.createElement('tr');
+
+        for(let i = 0; i < 4; i++){
+            const td = document.createElement('td');
+            td.innerText = rowData[i];
+            tr.appendChild(td);
+        }
+
+        promiseTable.appendChild(tr);
+    });
+}

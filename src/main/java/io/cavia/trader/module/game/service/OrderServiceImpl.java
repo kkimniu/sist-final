@@ -3,6 +3,7 @@ package io.cavia.trader.module.game.service;
 import io.cavia.trader.module.game.dto.GameDto;
 import io.cavia.trader.module.game.dto.OrderDto;
 import io.cavia.trader.module.game.dto.OrderTableDto;
+import io.cavia.trader.module.game.dto.PlayerStatusDto;
 import io.cavia.trader.module.game.dto.request.CancelOrderDto;
 import io.cavia.trader.module.game.dto.request.MarketOrderDto;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,13 @@ public class OrderServiceImpl implements OrderService {
         if (gameDto.getPlayerStatusDtos().get(targetId).getStocksHolding() < orderTableDto.getQuantity()) {
             throw new RuntimeException("보유 중인 주식보다 많은 수량은 주문 불가능합니다.");
         } else {
-            Queue<OrderTableDto> orders = gameDto.getPlayerStatusDtos().get(targetId).getOrderDto().getOrderTableDto();
+            PlayerStatusDto playerStatusDto = gameDto.getPlayerStatusDtos().get(targetId);
+
+            Queue<OrderTableDto> orders = playerStatusDto.getOrderDto().getOrderTableDto();
             orderTableDto.setId(orders.size() + 1);
             orderTableDto.setCreatedAt(LocalDateTime.now());
             orders.add(orderTableDto);
+
             return true;
         }
     }
@@ -32,10 +36,13 @@ public class OrderServiceImpl implements OrderService {
         if (gameDto.getPlayerStatusDtos().get(targetId).getEarnedCash() < (long) orderTableDto.getQuantity() * orderTableDto.getPrice()) {
             throw new RuntimeException("잔고가 부족합니다.");
         } else {
-            Queue<OrderTableDto> orders = gameDto.getPlayerStatusDtos().get(targetId).getOrderDto().getOrderTableDto();
+            PlayerStatusDto playerStatusDto = gameDto.getPlayerStatusDtos().get(targetId);
+
+            Queue<OrderTableDto> orders = playerStatusDto.getOrderDto().getOrderTableDto();
             orderTableDto.setId(orders.size() + 1);
             orderTableDto.setCreatedAt(LocalDateTime.now());
             orders.add(orderTableDto);
+
             return true;
         }
     }

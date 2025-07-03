@@ -130,29 +130,33 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                             if (orderTableDto.getPrice() < 0) {
                                                 if (trades.get(tradeIndex.get()).getStckPrpr() >= Math.abs(orderTableDto.getPrice())) {
 
+
                                                     playerStatusDto.setStocksHolding(
-                                                            playerStatusDto.getStocksHolding() + orderTableDto.getQuantity());
+                                                            playerStatusDto.getStocksHolding() - orderTableDto.getQuantity());
 
                                                     // 보유 자산 변동
                                                     playerStatusDto.setEarnedCash(
-                                                            playerStatusDto.getEarnedCash() + (long) orderTableDto.getQuantity() * orderTableDto.getPrice()
+                                                            playerStatusDto.getEarnedCash() -
+                                                                    (long) orderTableDto.getQuantity() * trades.get(tradeIndex.get()).getStckPrpr()
                                                     );
-
                                                     // 매도 거래 삭제
+
                                                     Deals.remove(orderTableDto);
+
                                                 }
                                             }else{
                                                 if (trades.get(tradeIndex.get()).getStckPrpr() <= Math.abs(orderTableDto.getPrice())) {
 
+
                                                     playerStatusDto.setStocksHolding(
                                                             playerStatusDto.getStocksHolding() + orderTableDto.getQuantity());
 
                                                     // 보유 자산 변동
                                                     playerStatusDto.setEarnedCash(
-                                                            playerStatusDto.getEarnedCash() + (long) orderTableDto.getQuantity() * orderTableDto.getPrice()
+                                                            playerStatusDto.getEarnedCash() -
+                                                                    (long) orderTableDto.getQuantity() * trades.get(tradeIndex.get()).getStckPrpr()
                                                     );
-
-                                                    // 매도 거래 삭제
+                                                    // 매수 거래 삭제
                                                     Deals.remove(orderTableDto);
                                                 }
                                             }
@@ -196,7 +200,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                     // 시장가 매수주문이 존재할 경우 현재 체결가로 주문 처리
                                     if (quantityOfMarketBuy != 0) {
                                         playerStatusDto.setStocksHolding(
-                                                playerStatusDto.getStocksHolding() - quantityOfMarketBuy
+                                                playerStatusDto.getStocksHolding() + quantityOfMarketBuy
                                         );
 
                                         playerStatusDto.setEarnedCash(
@@ -218,9 +222,9 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                                     // 거래가 발생했으니 새로고침 된 데이터를 전송
                                     try {
-                                        String orderJson = objectMapper.writeValueAsString(playerStatusDto.getOrderDto());
+                                        String playerStatusJson = objectMapper.writeValueAsString(playerStatusDto);
                                         synchronized (chartSession) {
-                                            chartSession.sendMessage(new TextMessage("playerStatus||" + orderJson));
+                                            chartSession.sendMessage(new TextMessage("playerStatus||" + playerStatusJson));
                                         }
                                     } catch (Exception e) {
                                         throw new RuntimeException("유저 거래 변동 사항 멀티캐스트 중 예외 발생!", e);
