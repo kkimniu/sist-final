@@ -700,6 +700,8 @@ function chartSocketHandler() {
             document.getElementById("stocksHolding").innerText = stockData.stocksHolding;
             document.getElementById("cash").innerText = stockData.earnedCash;
             updatePromiseTable(stockData);
+            updateTradeLogTable(stockData);
+
         } else {
             alert("에러 발생: 정제 되지 않은 데이터 수신!!", event);
         }
@@ -717,6 +719,11 @@ window.addEventListener("beforeunload", function (event) {
 });
 
 function updatePromiseTable(stockData) {
+
+    if(!stockData.orderDto.orderTableDto){
+        return;
+    }
+
     const promiseTable = document.getElementById("promiseTable");
 
     const rows = promiseTable.querySelectorAll("tr");
@@ -727,7 +734,7 @@ function updatePromiseTable(stockData) {
         }
     });
 
-    stockData.orderTableDto.forEach(row => {
+    stockData.orderDto.orderTableDto.forEach(row => {
         const rowData = [];
 
         const id = row.id;
@@ -752,5 +759,48 @@ function updatePromiseTable(stockData) {
         }
 
         promiseTable.appendChild(tr);
+    });
+}
+
+function updateTradeLogTable(stockData) {
+
+    if(!stockData.orderDto.tradeLogs){
+        return;
+    }
+    const tradeLogTable = document.getElementById("tradeLogTable");
+
+
+    const rows = tradeLogTable.querySelectorAll("tr");
+
+    rows.forEach((row, index) => {
+        if (index !== 0) {
+            row.remove();
+        }
+    });
+
+    stockData.orderDto.tradeLogs.forEach(row => {
+        const rowData = [];
+        const id = row.id;
+        const price = row.price;
+        const quantity =  row.quantity;
+        const createdAtData = new Date(row.createdAt);
+        const createdAt = createdAtData.getHours()+"시"+
+            createdAtData.getMinutes()+"분"
+            +createdAtData.getSeconds()+"초"
+
+        rowData.push(row.id);
+        rowData.push(row.price);
+        rowData.push(row.quantity);
+        rowData.push(createdAt);
+
+        const tr = document.createElement('tr');
+
+        for(let i = 0; i < 4; i++){
+            const td = document.createElement('td');
+            td.innerText = rowData[i];
+            tr.appendChild(td);
+        }
+
+        tradeLogTable.appendChild(tr);
     });
 }

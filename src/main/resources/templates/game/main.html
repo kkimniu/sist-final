@@ -272,6 +272,7 @@
             <div id="sellTab" onclick="showSellPanel();">매도</div>
             <div id="buyTab" onclick="showBuyPanel();">매수</div>
             <div id="promiseTab" onclick="showPromisePanel();">미체결</div>
+            <div id="tradeLogTab" onclick="showTradeLogPanel();">거래내역</div>
         </div>
         <div id="PanelLayout">
             <div id="sellPanel">
@@ -287,10 +288,20 @@
             <div id="promisePanel">
                 <table id="promiseTable">
                     <tr>
-                        <th>거래순번</th>
+                        <th>주문번호</th>
                         <th>가격</th>
                         <th>수량</th>
                         <th>요청시간</th>
+                    </tr>
+                </table>
+            </div>
+            <div id="tradeLogPanel">
+                <table id="tradeLogTable">
+                    <tr>
+                        <th>주문번호</th>
+                        <th>가격</th>
+                        <th>수량</th>
+                        <th>거래시간</th>
                     </tr>
                 </table>
             </div>

@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
@@ -121,15 +122,14 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                 // and 조건 불만족시 점프
                                 // 각각 조건의 만족할 때만 컬렉션 내부 순회
                                 // 수정은 각각의 조건문 내부에서 메세지 전송은 1회만
+
                                 if (!Deals.isEmpty() || quantityOfMarketSell != 0 || quantityOfMarketBuy != 0) {
 
                                     if (!Deals.isEmpty()) {
                                         // 매수, 매도 음수 양수로 구분하여 체결가와 주문가 비교하여 거래 발생시키기(미체결 거래가 한 테이블에 모여있어야 해서 수정함)
                                         Deals.forEach(((orderTableDto) -> {
-
                                             if (orderTableDto.getPrice() < 0) {
                                                 if (trades.get(tradeIndex.get()).getStckPrpr() >= Math.abs(orderTableDto.getPrice())) {
-
 
                                                     playerStatusDto.setStocksHolding(
                                                             playerStatusDto.getStocksHolding() - orderTableDto.getQuantity());
@@ -140,13 +140,21 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                                     (long) orderTableDto.getQuantity() * trades.get(tradeIndex.get()).getStckPrpr()
                                                     );
                                                     // 매도 거래 삭제
-
                                                     Deals.remove(orderTableDto);
 
+                                                    // 로그 추가
+                                                    Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
+                                                    tradeLog.add(
+                                                            TradeLog.builder()
+                                                                    .Id(tradeLog.size() + 1)
+                                                                    .price(orderTableDto.getPrice())
+                                                                    .quantity(orderTableDto.getQuantity())
+                                                                    .createdAt(LocalDateTime.now())
+                                                                    .build()
+                                                    );
                                                 }
                                             }else{
                                                 if (trades.get(tradeIndex.get()).getStckPrpr() <= Math.abs(orderTableDto.getPrice())) {
-
 
                                                     playerStatusDto.setStocksHolding(
                                                             playerStatusDto.getStocksHolding() + orderTableDto.getQuantity());
@@ -158,18 +166,22 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                     );
                                                     // 매수 거래 삭제
                                                     Deals.remove(orderTableDto);
+
+                                                    // 로그 추가
+                                                    Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
+                                                    tradeLog.add(
+                                                            TradeLog.builder()
+                                                                    .Id(tradeLog.size() + 1)
+                                                                    .price(orderTableDto.getPrice())
+                                                                    .quantity(orderTableDto.getQuantity())
+                                                                    .createdAt(LocalDateTime.now())
+                                                                    .build()
+                                                    );
                                                 }
                                             }
-                                            // 로그 추가
-                                            Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
-                                            tradeLog.add(
-                                                    TradeLog.builder()
-                                                            .Id(tradeLog.size() + 1)
-                                                            .price(Math.abs(orderTableDto.getPrice()))
-                                                            .quantity(orderTableDto.getQuantity())
-                                                            .build()
-                                            );
+
                                         }));
+
                                     }
 
                                     // 시장가 매도주문이 존재할 경우 현재 체결가로 주문 처리
@@ -219,7 +231,6 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                         .build()
                                         );
                                     }
-
                                     // 거래가 발생했으니 새로고침 된 데이터를 전송
                                     try {
                                         String playerStatusJson = objectMapper.writeValueAsString(playerStatusDto);
