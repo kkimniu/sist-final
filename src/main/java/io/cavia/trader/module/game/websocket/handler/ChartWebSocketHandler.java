@@ -9,9 +9,12 @@ import io.cavia.trader.module.game.dto.TradeLog;
 import io.cavia.trader.module.game.service.GameManager;
 import io.cavia.trader.module.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -30,6 +33,8 @@ public class ChartWebSocketHandler implements WebSocketHandler {
     private final JwtUtil jwtUtil;
 
     private GameDto gameDto;
+    @Value("${stock.default-fee-rate}")
+    private BigDecimal DEFAULT_FEE_RATE;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -147,9 +152,14 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                             playerStatusDto.getStocksHolding() - orderTableDto.getQuantity());
 
                                                     // 보유 자산 변동
+                                                    // 가능한 안전하게 계산해봄
+                                                    long tradeValue = (long) orderTableDto.getQuantity() * trades.get(tradeIndex.get()).getStckPrpr();
+                                                    BigDecimal tradeValueAmount = new BigDecimal(tradeValue+"");
+                                                    BigDecimal feeValue = tradeValueAmount.multiply(DEFAULT_FEE_RATE);
+                                                    tradeValue = tradeValueAmount.subtract(feeValue).setScale(0, RoundingMode.HALF_UP).intValue();
+
                                                     playerStatusDto.setEarnedCash(
-                                                            playerStatusDto.getEarnedCash() -
-                                                                    (long) orderTableDto.getQuantity() * trades.get(tradeIndex.get()).getStckPrpr()
+                                                            playerStatusDto.getEarnedCash() + tradeValue
                                                     );
 
                                                     // 로그 추가
@@ -204,9 +214,13 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                 playerStatusDto.getStocksHolding() - quantityOfMarketSell
                                         );
 
+                                        long tradeValue = (long) quantityOfMarketSell * trades.get(tradeIndex.get()).getStckPrpr();
+                                        BigDecimal tradeValueAmount = new BigDecimal(tradeValue+"");
+                                        BigDecimal feeValue = tradeValueAmount.multiply(DEFAULT_FEE_RATE);
+                                        tradeValue = tradeValueAmount.subtract(feeValue).setScale(0, RoundingMode.HALF_UP).intValue();
 
                                         playerStatusDto.setEarnedCash(
-                                                playerStatusDto.getEarnedCash() + quantityOfMarketSell * (long) trades.get(tradeIndex.get()).getStckPrpr()
+                                                playerStatusDto.getEarnedCash() + tradeValue
                                         );
 
                                         playerStatusDto.getOrderDto().setQuantityOfMarketSell(0);
