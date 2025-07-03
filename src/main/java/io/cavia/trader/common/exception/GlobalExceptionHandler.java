@@ -1,6 +1,7 @@
 package io.cavia.trader.common.exception;
 
 import io.cavia.trader.common.response.ApiResponse;
+import io.cavia.trader.common.response.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,15 +27,11 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ApiException.class)
     protected ResponseEntity<ApiResponse<?>> handleCustomException(ApiException e) {
+
         ErrorCode errorCode = e.getErrorCode();
         log.warn("Business Exception Occurred: {}", e.getMessage());
 
-        ApiResponse<Object> responseBody = ApiResponse.error(
-                errorCode.getHttpStatus().value(),
-                errorCode.getMessage()
-        );
-
-        return new ResponseEntity<>(responseBody, errorCode.getHttpStatus());
+        return ApiResponses.of(errorCode.getHttpStatus(), e.getMessage());
     }
 
     /**
@@ -44,16 +41,12 @@ public class GlobalExceptionHandler {
      * @return ApiResponse가 담긴 ResponseEntity
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Object>> handleValidationExceptions(MethodArgumentNotValidException e) {
+    public ResponseEntity<ApiResponse<?>> handleValidationExceptions(MethodArgumentNotValidException e) {
 
         ErrorCode errorCode = ErrorCode.INVALID_PARAMETER;
         String errorMessage = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
 
-        ApiResponse<Object> responseBody = ApiResponse.error(
-                errorCode.getHttpStatus().value(),
-                errorMessage // ⬅️ 상세 에러 메시지로 대체
-        );
-        return new ResponseEntity<>(responseBody, errorCode.getHttpStatus());
+        return ApiResponses.of(errorCode.getHttpStatus(), errorMessage);
     }
 
     /**
@@ -64,13 +57,9 @@ public class GlobalExceptionHandler {
      * @return ApiResponse가 담긴 ResponseEntity
      */
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ApiResponse<Object>> handleValidationExceptions(NoResourceFoundException e) {
+    public ResponseEntity<ApiResponse<?>> handleValidationExceptions(NoResourceFoundException e) {
 
-        ApiResponse<Object> responseBody = ApiResponse.error(
-                HttpStatus.NOT_FOUND.value(),
-                e.getMessage()
-        );
-        return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+        return ApiResponses.of(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     /**
@@ -80,13 +69,11 @@ public class GlobalExceptionHandler {
      * @return ApiResponse가 담긴 ResponseEntity
      */
     @ExceptionHandler(Exception.class)
-    protected ResponseEntity<ApiResponse<Object>> handleException(Exception e) {
+    protected ResponseEntity<ApiResponse<?>> handleException(Exception e) {
+
+        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         log.error("Unhandled Exception Occurred", e);
 
-        ApiResponse<Object> responseBody = ApiResponse.error(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()
-        );
-        return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
+        return ApiResponses.of(httpStatus, httpStatus.getReasonPhrase());
     }
 }
