@@ -541,11 +541,11 @@ function chartSocketHandler() {
             const num1 = document.getElementById("stocksHolding").innerText * stockData.stck_prpr;
             let returnRate = document.getElementById("returnRate");
             const rate = getRate(num1, holdingValue);
-            if (rate){
+            if (rate) {
                 if (rate > 0) {
                     returnRate.style.color = "red";
                     returnRate.innerText = rate + "%";
-                }else {
+                } else {
                     returnRate.style.color = "blue";
                     returnRate.innerText = rate + "%";
                 }
@@ -709,7 +709,7 @@ function chartSocketHandler() {
         } else if (DataHead === "numberOfParticipation") {
             document.getElementById("numberOfParticipation").innerText = stockData + "명";
         } else if (DataHead === "timeLeft") {
-            document.getElementById("timeLeft").innerText = Math.floor(stockData / 60) + "분 " + (stockData % 60) + "초";
+            showTimeLeft(stockData);
         } else if (DataHead === "playerStatus") {
             console.log("입력 받은 플레이어스테이터스: " + JSON.stringify(stockData));
             // 플레이어 스테이터스가 업데이트 됐을 때의 데이터를 처리해야 함
@@ -721,7 +721,7 @@ function chartSocketHandler() {
             stockData.orderDto.tradeLogs.forEach(row => {
                 sum += row.price * row.quantity;
             });
-             holdingValue = sum;
+            holdingValue = sum;
         } else {
             alert("에러 발생: 정제 되지 않은 데이터 수신!!", event);
         }
@@ -740,7 +740,7 @@ window.addEventListener("beforeunload", function (event) {
 
 function updatePromiseTable(stockData) {
 
-    if(!stockData.orderDto.orderTableDto){
+    if (!stockData.orderDto.orderTableDto) {
         return;
     }
 
@@ -759,11 +759,11 @@ function updatePromiseTable(stockData) {
 
         const id = row.id;
         const price = row.price;
-        const quantity =  row.quantity;
+        const quantity = row.quantity;
         const createdAtData = new Date(row.createdAt);
-        const createdAt = createdAtData.getHours()+"시"+
-            createdAtData.getMinutes()+"분"
-            +createdAtData.getSeconds()+"초"
+        const createdAt = createdAtData.getHours() + "시" +
+            createdAtData.getMinutes() + "분"
+            + createdAtData.getSeconds() + "초"
 
         rowData.push(row.id);
         rowData.push(row.price);
@@ -771,10 +771,9 @@ function updatePromiseTable(stockData) {
         rowData.push(createdAt);
 
 
-
         const tr = document.createElement('tr');
 
-        for(let i = 0; i < rowData.length; i++){
+        for (let i = 0; i < rowData.length; i++) {
             const td = document.createElement('td');
             td.innerText = rowData[i];
             tr.appendChild(td);
@@ -783,12 +782,10 @@ function updatePromiseTable(stockData) {
         cancelButton.addEventListener("click", () => {
             requestCancelOrder(row.id);
         });
-        cancelButton.innerText="주문취소";
+        cancelButton.innerText = "주문취소";
         const td = document.createElement('td');
         td.appendChild(cancelButton);
         tr.appendChild(td);
-
-
 
 
         promiseTable.appendChild(tr);
@@ -797,7 +794,7 @@ function updatePromiseTable(stockData) {
 
 function updateTradeLogTable(stockData) {
 
-    if(!stockData.orderDto.tradeLogs){
+    if (!stockData.orderDto.tradeLogs) {
         return;
     }
     const tradeLogTable = document.getElementById("tradeLogTable");
@@ -815,11 +812,11 @@ function updateTradeLogTable(stockData) {
         const rowData = [];
         const id = row.id;
         const price = row.price;
-        const quantity =  row.quantity;
+        const quantity = row.quantity;
         const createdAtData = new Date(row.createdAt);
-        const createdAt = createdAtData.getHours()+"시"+
-            createdAtData.getMinutes()+"분"
-            +createdAtData.getSeconds()+"초"
+        const createdAt = createdAtData.getHours() + "시" +
+            createdAtData.getMinutes() + "분"
+            + createdAtData.getSeconds() + "초"
 
         rowData.push(row.id);
         rowData.push(row.price);
@@ -828,7 +825,7 @@ function updateTradeLogTable(stockData) {
 
         const tr = document.createElement('tr');
 
-        for(let i = 0; i < 4; i++){
+        for (let i = 0; i < 4; i++) {
             const td = document.createElement('td');
             td.innerText = rowData[i];
             tr.appendChild(td);
@@ -838,6 +835,25 @@ function updateTradeLogTable(stockData) {
     });
 }
 
-function getRate (number1, number2){
-    return (Math.round((number1 / number2 * 100 - 100) *100)/100)
+function getRate(number1, number2) {
+    return (Math.round((number1 / number2 * 100 - 100) * 100) / 100)
+}
+
+function showTimeLeft(stockData){
+    const startedAt = new Date(stockData);
+    const endedAt = startedAt.getTime() + 1000 * 60 * 30;
+    // 인터발 실행 시간 때문에 먼저 1회 실행후 로딩
+    const now = new Date();
+    const timeLeft = Math.floor((endedAt - now) / 1000);
+    document.getElementById("timeLeft").innerText = Math.floor(timeLeft / 60) + "분 " + timeLeft % 60 + "초"
+
+    const interval = setInterval(() => {
+        const now = new Date();
+        if (now < endedAt) {
+            const timeLeft = Math.floor((endedAt - now) / 1000);
+            document.getElementById("timeLeft").innerText = Math.floor(timeLeft / 60) + "분 " + timeLeft % 60 + "초"
+        }else{
+            clearInterval(interval);
+        }
+    }, 1000); // 1초마다 체크
 }

@@ -75,6 +75,19 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                 if (chartSession.isOpen())
                     chartSession.sendMessage(new TextMessage("previewersTrades||" + previewersTradesJson));
 
+                // 새로운 시간 계산법
+                // 로직 세션 시작 시간에 타임 존만 추가해서 클라이언트에게 던져주고 시간 계산은 클라이언트에게 넘겨버리기
+
+
+                synchronized (chartSession) {
+                    if (chartSession.isOpen())
+                        chartSession.sendMessage(new TextMessage("timeLeft||" + (objectMapper.writeValueAsString(
+                                gameDto.getStartedAt()
+                                        .atZone(
+                                                ZoneId.systemDefault()))))
+                        );
+                }
+
 
                 AtomicLong stockBaseTime = new AtomicLong(
                         gameDto.getTrades()
@@ -216,11 +229,9 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                         playerStatusDto.setStocksHolding(
                                                 playerStatusDto.getStocksHolding() + quantityOfMarketBuy
                                         );
-                                        System.out.println("시장가 처리 전 가격: " + playerStatusDto.getEarnedCash());
                                         playerStatusDto.setEarnedCash(
                                                 playerStatusDto.getEarnedCash() - quantityOfMarketBuy * (long) trades.get(tradeIndex.get()).getStckPrpr()
                                         );
-                                        System.out.println("시장가 처리 후 가격: " + playerStatusDto.getEarnedCash());
 
                                         playerStatusDto.getOrderDto().setQuantityOfMarketBuy(0);
 
@@ -259,6 +270,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                     chartSession.sendMessage(new TextMessage("trades||" + tradesJson));
                             }
                         } catch (Exception e2) {
+                            Thread.currentThread().interrupt();
                             throw new RuntimeException(e2);
                         }
                     }
@@ -311,30 +323,14 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                         }
 
                     } catch (Exception e2) {
+                        Thread.currentThread().interrupt();
                         throw new RuntimeException(e2);
                     }
 
                 });
 
-                Thread thread3 = new Thread(() -> {
-                    long timeLeft = Duration.between(gameDto.getStartedAt(), LocalDateTime.now()).toSeconds();
-                    while (timeLeft < 1800) {
-                        try {
-                            timeLeft = Duration.between(gameDto.getStartedAt(), LocalDateTime.now()).toSeconds();
-                            synchronized (chartSession) {
-                                if (chartSession.isOpen())
-                                    chartSession.sendMessage(new TextMessage("timeLeft||" + (1800 - timeLeft)));
-                            }
-                            Thread.sleep(1000);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
-
                 thread1.start();
                 thread2.start();
-                thread3.start();
 
             } catch (Exception e3) {
                 throw new RuntimeException(e3);
