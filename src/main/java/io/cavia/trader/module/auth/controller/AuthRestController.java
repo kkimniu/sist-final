@@ -9,7 +9,6 @@ import io.cavia.trader.module.auth.dto.VerifyCodeRequestDto;
 import io.cavia.trader.module.auth.security.UserDetailsImpl;
 import io.cavia.trader.module.auth.service.AuthService;
 import io.cavia.trader.module.jwt.JwtUtil;
-import io.cavia.trader.module.member.entity.Member;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,15 +40,11 @@ public class AuthRestController {
      * 인증된 사용자의 모든 정보를 반환하는 API
      *
      * @param userDetails SecurityContextHolder에 저장된 인증 객체의 principal
-     * @return 멤버의 전체 정보
+     * @return body: {data: userDetails.getMember()}
      */
     @GetMapping("api/auth/login-checker")
-    public ResponseEntity<Member> getMemberInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401 Unauthorized
-        }
-
-        return ResponseEntity.ok(userDetails.getMember());
+    public ResponseEntity<ApiResponse<?>> getMemberInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ApiResponses.ok(userDetails.getMember());
     }
 
     /**
@@ -61,7 +56,7 @@ public class AuthRestController {
     @PostMapping("/api/auth/verification/send-code")
     public ResponseEntity<?> sendVerificationEmail(@Valid @RequestBody SendCodeRequestDto requestDto) {
         authService.sendVerificationEmail(requestDto.getEmail());
-        return ResponseEntity.ok("이메일 전송 완료");
+        return ApiResponses.ok();
     }
 
     /**

@@ -86,13 +86,13 @@ public class JwtUtil {
                     .parseSignedClaims(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
-            log.error("유효하지 않은 JWT 서명입니다.", e);
+            log.warn("유효하지 않은 JWT 서명입니다.", e);
         } catch (ExpiredJwtException e) {
-            log.error("만료된 JWT 토큰입니다.", e);
+            log.warn("만료된 JWT 토큰입니다.");
         } catch (UnsupportedJwtException e) {
-            log.error("지원되지 않는 JWT 토큰입니다.", e);
+            log.warn("지원되지 않는 JWT 토큰입니다.", e);
         } catch (IllegalArgumentException e) {
-            log.error("JWT 클레임 문자열이 비어있습니다.", e);
+            log.warn("JWT 클레임 문자열이 비어있습니다.", e);
         }
         return false;
     }

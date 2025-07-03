@@ -26,13 +26,15 @@
         .then(response => {
             // 서버 응답을 처리합니다.
             if (!response.ok) { // 401, 403, 500 등 에러 응답일 경우
-                // 에러를 발생시켜 .catch() 블록으로 보냅니다.
-                throw new Error('인증 정보가 유효하지 않습니다. 다시 로그인해주세요.');
+                return response.json().then(body => {
+                throw new Error(body.message || "api 응답이 실패했습니다.");
+                });
             }
             // 성공적인 응답(200 OK)이면, 응답 본문을 JSON으로 파싱합니다.
             return response.json();
         })
-        .then(userInfo => {
+        .then(body => {
+            const userInfo = body.data;
             // ❗️ API 호출 성공 시: 로그인 상태 UI를 표시합니다.
             // 서버로부터 받은 최신 닉네임 정보를 사용합니다.
             console.log(userInfo);

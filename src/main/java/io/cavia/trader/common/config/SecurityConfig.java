@@ -6,6 +6,7 @@ import io.cavia.trader.module.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -48,20 +49,10 @@ public class SecurityConfig {
         // 요청에 대한 접근 권한 설정
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
-                        // [ 1. 비회원(Anonymous) 접근 허용 ]
-                        .requestMatchers("/", "/login", "/signup", "/signup/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/notices").hasRole("ADMIN")
+                        .requestMatchers("/api/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/login-checker", "/forgot-password", "/auth/**", "/error", "/**").permitAll()
-
-                        // [ 2. 회원(USER, ADMIN) 접근 허용 ]
-                        .requestMatchers("/api/").authenticated()
-
-                        // [ 3. 관리자(ADMIN)만 접근 허용 ]
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-
-                        // [ 4. 그 외 모든 요청 ]
-                        // 위에서 설정한 경로 외의 모든 요청은 인증된 사용자만 접근할 수 있습니다.
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
         );
 
         // 커스텀 필터인 JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 앞에 추가
