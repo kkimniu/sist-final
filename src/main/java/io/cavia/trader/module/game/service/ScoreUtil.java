@@ -1,5 +1,6 @@
 package io.cavia.trader.module.game.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -7,6 +8,9 @@ import java.math.RoundingMode;
 
 @Component
 public class ScoreUtil {
+
+    @Value("${rank_points_per_player}")
+    private int RANK_POINTS_PER_PLAYER;
 
     public BigDecimal getReturnRate(long postCash, long earnedCash) {
         if(postCash == 0){
