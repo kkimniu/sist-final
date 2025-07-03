@@ -3,19 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
-
-<div id="message"></div>
-<div id="ranking">
-    <button onclick="loadRanking('cash')">총 자산순</button>
-    <button onclick="loadRanking('total-score')">점수순</button>
-    <div id="rankingList">
+<div class="main-wrapper">
+    <div class="main-container">
+        <div id="message"></div>
+        <div id="ranking">
+            <button onclick="loadRanking('cash')">총 자산순</button>
+            <button onclick="loadRanking('total-score')">점수순</button>
+            <div class="ranking-header">
+                <span class="col-rank">순위</span>
+                <span class="col-nickname">닉네임</span>
+                <span class="col-cash">자산</span>
+                <span class="col-score">점수</span>
+            </div>
+            <div id="rankingList">
+            </div>
+        </div>
+        <div class="game-btn">
+            <input type="button" value="주식게임" onclick="location.href = '/game'">
+        </div>
     </div>
-</div>
-<div>
-    <input type="button" value="주식게임" onclick="location.href = '/game'">
 </div>
 </body>
 <script src="/js/header.js"></script>
@@ -50,7 +60,12 @@
 
         rankings.forEach((user, i) => {
             const div = document.createElement('div');
-            div.innerText = `${i + 1}위 - ${user.nickname} | 자산: ${user.cash} | 점수: ${user.totalScore}`;
+            div.classList.add('ranking-row');
+            div.innerHTML = `
+              <span class="col-rank">${i + 1}위</span>
+              <span class="col-nickname">${user.nickname}</span>
+              <span class="col-cash">${Number(user.cash).toLocaleString()}원</span>
+              <span class="col-score">${user.totalScore}</span>`;
             list.appendChild(div);
         });
 
