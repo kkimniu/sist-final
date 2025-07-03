@@ -1,16 +1,10 @@
 package io.cavia.trader.module.auth.dto;
 
 import jakarta.validation.constraints.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
-@Setter
-@Getter
-@NoArgsConstructor
-@ToString
-public class SignupForm {
+@Data
+public class SignupDto {
 
     // --- Validation Groups ---
     // 한 파일 내에서 관리할 수 있도록 static inner class로 포함시켰습니다.
@@ -31,14 +25,6 @@ public class SignupForm {
         }
 
         public interface SignupGroup extends TermsGroup, EmailGroup, AuthKeyGroup, NicknameGroup, PasswordGroup {
-        }
-
-        public interface EmailVerificationGroup extends EmailGroup, AuthKeyGroup {
-
-        }
-
-        public interface ResetPasswordGroup extends EmailVerificationGroup, PasswordGroup {
-
         }
     }
 

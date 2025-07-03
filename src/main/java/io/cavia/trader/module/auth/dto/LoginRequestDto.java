@@ -1,14 +1,15 @@
 package io.cavia.trader.module.auth.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
+import io.cavia.trader.common.validation.ValidEmail;
+import io.cavia.trader.common.validation.ValidPassword;
+import lombok.Data;
 
-@Getter
+@Data
 public class LoginRequestDto {
 
-    @NotBlank(message = "이메일은 필수 입력 값입니다.")
+    @ValidEmail
     private String username;
 
-    @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
+    @ValidPassword
     private String password;
 }

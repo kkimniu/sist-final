@@ -21,7 +21,7 @@
         <p>본인의 이메일 주소를 입력해주세요. 인증 메일이 발송됩니다.</p>
     </div>
 
-    <form th:action="@{/signup/email}" th:object="${signupForm}" method="post">
+    <form th:action="@{/signup/email}" th:object="${signupDto}" method="post">
 
         <input type="email" id="email" name="email" maxlength="254"
                th:field="*{email}" placeholder="yourname@example.com" required>
