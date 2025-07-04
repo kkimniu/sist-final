@@ -31,6 +31,7 @@ public class GameRestController {
     private final GameManager gameManager;
     private final GameSessionDto gameSessionDto;
     private final OrderService orderService;
+    private final
 
     private GameDto gameDto;
 
@@ -114,5 +115,17 @@ public class GameRestController {
             }
         });
         return ResponseEntity.status(200).body("주문 완료");
+    }
+
+    @GetMapping("/last-game-participation")
+    public ResponseEntity<?> getLastGameParticipation(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        try {
+            long memberId = userDetails.getMember().getId();
+            return new ResponseEntity<ResponseDto>(
+                    new ResponseDto("" + gameManager.findGameSessionByUserId(memberId)
+                            .getPlayerStatusDtos().get(memberId).getLastGameParticipation()), HttpStatus.OK);
+        }catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "조회되는 게임 기록이 없습니다.");
+        }
     }
 }

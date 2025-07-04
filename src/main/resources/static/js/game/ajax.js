@@ -125,3 +125,19 @@ async function requestMarketBuyOrder() {
         throw new Error("시장가 매수 요청 실패!" + errorData);
     }
 }
+
+async function requestEndedGameInfo() {
+    let responseBuyOrder = await fetch("/api/game/last-game-participation", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("jwt-token")
+        }
+    });
+    if (responseBuyOrder.status === 200) {
+        return responseBuyOrder.json();
+    } else {
+        const errorData = await responseBuyOrder.text();
+        throw new Error("게임 히스토리 조회 실패!" + errorData);
+    }
+}
