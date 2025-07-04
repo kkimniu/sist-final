@@ -129,7 +129,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                 // 매도 주문이 있을 때, 매수 주문이 있을 때, 시장가 매도 주문이 있을 때, 시장가 매수 주문이 있을 때
                                 // 주문 자체를 검증하는 건 service계층에서
 
-                                Queue<OrderTableDto> Deals = playerStatusDto.getOrderDto().getOrderTableDto();
+                                Queue<OrderTableDto> Deals = playerStatusDto.getOrderDto().getOrderTableDtos();
 
                                 int quantityOfMarketSell = playerStatusDto.getOrderDto().getQuantityOfMarketSell();
                                 int quantityOfMarketBuy = playerStatusDto.getOrderDto().getQuantityOfMarketBuy();

@@ -12,7 +12,7 @@ import java.util.*;
 @ToString
 public class OrderDto {
     @Builder.Default
-    private Queue<OrderTableDto> orderTableDto = new LinkedList<>();
+    private Queue<OrderTableDto> orderTableDtos = new LinkedList<>();
     @Builder.Default
     private Queue<TradeLog> tradeLogs = new LinkedList<>();
     private int QuantityOfMarketBuy;

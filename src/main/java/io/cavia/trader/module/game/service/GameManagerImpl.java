@@ -54,7 +54,7 @@ public class GameManagerImpl implements GameManager {
             if (timesBetween >= GAME_LIFE_CYCLE) {
                 // TODO 게임 세션 삭제 전 DB 저장 필요(game 객체는 세션 만들어 질때 저장 했음)
                 Map<Long, PlayerStatusDto> playersSortedByRank = scoreUtil.evaluatePlayers(
-                        gameDto.getPlayerStatusDtos());
+                        gameDto.getPlayerStatusDtos(), gameDto.getTrades().get(gameDto.getTrades().size()-1).getStckPrpr());
 
                 // 순위 지정 후 DB 저장
             AtomicInteger gameRank = new AtomicInteger(1);

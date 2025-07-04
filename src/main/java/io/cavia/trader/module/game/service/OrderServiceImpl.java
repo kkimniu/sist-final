@@ -23,7 +23,7 @@ public class OrderServiceImpl implements OrderService {
             PlayerStatusDto playerStatusDto = gameDto.getPlayerStatusDtos().get(targetId);
             playerStatusDto.setUpdated(true);
 
-            Queue<OrderTableDto> orders = playerStatusDto.getOrderDto().getOrderTableDto();
+            Queue<OrderTableDto> orders = playerStatusDto.getOrderDto().getOrderTableDtos();
             orderTableDto.setId(orders.size() + 1);
             orderTableDto.setCreatedAt(LocalDateTime.now());
             orders.add(orderTableDto);
@@ -40,7 +40,7 @@ public class OrderServiceImpl implements OrderService {
             PlayerStatusDto playerStatusDto = gameDto.getPlayerStatusDtos().get(targetId);
             playerStatusDto.setUpdated(true);
 
-            Queue<OrderTableDto> orders = playerStatusDto.getOrderDto().getOrderTableDto();
+            Queue<OrderTableDto> orders = playerStatusDto.getOrderDto().getOrderTableDtos();
             orderTableDto.setId(orders.size() + 1);
             orderTableDto.setCreatedAt(LocalDateTime.now());
             orders.add(orderTableDto);
@@ -55,11 +55,11 @@ public class OrderServiceImpl implements OrderService {
         playerStatusDto.setUpdated(true);
         OrderDto orderDto = playerStatusDto.getOrderDto();
         AtomicBoolean isFinded = new AtomicBoolean(false);
-        orderDto.getOrderTableDto().forEach(orderTableDto -> {
+        orderDto.getOrderTableDtos().forEach(orderTableDto -> {
             if (orderTableDto.getId() == cancelOrderDto.getOrderId()){
                 System.out.println("주문번호 검색까지는 성공!");
-                orderDto.getOrderTableDto().remove(orderTableDto);
-                System.out.println("처리 후 미체결 주문 개 수:" + orderDto.getOrderTableDto().size());
+                orderDto.getOrderTableDtos().remove(orderTableDto);
+                System.out.println("처리 후 미체결 주문 개 수:" + orderDto.getOrderTableDtos().size());
                 isFinded.set(true);
             }
         });
