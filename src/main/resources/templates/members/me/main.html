@@ -3,32 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/members.css">
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
-<div>
+<div class="logout">
+        <a href="#" id="logout-link" class="nav-button logout-button">로그아웃</a>
+</div>
+<div class="member-wrapper">
     <h1>마이 페이지</h1>
-    <div>
-        <!-- 게임기록-->
-        <h2>게임기록</h2>
-        <ul id="gameDTO-list"></ul>
-    </div>
-    <div>
-        <!--닉네임 등급 자산조회 등등-->
-        <strong>닉네임</strong> <span id="nickname"></span>
-        <strong>등급</strong> <span id="total-score"></span><br>
-        <input type="button" value="닉네임변경" onclick="location.href= window.location.pathname + '/nickname'"/>
-        <input type="button" value="비밀번호변경" onclick="location.href= window.location.pathname + '/password'"/><br>
-        <h3>자산조회</h3> <span id="cash"></span><br>
-        <input type="button" value="자산초기화" onclick="cashReset()"><br>
+    <div class="container">
+        <div class="game-container">
+            <!-- 게임기록-->
+            <h2>게임기록</h2>
+            <div id="gameDTO-list"></div>
+        </div>
+        <div class="member-container">
+            <!--닉네임 등급 자산조회 등등-->
+            <strong>닉네임</strong> <span id="nickname"></span>
+            <strong>등급</strong> <span id="total-score"></span><br>
+            <input type="button" value="닉네임변경" onclick="location.href= window.location.pathname + '/nickname'"/>
+            <input type="button" value="비밀번호변경"
+                   onclick="location.href= window.location.pathname + '/password'"/><br>
+            <h3>자산조회</h3> <span id="cash"></span> <input type="button" value="자산초기화" onclick="cashReset()"><br>
+        </div>
     </div>
 </div>
 
-<div>
-    <a href="#" id="logout-link" class="nav-button logout-button">로그아웃</a>
-</div>
-
-<div>
+<div class="withdraw">
     <input type="button" value="회원탈퇴" onclick="location.href = window.location.pathname + '/withdraw'"><br>
 </div>
 <script src="/js/header.js"></script>
@@ -64,15 +67,17 @@
                 list.innerHTML = '<li>참여한 게임이 없습니다.</li>'
             }else{
                 gameParticipation.forEach(gameDTO => {
-                    const li = document.createElement('li');
+                    const div = document.createElement('div');
+                    div.className = 'game-card';
                     const date = new Date(gameDTO.enteredAt);
                     const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-                    li.innerText = `날짜: ${formatted}
-                   | 수익률: ${gameDTO.returnId}%
-                   | 순위: ${gameDTO.gameRank}위
-                   | 점수: ${gameDTO.earnedScore} → ${gameDTO.postScore}
-                   | 캐시: ${gameDTO.earnedCash} → ${gameDTO.postCash}`;
-                    list.appendChild(li);
+                    div.innerHTML =
+                    `<p><strong>날짜:</strong> ${formatted}</p>
+                     <p><strong>수익률:</strong> ${gameDTO.returnRate}%</p>
+                     <p><strong>순위:</strong> ${gameDTO.gameRank}위</p>
+                     <p><strong>점수:</strong> ${gameDTO.earnedScore} → ${gameDTO.postScore}</p>
+                     <p><strong>캐시:</strong> ${gameDTO.earnedCash} → ${gameDTO.postCash}</p>`;
+                    list.appendChild(div);
                 });
             }
         }catch(err) {
