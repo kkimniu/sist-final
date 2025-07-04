@@ -1,5 +1,6 @@
 package io.cavia.trader.module.member.controller;
 
+import io.cavia.trader.common.response.ApiResponses;
 import io.cavia.trader.module.auth.security.UserDetailsImpl;
 import io.cavia.trader.module.member.entity.GameParticipation;
 import io.cavia.trader.module.member.dto.NicknameUpdateRequestDto;
@@ -51,10 +52,12 @@ public class MemberRestController {
     }
 
     @PatchMapping("/me/password")
-    public ResponseEntity<String> changePassword(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public ResponseEntity<?> changePassword(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                  @Valid @RequestBody PasswordChangeRequestDto requestDto) {
-        memberService.changePassword(userDetails.getMember().getId(), requestDto);
-        return ResponseEntity.ok("비밀번호 변경 완료");
+        memberService.processPasswordChangeRequest(userDetails.getMember().getId(),
+                requestDto.getCurrentPassword(),
+                requestDto.getNewPassword());
+        return ApiResponses.noContent();
     }
 
     @PostMapping("/me/cash/reset")
@@ -65,7 +68,7 @@ public class MemberRestController {
 
     @PatchMapping("/me/nickname")
     public ResponseEntity<String> updateNickname(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                 @RequestBody NicknameUpdateRequestDto requestDto) {
+                                                 @Valid @RequestBody NicknameUpdateRequestDto requestDto) {
         memberService.changeNickname(userDetails.getMember().getId(), requestDto.getNickname());
         return ResponseEntity.status(200).body("변경성공");
     }
