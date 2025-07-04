@@ -3,7 +3,6 @@ package io.cavia.trader.module.auth.service;
 import io.cavia.trader.common.email.EmailService;
 import io.cavia.trader.common.exception.ApiException;
 import io.cavia.trader.common.exception.ErrorCode;
-import io.cavia.trader.module.auth.dto.LoginRequestDto;
 import io.cavia.trader.module.auth.dto.ResetPasswordRequestDto;
 import io.cavia.trader.module.auth.dto.SignupDto;
 import io.cavia.trader.module.auth.entity.EmailVerification;
@@ -44,14 +43,26 @@ public class AuthServiceImpl implements AuthService {
         emailVerificationRepository.save(EmailVerification.create(email, authKey, 60));
     }
 
-    public void verifyAuthKey(String email, String authKey) {
+    @Override
+    public void verifyPasswordResetVerificationRequest(String email, String authKey) {
+        verifyAuthKey(email, authKey);
+        memberService.getMemberByEmail(email);
+    }
+
+    @Override
+    public void verifySignupVerificationRequest(String email, String authKey) {
+        verifyAuthKey(email, authKey);
+        validateDuplicateEmail(email);
+    }
+
+    private void verifyAuthKey(String email, String authKey) {
         EmailVerification emailVerification = emailVerificationRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이메일로 조회된 인증키 정보가 없습니다."));
+                .orElseThrow(() -> new ApiException(ErrorCode.EMAIL_VERIFICATION_NOT_FOUND));
         if (!emailVerification.getVerificationKey().equals(authKey)) {
-            throw new IllegalArgumentException("인증키가 일치하지 않습니다.");
+            throw new ApiException(ErrorCode.INVALID_AUTH_KEY);
         }
         if (emailVerification.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("만료된 인증키 입니다.");
+            throw new ApiException(ErrorCode.EXPIRED_AUTH_KEY);
         }
     }
 
@@ -85,14 +96,15 @@ public class AuthServiceImpl implements AuthService {
     /**
      * 로그인 비즈니스 로직
      *
-     * @param requestDto 로그인 요청 정보
+     * @param email    로그인 시도 이메일
+     * @param password 로그인 시도 비밀번호
      * @return 생성된 JWT
      */
     @Override
-    public String login(LoginRequestDto requestDto) {
+    public String login(String email, String password) {
         try {
-            Member member = memberService.getMemberByEmail(requestDto.getEmail());
-            memberService.verifyMember(requestDto.getPassword(), member);
+            Member member = memberService.getMemberByEmail(email);
+            memberService.verifyMember(password, member);
             return jwtUtil.createToken(member.getId(), member.getRole());
         } catch (ApiException e) {
             throw new ApiException(ErrorCode.LOGIN_FAILED);
@@ -105,8 +117,7 @@ public class AuthServiceImpl implements AuthService {
      * @param to      메일 받을 주소
      * @param authKey 사용자에게 전달할 이메일 인증을 위한 인증키
      */
-    @Override
-    public void sendAuthEmail(String to, String authKey) {
+    private void sendAuthEmail(String to, String authKey) {
         Context context = new Context();
         context.setVariable("username", to);
         context.setVariable("authKey", authKey);
@@ -114,11 +125,6 @@ public class AuthServiceImpl implements AuthService {
         String htmlBody = templateEngine.process("email/auth-email", context);
 
         emailService.sendEmail(to, "[TRADER.IO] 이메일 인증", htmlBody);
-    }
-
-    @Override
-    public boolean isMemberByEmail(String email) {
-        return memberService.isMemberByEmail(email);
     }
 
     @Override

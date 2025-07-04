@@ -61,7 +61,6 @@ public class SignupController {
             return "members/signup/email";
         }
         try {
-            authService.validateDuplicateEmail(signupDto.getEmail());
             //TODO: 이메일 전송 몇초 걸리고, 걸리는 동안 뷰 전환이 없어서, 발송 버튼을 계속 누를 수 있고 이메일도 계속 감.
             authService.sendVerificationEmail(signupDto.getEmail());
         } catch (RuntimeException e) {
@@ -85,7 +84,7 @@ public class SignupController {
             return "members/signup/verify";
         }
         try {
-            authService.verifyAuthKey(signupDto.getEmail(), signupDto.getAuthKey());
+            authService.verifySignupVerificationRequest(signupDto.getEmail(), signupDto.getAuthKey());
         } catch (RuntimeException e) {
             bindingResult.rejectValue("authKey", "runtimeError", e.getMessage());
             return "members/signup/verify";

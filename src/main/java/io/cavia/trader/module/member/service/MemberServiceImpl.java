@@ -111,7 +111,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void validateDuplicateEmail(String email) {
         if (memberRepository.existsByEmail(email)) {
-            throw new IllegalStateException("이미 존재하는 회원입니다.");
+            throw new ApiException(ErrorCode.DUPLICATE_EMAIL);
         }
     }
 

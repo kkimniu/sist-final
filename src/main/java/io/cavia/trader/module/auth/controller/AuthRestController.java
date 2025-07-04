@@ -12,15 +12,12 @@ import io.cavia.trader.module.jwt.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +28,7 @@ public class AuthRestController {
     @PostMapping("/api/auth/login")
     public ResponseEntity<ApiResponse<?>> login(@Valid @RequestBody LoginRequestDto requestDto,
                                                 HttpServletResponse response) {
-        String token = authService.login(requestDto);
+        String token = authService.login(requestDto.getEmail(), requestDto.getPassword());
         response.setHeader(JwtUtil.AUTHORIZATION_HEADER, JwtUtil.BEARER_PREFIX + token);
         return ApiResponses.ok();
     }
@@ -67,12 +64,9 @@ public class AuthRestController {
      * @return 상태코드, is-our-member : true/false
      */
     @PostMapping("/api/auth/verification/verify-code")
-    public ResponseEntity<?> checkAuthKeyAndIsMember(@Valid @RequestBody VerifyCodeRequestDto requestDto) {
-        authService.verifyAuthKey(requestDto.getEmail(), requestDto.getAuthKey());
-        if (!authService.isMemberByEmail(requestDto.getEmail())) {
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("is-our-member", false, "message", "회원가입이 필요한 이메일입니다."));
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("is-our-member", true, "message", "이메일 인증이 성공했습니다."));
+    public ResponseEntity<?> verifyPasswordResetVerification(@Valid @RequestBody VerifyCodeRequestDto requestDto) {
+        authService.verifyPasswordResetVerificationRequest(requestDto.getEmail(), requestDto.getAuthKey());
+        return ApiResponses.ok();
     }
 
     /**
