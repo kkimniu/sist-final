@@ -86,17 +86,13 @@ formStep2.addEventListener('submit', (e) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: userEmail, authKey: userAuthKey })
     })
-    .then(response => response.json()) // 응답을 JSON으로 파싱
-    .then(resultData => {
-        // 응답 상태와 관계없이 일단 JSON 파싱은 성공한 경우
-        if (resultData.message && resultData.message.includes('성공')) { // 성공 메시지 포함 여부로 판단
-            alert(resultData.message);
-            step2Div.style.display = 'none';
-            step3Div.style.display = 'block';
-        } else {
-            // 비즈니스 로직 상 실패 (예: 코드가 틀림)
-            throw new Error(resultData.message || '인증에 실패했습니다.');
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(body => {
+                throw new Error(body.message || '비밀번호 변경에 실패했습니다.');
+            });
         }
+        return response.json();
     })
     .catch(error => {
         step2Message.textContent = error.message || '서버와 통신 중 오류가 발생했습니다.';

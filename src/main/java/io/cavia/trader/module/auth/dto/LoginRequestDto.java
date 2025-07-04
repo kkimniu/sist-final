@@ -8,7 +8,7 @@ import lombok.Data;
 public class LoginRequestDto {
 
     @ValidEmail
-    private String username;
+    private String email;
 
     @ValidPassword
     private String password;
