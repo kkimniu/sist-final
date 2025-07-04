@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="/css/header.css">
     <link rel="stylesheet" href="/css/members.css">
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
+<div class="logout">
+    <a href="#" id="logout-link" class="nav-button logout-button">로그아웃</a>
+</div>
 <div class="member-wrapper">
     <h1>마이 페이지</h1>
     <div class="container">
         <div class="game-container">
             <!-- 게임기록-->
             <h2>게임기록</h2>
-            <ul id="game-list"></ul>
+            <div id="game-list"></div>
         </div>
         <div class="member-container">
             <!--닉네임 등급 자산조회 등등-->
@@ -26,11 +30,7 @@
     </div>
 </div>
 
-<div>
-    <a href="#" id="logout-link" class="nav-button logout-button">로그아웃</a>
-</div>
-
-<div>
+<div class="withdraw">
     <input type="button" value="회원탈퇴" onclick="location.href = window.location.pathname + '/withdraw'"><br>
 </div>
 <script src="/js/header.js"></script>
@@ -66,15 +66,17 @@
                 list.innerHTML = '<li>참여한 게임이 없습니다.</li>'
             }else{
                 gameParticipation.forEach(game => {
-                    const li = document.createElement('li');
+                    const div = document.createElement('div');
+                    div.className = 'game-card';
                     const date = new Date(game.enteredAt);
                     const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}   ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
-                    li.innerText = `날짜: ${formatted}
-                   | 수익률: ${game.returnRate}%
-                   | 순위: ${game.gameRank}위
-                   | 점수: ${game.earnedScore} → ${game.postScore}
-                   | 캐시: ${game.earnedCash} → ${game.postCash}`;
-                    list.appendChild(li);
+                    div.innerHTML =
+                    `<p><strong>날짜:</strong> ${formatted}</p>
+                     <p><strong>수익률:</strong> ${game.returnRate}%</p>
+                     <p><strong>순위:</strong> ${game.gameRank}위</p>
+                     <p><strong>점수:</strong> ${game.earnedScore} → ${game.postScore}</p>
+                     <p><strong>캐시:</strong> ${game.earnedCash} → ${game.postCash}</p>`;
+                    list.appendChild(div);
                 });
             }
         }catch(err) {
