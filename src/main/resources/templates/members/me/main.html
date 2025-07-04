@@ -3,24 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="/css/members.css">
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
-<div>
+<div class="member-wrapper">
     <h1>마이 페이지</h1>
-    <div>
-        <!-- 게임기록-->
-        <h2>게임기록</h2>
-        <ul id="game-list"></ul>
-    </div>
-    <div>
-        <!--닉네임 등급 자산조회 등등-->
-        <strong>닉네임</strong> <span id="nickname"></span>
-        <strong>등급</strong> <span id="total-score"></span><br>
-        <input type="button" value="닉네임변경" onclick="location.href= window.location.pathname + '/nickname'"/>
-        <input type="button" value="비밀번호변경" onclick="location.href= window.location.pathname + '/password'"/><br>
-        <h3>자산조회</h3> <span id="cash"></span><br>
-        <input type="button" value="자산초기화" onclick="cashReset()"><br>
+    <div class="container">
+        <div class="game-container">
+            <!-- 게임기록-->
+            <h2>게임기록</h2>
+            <ul id="game-list"></ul>
+        </div>
+        <div class="member-container">
+            <!--닉네임 등급 자산조회 등등-->
+            <strong>닉네임</strong> <span id="nickname"></span>
+            <strong>등급</strong> <span id="total-score"></span><br>
+            <input type="button" value="닉네임변경" onclick="location.href= window.location.pathname + '/nickname'"/>
+            <input type="button" value="비밀번호변경" onclick="location.href= window.location.pathname + '/password'"/><br>
+            <h3>자산조회</h3> <span id="cash"></span> <input type="button" value="자산초기화" onclick="cashReset()"><br>
+        </div>
     </div>
 </div>
 
