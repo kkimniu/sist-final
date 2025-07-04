@@ -2,7 +2,7 @@ package io.cavia.trader.module.auth.service;
 
 import io.cavia.trader.module.auth.dto.LoginRequestDto;
 import io.cavia.trader.module.auth.dto.ResetPasswordRequestDto;
-import io.cavia.trader.module.auth.dto.SignupForm;
+import io.cavia.trader.module.auth.dto.SignupDto;
 import io.cavia.trader.module.member.entity.Member;
 
 public interface AuthService {
@@ -14,7 +14,7 @@ public interface AuthService {
 
     void validateDuplicateNickname(String nickname);
 
-    void join(SignupForm signupForm);
+    void join(SignupDto signupDto);
 
     String login(LoginRequestDto requestDto);
 

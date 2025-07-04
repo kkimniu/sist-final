@@ -6,20 +6,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="/css/notices.css">
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
-<div>
-    <div>
-        <h2 th:text="${dto.title}">제목</h2>
-    </div>
-    <div>
-        <p th:text="${dto.content}">본문</p>
-    </div>
-    <div>
-        <a th:href="@{/notices(cp=${cp})}">
-            <button type="button">목록</button>
-        </a>
+<div class="notice-wrapper">
+    <div class="notice-container">
+        <div class="created-at">
+            <p th:text="${#temporals.format(dto.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></p>
+        </div>
+        <div class="title">
+            <h2 th:text="${dto.title}">제목</h2>
+        </div>
+        <div class="content">
+            <p th:utext="${#strings.replace(dto.content,'\n', '<br/>')}"></p>
+        </div>
+        <div class="notice-back-btn">
+            <a th:href="@{/notices(cp=${cp})}">
+                <button type="button">목록</button>
+            </a>
+        </div>
     </div>
 </div>
 <script src="/js/header.js"></script>

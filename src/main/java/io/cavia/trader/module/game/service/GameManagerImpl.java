@@ -76,7 +76,6 @@ public class GameManagerImpl implements GameManager {
                     gameRank.set(
                             gameRank.get()+1
                     );
-
                 });
 
 

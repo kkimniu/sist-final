@@ -18,11 +18,11 @@
         <h2>이메일 인증</h2>
     </div>
     <div class="signup-content">
-        <p><b><span th:text="${signupForm.email}"></span></b>로 받으신 인증번호를 입력해주세요.
+        <p><b><span th:text="${signupDto.email}"></span></b>로 받으신 인증번호를 입력해주세요.
             인증번호는 1시간 동안만 유효합니다.</p>
     </div>
 
-    <form th:action="@{/signup/verify}" th:object="${signupForm}" method="post">
+    <form th:action="@{/signup/verify}" th:object="${signupDto}" method="post">
 
         <input type="text" id="authKey" name="authKey" minlength="6" maxlength="6" pattern="^\d{6}$"
                inputmode="numeric" placeholder="000000" title="정확히 6자리 숫자를 입력해주세요 (예: 000000)" required/>
