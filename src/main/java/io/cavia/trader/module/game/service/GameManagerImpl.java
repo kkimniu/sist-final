@@ -12,6 +12,7 @@ import io.cavia.trader.module.member.entity.Member;
 import io.jsonwebtoken.Claims;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +23,9 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -45,32 +47,40 @@ public class GameManagerImpl implements GameManager {
 
         if (!gameSessionDto.getGameDtos().isEmpty()) {
             // 현재시간 - 세션시작 시간을 분 단위로 치환한 값
-            GameDto gameDTO = gameSessionDto.getGameDtos().peekFirst();
-            long timesBetween = Duration.between(gameDTO.getStartedAt(), LocalDateTime.now()).toMillis();
+            GameDto gameDto = gameSessionDto.getGameDtos().peekFirst();
+            long timesBetween = Duration.between(gameDto.getStartedAt(), LocalDateTime.now()).toMillis();
 
             // 세션의 생명 주기가 끝났으면 선입 세션 삭제
             if (timesBetween >= GAME_LIFE_CYCLE) {
                 // TODO 게임 세션 삭제 전 DB 저장 필요(game 객체는 세션 만들어 질때 저장 했음)
-                gameDTO.getPlayerStatusDtos().forEach((memberId, playerStatusDto) -> {
+                Map<Long, PlayerStatusDto> playersSortedByRank = scoreUtil.evaluatePlayers(
+                        gameDto.getPlayerStatusDtos());
 
+                // 순위 지정 후 DB 저장
+            AtomicInteger gameRank = new AtomicInteger(1);
+                playersSortedByRank.forEach((memberId, playerStatusDto) -> {
 
                     gameRepositoryImpl.saveGameParticipation(
                             GameParticipation.builder()
                                     .gameId(playerStatusDto.getGameId())
                                     .memberId(playerStatusDto.getMemberId())
-                                    .gameRank(playerStatusDto.getPostScore()-playerStatusDto.getEarnedScore())
+                                    .gameRank(gameRank.get())
                                     .postCash(playerStatusDto.getPostCash())
                                     .earnedCash(playerStatusDto.getEarnedCash())
                                     .postScore(playerStatusDto.getPostScore())
                                     .earnedScore(playerStatusDto.getEarnedScore())
-                                    .returnRate(scoreUtil.getReturnRate(playerStatusDto.getPostCash(),
-                                            playerStatusDto.getEarnedCash()))
+                                    .returnRate(playerStatusDto.getReturnRate())
                                     .enteredAt(LocalDateTime.now())
                                     .build());
+
+                    gameRank.set(
+                            gameRank.get()+1
+                    );
+
                 });
 
 
-                gameDTO.getChartSessions().values().forEach(chartSessions -> {
+                gameDto.getChartSessions().values().forEach(chartSessions -> {
                     try {
                         chartSessions.close();
                     } catch (IOException e) {
@@ -78,7 +88,7 @@ public class GameManagerImpl implements GameManager {
                     }
                 });
 
-                gameDTO.getChatSessions().values().forEach(chatSessions -> {
+                gameDto.getChatSessions().values().forEach(chatSessions -> {
                     try {
                         chatSessions.close();
                     } catch (IOException e) {
@@ -93,11 +103,11 @@ public class GameManagerImpl implements GameManager {
         }
 
         // 게임 세션 1개 생성
-        GameDto gameDTO = gameAdministrationService.createGame();
-        gameSessionDto.getGameDtos().add(gameDTO);
-        gameRepositoryImpl.saveGame(gameDTO.getStockId(),
-                gameDTO.getStartedAt());
-        gameDTO.setId(gameRepositoryImpl.findLastGameId());
+        GameDto gameDto = gameAdministrationService.createGame();
+        gameSessionDto.getGameDtos().add(gameDto);
+        gameRepositoryImpl.saveGame(gameDto.getStockId(),
+                gameDto.getStartedAt());
+        gameDto.setId(gameRepositoryImpl.findLastGameId());
         System.out.println("Game Session Created, Games size: " + gameSessionDto.getGameDtos().size());
     }
 
@@ -174,14 +184,14 @@ public class GameManagerImpl implements GameManager {
         }
 
         if (!gameSessionDto.getGameDtos().isEmpty()) {
-            GameDto gameDTO = gameSessionDto.getGameDtos().peekLast();
-            synchronized (gameDTO.getChatSessions()) {
-                gameDTO.getChatSessions().put(member.getId(), webSocketSession);
+            GameDto gameDto = gameSessionDto.getGameDtos().peekLast();
+            synchronized (gameDto.getChatSessions()) {
+                gameDto.getChatSessions().put(member.getId(), webSocketSession);
             }
-            synchronized (gameDTO.getUserIdsInChatSessions()) {
-                gameDTO.getUserIdsInChatSessions().put(webSocketSession.getId(), member.getId());
+            synchronized (gameDto.getUserIdsInChatSessions()) {
+                gameDto.getUserIdsInChatSessions().put(webSocketSession.getId(), member.getId());
             }
-            return gameDTO;
+            return gameDto;
 
         } else {
             throw new RuntimeException("현재 생성된 게임 세션이 존재하지 않습니다.");
@@ -190,25 +200,25 @@ public class GameManagerImpl implements GameManager {
 
     @Override
     public boolean findChartSessionKeyByUserId(Long memberId) {
-        for (GameDto gameDTO : gameSessionDto.getGameDtos()) {
-            if (gameDTO.getChartSessions().containsKey(memberId)) return true;
+        for (GameDto gameDto : gameSessionDto.getGameDtos()) {
+            if (gameDto.getChartSessions().containsKey(memberId)) return true;
         }
         return false;
     }
 
     @Override
     public boolean findChatSessionKeyByUserId(Long memberId) {
-        for (GameDto gameDTO : gameSessionDto.getGameDtos()) {
-            if (gameDTO.getChatSessions().containsKey(memberId)) return true;
+        for (GameDto gameDto : gameSessionDto.getGameDtos()) {
+            if (gameDto.getChatSessions().containsKey(memberId)) return true;
         }
         return false;
     }
 
     @Override
     public GameDto findGameSessionByUserId(Long memberId) {
-        for (GameDto gameDTO : gameSessionDto.getGameDtos()) {
-            if (gameDTO.getPlayerStatusDtos().containsKey(memberId)) {
-                return gameDTO;
+        for (GameDto gameDto : gameSessionDto.getGameDtos()) {
+            if (gameDto.getPlayerStatusDtos().containsKey(memberId)) {
+                return gameDto;
             }
         }
         throw new RuntimeException("세션 조회 중 예외 발생: 세션에서 해당 유저를 찾을 수 없습니다.");
@@ -254,14 +264,14 @@ public class GameManagerImpl implements GameManager {
     @Override
     public void removeChartSession(WebSocketSession session) {
         try {
-            for (GameDto gameDTO : gameSessionDto.getGameDtos()) {
-                if (gameDTO.getUserIdsInChartSessions()
+            for (GameDto gameDto : gameSessionDto.getGameDtos()) {
+                if (gameDto.getUserIdsInChartSessions()
                         .containsKey(session.getId())) {
 
-                    long targetId = gameDTO.getUserIdsInChartSessions()
+                    long targetId = gameDto.getUserIdsInChartSessions()
                             .get(session.getId());
 
-                    gameDTO.getUserIdsInChartSessions()
+                    gameDto.getUserIdsInChartSessions()
                             .remove(session.getId());
                     return;
                 }
@@ -274,14 +284,14 @@ public class GameManagerImpl implements GameManager {
     @Override
     public void removeChatSession(WebSocketSession session) {
         try {
-            for (GameDto gameDTO : gameSessionDto.getGameDtos()) {
-                if (gameDTO.getUserIdsInChatSessions()
+            for (GameDto gameDto : gameSessionDto.getGameDtos()) {
+                if (gameDto.getUserIdsInChatSessions()
                         .containsKey(session.getId())) {
 
-                    long targetId = gameDTO.getUserIdsInChatSessions()
+                    long targetId = gameDto.getUserIdsInChatSessions()
                             .get(session.getId());
 
-                    gameDTO.getUserIdsInChatSessions()
+                    gameDto.getUserIdsInChatSessions()
                             .remove(session.getId());
                     return;
                 }
