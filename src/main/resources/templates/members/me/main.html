@@ -9,7 +9,7 @@
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 <div class="logout">
-    <a href="#" id="logout-link" class="nav-button logout-button">로그아웃</a>
+        <a href="#" id="logout-link" class="nav-button logout-button">로그아웃</a>
 </div>
 <div class="member-wrapper">
     <h1>마이 페이지</h1>
@@ -17,14 +17,15 @@
         <div class="game-container">
             <!-- 게임기록-->
             <h2>게임기록</h2>
-            <div id="game-list"></div>
+            <div id="gameDTO-list"></div>
         </div>
         <div class="member-container">
             <!--닉네임 등급 자산조회 등등-->
             <strong>닉네임</strong> <span id="nickname"></span>
             <strong>등급</strong> <span id="total-score"></span><br>
             <input type="button" value="닉네임변경" onclick="location.href= window.location.pathname + '/nickname'"/>
-            <input type="button" value="비밀번호변경" onclick="location.href= window.location.pathname + '/password'"/><br>
+            <input type="button" value="비밀번호변경"
+                   onclick="location.href= window.location.pathname + '/password'"/><br>
             <h3>자산조회</h3> <span id="cash"></span> <input type="button" value="자산초기화" onclick="cashReset()"><br>
         </div>
     </div>
@@ -61,21 +62,21 @@
             });
             if(!res2.ok) throw new Error('게임 기록을 불러오지 못했습니다');
             const gameParticipation = await res2.json();
-            const list = document.getElementById('game-list');
+            const list = document.getElementById('gameDTO-list');
             if(gameParticipation.length === 0 ) {
                 list.innerHTML = '<li>참여한 게임이 없습니다.</li>'
             }else{
-                gameParticipation.forEach(game => {
+                gameParticipation.forEach(gameDTO => {
                     const div = document.createElement('div');
                     div.className = 'game-card';
-                    const date = new Date(game.enteredAt);
-                    const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}   ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+                    const date = new Date(gameDTO.enteredAt);
+                    const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
                     div.innerHTML =
                     `<p><strong>날짜:</strong> ${formatted}</p>
-                     <p><strong>수익률:</strong> ${game.returnRate}%</p>
-                     <p><strong>순위:</strong> ${game.gameRank}위</p>
-                     <p><strong>점수:</strong> ${game.earnedScore} → ${game.postScore}</p>
-                     <p><strong>캐시:</strong> ${game.earnedCash} → ${game.postCash}</p>`;
+                     <p><strong>수익률:</strong> ${gameDTO.returnRate}%</p>
+                     <p><strong>순위:</strong> ${gameDTO.gameRank}위</p>
+                     <p><strong>점수:</strong> ${gameDTO.earnedScore} → ${gameDTO.postScore}</p>
+                     <p><strong>캐시:</strong> ${gameDTO.earnedCash} → ${gameDTO.postCash}</p>`;
                     list.appendChild(div);
                 });
             }

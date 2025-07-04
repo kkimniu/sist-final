@@ -51,7 +51,7 @@ public class ChatWebSocketHandler implements WebSocketHandler {
                 ChatLog chatLog = ChatLog
                         .builder()
                         .memberId(memberId)
-                        .memberNickname(gameDto.getGameParticipations().get(memberId).getMemberNickname())
+                        .memberNickname(gameDto.getPlayerStatusDtos().get(memberId).getMemberNickname())
                         .msg(msg)
                         .sentTime(LocalDateTime.now())
                         .build();

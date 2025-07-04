@@ -1,6 +1,6 @@
 package io.cavia.trader.module.game.repository;
 
-import io.cavia.trader.module.game.entity.GameParticipation;
+import io.cavia.trader.module.member.entity.GameParticipation;
 import io.cavia.trader.module.member.entity.Member;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
