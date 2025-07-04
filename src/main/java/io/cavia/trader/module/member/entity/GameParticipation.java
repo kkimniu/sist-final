@@ -1,7 +1,8 @@
-package io.cavia.trader.module.member.dto;
+package io.cavia.trader.module.member.entity;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -9,11 +10,12 @@ import java.time.LocalDateTime;
 @ToString
 @Getter
 @Setter
-public class GameParticipationDto {
+@Builder
+public class GameParticipation {
     private Long id;
-    private int memberId;
-    private int gameId;
-    private float returnRate;
+    private long memberId;
+    private long gameId;
+    private BigDecimal returnRate;
     private int gameRank;
     private int earnedScore;
     private int postScore;
