@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 public class TradeLog {
 
-    private long Id;
+    private String Id;
     private int price;
     private int quantity;
     private LocalDateTime createdAt;

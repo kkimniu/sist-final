@@ -15,7 +15,6 @@ import org.springframework.web.socket.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -163,10 +162,13 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                     );
 
                                                     // 로그 추가
+                                                    AtomicInteger counter = new AtomicInteger(0);
+
+
                                                     Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
                                                     tradeLog.add(
                                                             TradeLog.builder()
-                                                                    .Id(tradeLog.size() + 1)
+                                                                    .Id(String.format("%06d", counter.getAndIncrement() % 1000000))
                                                                     .price(-Math.abs(trades.get(tradeIndex.get()).getStckPrpr()))
                                                                     .quantity(orderTableDto.getQuantity())
                                                                     .createdAt(LocalDateTime.now())
@@ -189,10 +191,11 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                     );
 
                                                     // 로그 추가
+                                                    AtomicInteger counter = new AtomicInteger(0);
                                                     Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
                                                     tradeLog.add(
                                                             TradeLog.builder()
-                                                                    .Id(tradeLog.size() + 1)
+                                                                    .Id(String.format("%06d", counter.getAndIncrement() % 1000000))
                                                                     .price(trades.get(tradeIndex.get()).getStckPrpr())
                                                                     .quantity(orderTableDto.getQuantity())
                                                                     .createdAt(LocalDateTime.now())
@@ -227,10 +230,11 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
 
                                         // 로그 추가 해야겠지?
+                                        AtomicInteger counter = new AtomicInteger(0);
                                         Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
                                         tradeLog.add(
                                                 TradeLog.builder()
-                                                        .Id(tradeLog.size() + 1)
+                                                        .Id(String.format("%06d", counter.getAndIncrement() % 1000000))
                                                         .price(-Math.abs(trades.get(tradeIndex.get()).getStckPrpr()))
                                                         .quantity(quantityOfMarketSell)
                                                         .createdAt(LocalDateTime.now())
@@ -250,10 +254,11 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                         playerStatusDto.getOrderDto().setQuantityOfMarketBuy(0);
 
                                         // 로그 추가 해야겠지?
+                                        AtomicInteger counter = new AtomicInteger(0);
                                         Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
                                         tradeLog.add(
                                                 TradeLog.builder()
-                                                        .Id(tradeLog.size() + 1)
+                                                        .Id(String.format("%06d", counter.getAndIncrement() % 1000000))
                                                         .price(trades.get(tradeIndex.get()).getStckPrpr())
                                                         .quantity(quantityOfMarketBuy)
                                                         .createdAt(LocalDateTime.now())
