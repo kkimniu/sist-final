@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
     <link rel="stylesheet" href="/css/members.css">
 </head>
 <body>
@@ -34,6 +35,7 @@
 <div class="withdraw">
     <input type="button" value="회원탈퇴" onclick="location.href = window.location.pathname + '/withdraw'"><br>
 </div>
+<div th:replace="~{fragments/footer :: footer}"></div>
 <script src="/js/header.js"></script>
 <script>
     window.onload = async function () {
