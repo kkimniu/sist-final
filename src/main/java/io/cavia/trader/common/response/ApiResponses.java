@@ -9,8 +9,8 @@ import java.net.URI;
  * ApiResponse 는 api의 응답 객체이고,
  * 이 클래스는 응답 객체를 ResponseEntity와 결합해 보일러 플레이트를 없애고, 쉽게 반환할 수 있도록 하는 헬퍼 클래스임.
  *
- * @see ApiResponse
  * @author KimBeomhee
+ * @see ApiResponse
  */
 public final class ApiResponses {
 
@@ -40,7 +40,7 @@ public final class ApiResponses {
                 .body(new ApiResponse<>(HttpStatus.CREATED.value(), message, data));
     }
 
-    public static ResponseEntity<?> noContent() {
+    public static ResponseEntity<Void> noContent() {
         return ResponseEntity.noContent().build();
     }
 

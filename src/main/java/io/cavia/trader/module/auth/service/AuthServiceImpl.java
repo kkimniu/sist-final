@@ -3,13 +3,11 @@ package io.cavia.trader.module.auth.service;
 import io.cavia.trader.common.email.EmailService;
 import io.cavia.trader.common.exception.ApiException;
 import io.cavia.trader.common.exception.ErrorCode;
-import io.cavia.trader.module.auth.dto.ResetPasswordRequestDto;
 import io.cavia.trader.module.auth.dto.SignupDto;
 import io.cavia.trader.module.auth.entity.EmailVerification;
 import io.cavia.trader.module.auth.repository.EmailVerificationRepository;
 import io.cavia.trader.module.jwt.JwtUtil;
 import io.cavia.trader.module.member.entity.Member;
-import io.cavia.trader.module.member.repository.MemberRepository;
 import io.cavia.trader.module.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +24,6 @@ public class AuthServiceImpl implements AuthService {
 
     private final EmailService emailService;
     private final EmailVerificationRepository emailVerificationRepository;
-    private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final TemplateEngine templateEngine;
@@ -52,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void verifySignupVerificationRequest(String email, String authKey) {
         verifyAuthKey(email, authKey);
-        validateDuplicateEmail(email);
+        memberService.validateDuplicateEmail(email);
     }
 
     private void verifyAuthKey(String email, String authKey) {
@@ -67,17 +64,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void validateDuplicateEmail(String email) {
-        memberService.validateDuplicateEmail(email);
-    }
-
-    @Override
     public void validateDuplicateNickname(String nickname) {
         memberService.validateDuplicateNickname(nickname);
     }
 
     @Override
-    public void join(SignupDto signupDto) {
+    public Member join(SignupDto signupDto) {
 
         Member member = Member.builder()
                 .email(signupDto.getEmail())
@@ -90,7 +82,8 @@ public class AuthServiceImpl implements AuthService {
         memberService.validateDuplicateEmail(signupDto.getEmail());
         verifyAuthKey(signupDto.getEmail(), signupDto.getAuthKey());
         memberService.createMember(member);
-        System.out.println("회원가입 완료시 member = " + member);
+        System.out.println("회원가입 완료 member = " + member);
+        return member;
     }
 
     /**
@@ -104,7 +97,7 @@ public class AuthServiceImpl implements AuthService {
     public String login(String email, String password) {
         try {
             Member member = memberService.getMemberByEmail(email);
-            memberService.verifyMember(password, member);
+            memberService.validatePassword(member.getId(), password);
             return jwtUtil.createToken(member.getId(), member.getRole());
         } catch (ApiException e) {
             throw new ApiException(ErrorCode.LOGIN_FAILED);
@@ -128,14 +121,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void resetPassword(ResetPasswordRequestDto requestDto) {
-        verifyAuthKey(requestDto.getEmail(), requestDto.getAuthKey());
-
-        Member member = memberService.getMemberByEmail(requestDto.getEmail());
-
-        String newEncodedPassword = passwordEncoder.encode(requestDto.getPassword());
-        if (memberRepository.updatePassword(member.getId(), newEncodedPassword, LocalDateTime.now()) == 0) {
-            throw new IllegalStateException("비밀번호 수정 작업이 실패했습니다.");
-        }
+    public void resetPassword(String email, String authKey, String rawPassword) {
+        verifyAuthKey(email, authKey);
+        Member member = memberService.getMemberByEmail(email);
+        memberService.changePassword(member.getId(), rawPassword);
     }
 }

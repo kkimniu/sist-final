@@ -17,17 +17,15 @@ public interface MemberService {
 
     void changeNickname(Long id, String nickname);
 
-    void verifyMember(String rawPassword, Member member);
-
     void validatePassword(Long id, String password);
 
-    void changePassword(Long id, PasswordChangeRequestDto requestDto);
+    void processPasswordChangeRequest(Long id, String currentPassword, String newPassword);
+
+    void changePassword(Long id, String newPassword);
 
     void resetCash(Long id);
 
     void withdrawMember(Long id, String password);
-
-    boolean isMemberByEmail(String email);
 
     void validateDuplicateEmail(String email);
 

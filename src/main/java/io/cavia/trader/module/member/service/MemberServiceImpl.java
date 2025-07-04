@@ -3,14 +3,11 @@ package io.cavia.trader.module.member.service;
 import io.cavia.trader.common.exception.ApiException;
 import io.cavia.trader.common.exception.ErrorCode;
 import io.cavia.trader.module.member.dto.GameParticipationDto;
-import io.cavia.trader.module.member.dto.PasswordChangeRequestDto;
 import io.cavia.trader.module.member.dto.UserRankingDto;
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.repository.GameParticipationRepository;
 import io.cavia.trader.module.member.repository.MemberMapper;
 import io.cavia.trader.module.member.repository.MemberRepository;
-import io.cavia.trader.module.notice.exception.InvalidNoticeRequestException;
-import io.cavia.trader.module.notice.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,7 +32,7 @@ public class MemberServiceImpl implements MemberService {
     public List<GameParticipationDto> getGameParticipationByMemberId(Long memberId) {
         List<GameParticipationDto> list = gameParticipationRepository.findByMemberId(memberId);
         if (list == null || list.isEmpty()) {
-            throw new NotFoundException("게임 참여 이력이 없습니다");
+            throw new ApiException(ErrorCode.GAME_HISTORY_NOT_FOUND);
         }
         return list;
     }
@@ -55,43 +52,41 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void changeNickname(Long id, String nickname) {
         if (memberRepository.existsByNickname(nickname)) {
-            throw new IllegalStateException("이미 존재하는 닉네임입니다.");
+            throw new ApiException(ErrorCode.DUPLICATE_NICKNAME);
         }
         if (memberRepository.updateNickname(id, nickname, LocalDateTime.now()) <= 0) {
-            throw new InvalidNoticeRequestException("닉네임 변경 실패");
-        }
-    }
-
-    @Override
-    public void verifyMember(String rawPassword, Member member) {
-        if (!passwordEncoder.matches(rawPassword, member.getPassword())) {
-            throw new ApiException(ErrorCode.INCORRECT_PASSWORD);
+            throw new ApiException(ErrorCode.MEMBER_NOT_FOUND);
         }
     }
 
     @Override
     public void validatePassword(Long id, String password) {
         Member member = memberRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
+                () -> new ApiException(ErrorCode.MEMBER_NOT_FOUND)
         );
         if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new ApiException(ErrorCode.INCORRECT_PASSWORD);
         }
     }
 
     @Override
-    public void changePassword(Long id, PasswordChangeRequestDto requestDto) {
-        validatePassword(id, requestDto.getCurrentPassword());
-        String newEncodedPassword = passwordEncoder.encode(requestDto.getNewPassword());
+    public void processPasswordChangeRequest(Long id, String currentPassword, String newPassword) {
+        validatePassword(id, currentPassword);
+        changePassword(id, newPassword);
+    }
+
+    @Override
+    public void changePassword(Long id, String newPassword) {
+        String newEncodedPassword = passwordEncoder.encode(newPassword);
         if (memberRepository.updatePassword(id, newEncodedPassword, LocalDateTime.now()) == 0) {
-            throw new IllegalStateException("비밀번호 수정 작업이 실패했습니다.");
+            throw new ApiException(ErrorCode.MEMBER_NOT_FOUND);
         }
     }
 
     @Override
     public void resetCash(Long id) {
         if (memberRepository.updateCash(id, memberCashReset) == 0) {
-            throw new IllegalStateException("자산 초기화가 실패했습니다.");
+            throw new ApiException(ErrorCode.MEMBER_NOT_FOUND);
         }
     }
 
@@ -99,13 +94,8 @@ public class MemberServiceImpl implements MemberService {
     public void withdrawMember(Long id, String password) {
         validatePassword(id, password);
         if (memberMapper.delete(id) == 0) {
-            throw new IllegalStateException("회원 탈퇴 작업에 실패했습니다.");
+            throw new ApiException(ErrorCode.MEMBER_NOT_FOUND);
         }
-    }
-
-    @Override
-    public boolean isMemberByEmail(String email) {
-        return memberRepository.existsByEmail(email);
     }
 
     @Override
@@ -118,7 +108,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void validateDuplicateNickname(String nickname) {
         if (memberRepository.existsByNickname(nickname)) {
-            throw new IllegalStateException("이미 존재하는 닉네임입니다.");
+            throw new ApiException(ErrorCode.DUPLICATE_NICKNAME);
         }
     }
 
@@ -131,7 +121,7 @@ public class MemberServiceImpl implements MemberService {
     public List<UserRankingDto> findAllOrderByCash(Long limit, Long offset) {
         List<UserRankingDto> list = memberRepository.findAllByOrderByCashDesc(limit, offset);
         if (list == null || list.isEmpty()) {
-            throw new NotFoundException("게임 참여 이력이 없습니다");
+            throw new ApiException(ErrorCode.USER_RANKING_NOT_FOUND);
         }
         return list;
     }
@@ -140,7 +130,7 @@ public class MemberServiceImpl implements MemberService {
     public List<UserRankingDto> findAllOrderByTotalScore(Long limit, Long offset) {
         List<UserRankingDto> list = memberRepository.findAllByOrderByTotalScoreDesc(limit, offset);
         if (list == null || list.isEmpty()) {
-            throw new NotFoundException("게임 참여 이력이 없습니다");
+            throw new ApiException(ErrorCode.USER_RANKING_NOT_FOUND);
         }
         return list;
     }

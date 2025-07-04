@@ -1,5 +1,6 @@
 package io.cavia.trader.module.auth.controller;
 
+import io.cavia.trader.common.exception.ApiException;
 import io.cavia.trader.module.auth.dto.SignupDto;
 import io.cavia.trader.module.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -85,8 +86,8 @@ public class SignupController {
         }
         try {
             authService.verifySignupVerificationRequest(signupDto.getEmail(), signupDto.getAuthKey());
-        } catch (RuntimeException e) {
-            bindingResult.rejectValue("authKey", "runtimeError", e.getMessage());
+        } catch (ApiException e) {
+            bindingResult.rejectValue("authKey", "runtimeError", e.getErrorCode().getMessage());
             return "members/signup/verify";
         }
         return "redirect:/signup/nickname";

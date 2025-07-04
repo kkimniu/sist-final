@@ -30,7 +30,7 @@ public class AuthRestController {
                                                 HttpServletResponse response) {
         String token = authService.login(requestDto.getEmail(), requestDto.getPassword());
         response.setHeader(JwtUtil.AUTHORIZATION_HEADER, JwtUtil.BEARER_PREFIX + token);
-        return ApiResponses.ok();
+        return ApiResponses.ok("토큰이 발급되었습니다", null);
     }
 
     /**
@@ -51,7 +51,7 @@ public class AuthRestController {
      * @return 상태코드와 메시지
      */
     @PostMapping("/api/auth/verification/send-code")
-    public ResponseEntity<?> sendVerificationEmail(@Valid @RequestBody SendCodeRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<?>> sendVerificationEmail(@Valid @RequestBody SendCodeRequestDto requestDto) {
         authService.sendVerificationEmail(requestDto.getEmail());
         return ApiResponses.ok();
     }
@@ -64,7 +64,7 @@ public class AuthRestController {
      * @return 상태코드, is-our-member : true/false
      */
     @PostMapping("/api/auth/verification/verify-code")
-    public ResponseEntity<?> verifyPasswordResetVerification(@Valid @RequestBody VerifyCodeRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<?>> verifyPasswordResetVerification(@Valid @RequestBody VerifyCodeRequestDto requestDto) {
         authService.verifyPasswordResetVerificationRequest(requestDto.getEmail(), requestDto.getAuthKey());
         return ApiResponses.ok();
     }
@@ -73,12 +73,12 @@ public class AuthRestController {
      * 완성된 requestDto를 가지고 비밀번호를 재설정함
      *
      * @param requestDto 사용자가 입력한 이메일, 인증코드, 비밀번호가 들어있는 dto
-     * @return 상태코드와 메시지
+     * @return 응답 body가 없는 204 no content 성공 응답
      */
     @PostMapping("/api/auth/password-reset")
-    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequestDto requestDto) {
-        authService.resetPassword(requestDto);
-        return ResponseEntity.ok("비밀번호 변경 완료");
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordRequestDto requestDto) {
+        authService.resetPassword(requestDto.getEmail(), requestDto.getAuthKey(), requestDto.getPassword());
+        return ApiResponses.noContent();
     }
 
 }
