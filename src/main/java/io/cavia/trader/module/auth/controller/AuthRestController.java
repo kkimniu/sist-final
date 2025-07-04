@@ -1,5 +1,7 @@
 package io.cavia.trader.module.auth.controller;
 
+import io.cavia.trader.common.exception.ApiException;
+import io.cavia.trader.common.exception.ErrorCode;
 import io.cavia.trader.common.response.ApiResponse;
 import io.cavia.trader.common.response.ApiResponses;
 import io.cavia.trader.module.auth.dto.LoginRequestDto;
@@ -41,6 +43,9 @@ public class AuthRestController {
      */
     @GetMapping("api/auth/login-checker")
     public ResponseEntity<ApiResponse<?>> getMemberInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (userDetails == null) {
+            throw new ApiException(ErrorCode.LOGIN_FAILED);
+        }
         return ApiResponses.ok(userDetails.getMember());
     }
 
