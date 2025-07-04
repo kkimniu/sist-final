@@ -541,7 +541,7 @@ function chartSocketHandler() {
             const num1 = document.getElementById("stocksHolding").innerText * stockData.stck_prpr;
             let returnRate = document.getElementById("returnRate");
             const rate = getRate(num1, holdingValue);
-            if (rate) {
+            if (rate || holdingValue !== 0) {
                 if (rate > 0) {
                     returnRate.style.color = "red";
                     returnRate.innerText = rate + "%";
@@ -550,6 +550,8 @@ function chartSocketHandler() {
                     returnRate.innerText = rate + "%";
                 }
 
+            }else{
+                returnRate.innerText = "";
             }
 
         } else if (DataHead === "quotes") {
@@ -711,7 +713,7 @@ function chartSocketHandler() {
         } else if (DataHead === "timeLeft") {
             showTimeLeft(stockData);
         } else if (DataHead === "playerStatus") {
-            console.log("입력 받은 플레이어스테이터스: " + JSON.stringify(stockData));
+            //console.log("입력 받은 플레이어스테이터스: " + JSON.stringify(stockData));
             // 플레이어 스테이터스가 업데이트 됐을 때의 데이터를 처리해야 함
             document.getElementById("stocksHolding").innerText = stockData.stocksHolding;
             document.getElementById("cash").innerText = stockData.earnedCash;
