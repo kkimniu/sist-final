@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,5 +26,7 @@ public class PlayerStatusDto {
     private long earnedCash;
     private long postCash;
     private OrderDto orderDto;
+    @Builder.Default
+    private AtomicInteger idCreator = new AtomicInteger(1);
     private LocalDateTime enteredAt;
 }
