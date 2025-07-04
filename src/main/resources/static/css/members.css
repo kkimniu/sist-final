@@ -1,0 +1,37 @@
+/*게임 게임 기록과 닉네임/등급/자산 푸른 박스로 감싸요*/
+.member-wrapper {
+    background-color: #eef4fb;
+    min-height: 100vh;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    max-width: 950px;
+    margin: 40px auto;
+}
+
+/*게임 기록과 닉네임/등급/자산 각각에 컨테이너를 양옆으로 함*/
+.container{
+    display: flex;
+    gap: 100px;
+    align-items: flex-start;
+}
+
+/*게임 기록*/
+.game-container {
+  background-color: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  max-width: 500px;
+  margin: 0;
+}
+
+/*닉네임/등급/자산*/
+.member-container {
+  background-color: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  max-width: 400px;
+  margin: 0;
+}
