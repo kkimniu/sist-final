@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="/css/members.css">
     <script>
         async function updateNickname(event){
             event.preventDefault();
@@ -46,12 +47,22 @@
     </script>
 </head>
 <body>
-<h2>닉네임 변경</h2>
-<h3>변경할 닉네임을 올려주세요</h3>
-<form onsubmit="updateNickname(event)">
-    <input type="text" id="nickname" name="nickname" placeholder="닉네임을 입력해주세요">
-    <span id="message" style="display:block; margin-top:10px;">닉네임 피드백 메세지</span>
-    <input type="submit" value="닉네임 변경">
-</form>
+<div class="nickname-wrapper">
+    <div class="header-logo-container">
+        <a href="/">
+            <img src="/images/logo.png" alt="서비스 로고">
+        </a>
+    </div>
+    <h2>닉네임 변경</h2>
+    <div class="nickname-container">
+        <h3>변경할 닉네임을 올려주세요</h3>
+        <form onsubmit="updateNickname(event)">
+            <input type="text" id="nickname" name="nickname" placeholder="닉네임을 입력해주세요">
+            <span id="message" style="display:block; margin-top:10px;"></span>
+            <input type="submit" value="닉네임 변경">
+        </form>
+        <a href="/members/me">돌아가기</a>
+    </div>
+</div>
 </body>
 </html>
