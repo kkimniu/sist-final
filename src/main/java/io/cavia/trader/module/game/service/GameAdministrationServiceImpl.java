@@ -4,14 +4,12 @@ import io.cavia.trader.module.client.connector.RestWebClientImpl;
 import io.cavia.trader.module.client.dto.StocksOutput;
 import io.cavia.trader.module.game.dto.ChatLog;
 import io.cavia.trader.module.game.dto.GameDto;
-import io.cavia.trader.module.game.entity.GameParticipation;
+import io.cavia.trader.module.game.dto.PlayerStatusDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -45,7 +43,7 @@ public class GameAdministrationServiceImpl implements GameAdministrationService 
                 .getOutput()
         );
 
-        gameDTO.setGameParticipations(new ConcurrentHashMap<Long, GameParticipation>());
+        gameDTO.setPlayerStatusDtos(new ConcurrentHashMap<Long, PlayerStatusDto>());
         gameDTO.setChatSessions(new ConcurrentHashMap<Long, WebSocketSession>());
         gameDTO.setUserIdsInChartSessions(new ConcurrentHashMap<String, Long>());
         gameDTO.setChartSessions(new ConcurrentHashMap<Long, WebSocketSession>());

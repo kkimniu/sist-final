@@ -2,8 +2,8 @@ package io.cavia.trader.module.member.service;
 
 import io.cavia.trader.common.exception.ApiException;
 import io.cavia.trader.common.exception.ErrorCode;
-import io.cavia.trader.module.member.dto.GameParticipationDto;
 import io.cavia.trader.module.member.dto.UserRankingDto;
+import io.cavia.trader.module.member.entity.GameParticipation;
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.repository.GameParticipationRepository;
 import io.cavia.trader.module.member.repository.MemberMapper;
@@ -29,8 +29,8 @@ public class MemberServiceImpl implements MemberService {
     private Long memberCashReset;
 
     @Override
-    public List<GameParticipationDto> getGameParticipationByMemberId(Long memberId) {
-        List<GameParticipationDto> list = gameParticipationRepository.findByMemberId(memberId);
+    public List<GameParticipation> getGameParticipationByMemberId(Long memberId) {
+        List<GameParticipation> list = gameParticipationRepository.findByMemberId(memberId);
         if (list == null || list.isEmpty()) {
             throw new ApiException(ErrorCode.GAME_HISTORY_NOT_FOUND);
         }
@@ -108,7 +108,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void validateDuplicateNickname(String nickname) {
         if (memberRepository.existsByNickname(nickname)) {
-            throw new ApiException(ErrorCode.DUPLICATE_NICKNAME);
+            throw new IllegalStateException("이미 존재하는 닉네임입니다.");
         }
     }
 

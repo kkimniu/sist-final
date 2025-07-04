@@ -2,7 +2,7 @@ package io.cavia.trader.module.member.controller;
 
 import io.cavia.trader.common.response.ApiResponses;
 import io.cavia.trader.module.auth.security.UserDetailsImpl;
-import io.cavia.trader.module.member.dto.GameParticipationDto;
+import io.cavia.trader.module.member.entity.GameParticipation;
 import io.cavia.trader.module.member.dto.NicknameUpdateRequestDto;
 import io.cavia.trader.module.member.dto.PasswordChangeRequestDto;
 import io.cavia.trader.module.member.dto.PasswordVerificationRequestDto;
@@ -38,7 +38,7 @@ public class MemberRestController {
     }
 
     @GetMapping("/me/game-participations")
-    public ResponseEntity<List<GameParticipationDto>> getGameParticipationsByMemberId(
+    public ResponseEntity<List<GameParticipation>> getGameParticipationsByMemberId(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.status(200)
                 .body(memberService.getGameParticipationByMemberId(userDetails.getMember().getId()));
