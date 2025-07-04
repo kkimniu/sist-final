@@ -1,22 +1,22 @@
 /*컨테이너를 연한 파랑색으로 감싸는 웨퍼*/
 .main-wrapper {
   background-color: #eef4fb;
-  min-height: 100vh;
-  padding: 30px;
+  min-height: 80vh;
+  padding: 20px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   max-width: 950px;
-  margin: 40px auto;
+  margin: 20px auto;
 }
 
 /*메인페이지 랭킹을 감싸는 컨테이너*/
 .main-container {
   background-color: white;
-  padding: 24px;
+  padding: 20px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   max-width: 900px;
-  margin: 30px auto;
+  margin: 20px auto;
 }
 /*어떤 랭킹인지 알려주는 제목*/
 #message {
@@ -44,7 +44,7 @@
 /*랭킹 상단의 제목들 순위,닉네임,자산,점수*/
 .ranking-header {
   display: grid;
-  grid-template-columns: 240px 240px 240px 240px;
+  grid-template-columns: 80px 240px 160px 160px;
   column-gap: 16px;
 
   font-size: 12px;
@@ -65,15 +65,15 @@
 /* 각 유저 한 줄 (순위, 닉네임, 자산, 점수) */
 .ranking-row {
   display: grid;
-  grid-template-columns: 240px 240px 240px 240px;
+  grid-template-columns: 80px 240px 160px 160px;
   column-gap: 16px;
 
   font-size: 12px;
   font-weight: 600;
-  margin-top: 20px;
+  margin-top: 10px;
   margin-bottom: 8px;
   color: gray;
-  padding-bottom: 30px;
+  padding-bottom: 10px;
   border-bottom : 1px solid #e0e0e0;
 }
 
@@ -93,4 +93,17 @@
 .game-btn input[type="button"]:hover {
   background-color: #007bff;
   color: white;
+}
+/* 추가된 CSS: 두 랭킹을 나란히 배치 */
+.rankings-wrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px; /* 랭킹 사이 간격 */
+}
+.ranking-container {
+    width: 48%; /* 각 랭킹 컨테이너 너비 */
+}
+.ranking-container h3 {
+    text-align: center;
+    margin-bottom: 10px;
 }
