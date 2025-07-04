@@ -5,6 +5,7 @@
     <title>메인 | TRADER</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
@@ -38,6 +39,7 @@
         <input type="button" value="주식게임" onclick="location.href = '/game'">
     </div>
 </div>
+<div th:replace="~{fragments/footer :: footer}"></div>
 
 <script>
     // 페이지가 로드되면 두 랭킹을 모두 불러옵니다.
