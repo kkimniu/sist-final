@@ -2,23 +2,29 @@ function showGameEndDisplay() {
 
     requestEndedGameInfo()
         .then(data => {
+            console.log("종료 결과 요청: "+JSON.stringify(data));
             let returnRate = data.returnRate;
+            console.log(returnRate);
             if (returnRate === 0) {
                 document.getElementById("gameEndDisplayReturnRate").style.color = "black";
+                console.log(0+"!");
             } else {
+                console.log(1);
                returnRate = Math.round(((data.returnRate - 1) * 10000)) / 100;
                 if (returnRate > 0) {
+                    console.log(1-1);
                     document.getElementById("gameEndDisplayReturnRate").style.color = "red";
                 } else if (returnRate < 0) {
+                    console.log(1-2);
                     document.getElementById("gameEndDisplayReturnRate").style.color = "blue";
                 }
             }
-
             document.getElementById("gameEndDisplayGameRank").textContent = "게임랭크: " + data.gameRank;
             document.getElementById("gameEndDisplayReturnRate").textContent = "수익률: " + returnRate + "%";
             document.getElementById("gameEndDisplayEarnedScore").textContent = "획득점수: " + data.earnedScore;
             document.getElementById("gameEndDisplayEarnedCash").textContent = "획득재화: " + data.earnedCash;
         });
+
 // div 표시
     document.getElementById("gameProgressDisplay").style.display = "none";
     document.getElementById("loadingDisplay").style.display = "none";

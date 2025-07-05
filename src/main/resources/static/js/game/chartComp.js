@@ -849,18 +849,19 @@ function getRate(number1, number2) {
 function showTimeLeft(stockData){
     const startedAt = new Date(stockData[0]);
     const serverNow = new Date(stockData[1]);
-    let now = new Date();
-    const timeDif =  now - serverNow;
+    const now = new Date();
+    const timeDif =  serverNow.getTime() - now.getTime();
     const endedAt = startedAt.getTime() + 1000 * 60 * 1;
     // 인터발 실행 시간 때문에 먼저 1회 실행후 로딩
 
-    const timeLeft = Math.floor((endedAt - now + timeDif) / 1000);
+    const timeLeft = Math.floor((endedAt - now.getTime() - timeDif) / 1000);
     document.getElementById("timeLeft").innerText = Math.floor(timeLeft / 60) + "분 " + timeLeft % 60 + "초"
 
     const interval = setInterval(() => {
         const now = new Date();
-        if (now < endedAt) {
-            const timeLeft = Math.floor((endedAt - now + timeDif) / 1000);
+        console.log(now.getTime() + timeDif + "  vs  "+ endedAt);
+        if (now.getTime() + timeDif < endedAt) {
+            const timeLeft = Math.floor((endedAt - now.getTime() - timeDif) / 1000);
             document.getElementById("timeLeft").innerText = Math.floor(timeLeft / 60) + "분 " + timeLeft % 60 + "초"
         }else{
             showLoadingDisplay();
