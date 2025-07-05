@@ -42,7 +42,7 @@ async function requestSellOrder() {
         })
     });
     if (responseSellOrder.status === 200) {
-        return responseSellOrder.json();
+        return responseSellOrder;
     } else {
         const errorData = await responseSellOrder.text();
         throw new Error("매도 요청 실패!" + errorData);
@@ -62,7 +62,7 @@ async function requestBuyOrder() {
         })
     });
     if (responseBuyOrder.status === 200) {
-        return responseBuyOrder.json();
+        return responseBuyOrder;
     } else {
         const errorData = await responseBuyOrder.text();
         throw new Error("매수 요청 실패!" + errorData);
@@ -81,7 +81,7 @@ async function requestCancelOrder(orderId) {
         })
     });
     if (responseBuyOrder.status === 200) {
-        return responseBuyOrder.json();
+        return responseBuyOrder;
     } else {
         const errorData = await responseBuyOrder.text();
         throw new Error("주문 취소 요청 실패!" + errorData);
@@ -100,7 +100,7 @@ async function requestMarketSellOrder() {
         })
     });
     if (responseSellOrder.status === 200) {
-        return responseSellOrder.json();
+        return responseSellOrder;
     } else {
         const errorData = await responseSellOrder.text();
         throw new Error("시장가 매도 요청 실패!" + errorData);
@@ -119,7 +119,7 @@ async function requestMarketBuyOrder() {
         })
     });
     if (responseBuyOrder.status === 200) {
-        return responseBuyOrder.json();
+        return responseBuyOrder;
     } else {
         const errorData = await responseBuyOrder.text();
         throw new Error("시장가 매수 요청 실패!" + errorData);

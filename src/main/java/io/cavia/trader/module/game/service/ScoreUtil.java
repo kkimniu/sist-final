@@ -1,6 +1,5 @@
 package io.cavia.trader.module.game.service;
 
-import io.cavia.trader.module.client.dto.TradesDto;
 import io.cavia.trader.module.game.dto.PlayerStatusDto;
 import io.cavia.trader.module.game.dto.TradeLog;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -19,20 +19,23 @@ import java.util.stream.IntStream;
 @Slf4j(topic = "ScoreUtil")
 public class ScoreUtil {
 
+    @Value("${stock.default-fee-rate}")
+    private BigDecimal DEFAULT_FEE_RATE;
     @Value("${score.rank_points_per_player}")
     private long RANK_POINTS_PER_PLAYER;
     @Value("${score.rank_reward_rate}")
-    private int REWARD_RATE = 2;
+    private int REWARD_RATE;
     @Value("${score.rank_max_score}")
     private int MAX_SCORE;
 
     public BigDecimal getReturnRate(long postCash, long earnedCash) {
-        if(postCash == 0){
+        if (postCash == 0) {
             throw new RuntimeException("자산 초기값이 0은 division by zero가 발생할 위험성이 있습니다!");
         }
+        log.info("수익률 계산 메서드 내부 값 : {}, {}", postCash, earnedCash);
         BigDecimal postCashAmount = new BigDecimal(postCash);
         BigDecimal earnedCashAmount = new BigDecimal(earnedCash);
-        return earnedCashAmount.divide(postCashAmount, 2, RoundingMode.HALF_UP);
+        return earnedCashAmount.divide(postCashAmount, 3, RoundingMode.HALF_UP);
     }
 
     public Map<Long, PlayerStatusDto> evaluatePlayers(Map<Long, PlayerStatusDto> playerStatusDtos, int LastPrice) {
@@ -42,53 +45,66 @@ public class ScoreUtil {
 
         // 남아 있는 미체결 거래가 있다면 모든 거래 종가로 처리
         AtomicLong totalTrade = new AtomicLong(0);
-        playerStatusDtos.values().forEach(playerStatus -> {
-            if(!playerStatus.getOrderDto().getOrderTableDtos().isEmpty()){
-                playerStatus.getOrderDto().getOrderTableDtos().forEach(orderTableDto -> {
-                    // 요청 금액 음수면 매도
-                    if(orderTableDto.getPrice() < 0){
-                        totalTrade.set(
-                                totalTrade.get() +
-                                orderTableDto.getQuantity() * LastPrice);
-                    }
-                });
-
-                playerStatus.setEarnedCash(
-                        playerStatus.getEarnedCash() +
-                                totalTrade.get());
-
-                log.debug("남아 있던 미체결 매도 거래를 처리합니다. 남아있던 미체결 거래: " + totalTrade.get());
+        for (PlayerStatusDto playerStatus : playerStatusDtos.values()) {
+            if (playerStatus.getOrderDto().getTradeLogs().isEmpty()) {
+                log.info("거래를 하지 않은 유저는 건너 뛰고 검사합니다. id: {}", playerStatus.getMemberId());
+                continue;
             }
 
-                long tradeVolume = 0;
-                for(TradeLog log : playerStatus.getOrderDto().getTradeLogs()){
-                    if(log.getPrice() > 0){
-                        tradeVolume += log.getQuantity();
-                    }else if(log.getPrice() < 0){
-                        tradeVolume -= log.getQuantity();
-                    }
+            long tradeVolume = 0;
+            for (TradeLog log : playerStatus.getOrderDto().getTradeLogs()) {
+                if (log.getPrice() > 0) {
+                    tradeVolume += log.getQuantity();
+                } else if (log.getPrice() < 0) {
+                    tradeVolume -= log.getQuantity();
                 }
-                if (tradeVolume > 0){
+            }
 
-                    playerStatus.setEarnedCash(
-                            playerStatus.getEarnedCash() +
-                                    tradeVolume * LastPrice
-                    );
-                    log.debug("매도 하지 않은 주식을 처리합니다. 남아있던 매수 종목: " + tradeVolume);
+            if (tradeVolume > 0) {
+                long tradeValue = tradeVolume * LastPrice;
+                BigDecimal tradeValueAmount = new BigDecimal(tradeValue);
+                BigDecimal feeValue = tradeValueAmount.multiply(DEFAULT_FEE_RATE);
+                tradeValue = tradeValueAmount.subtract(feeValue).setScale(0, RoundingMode.HALF_UP).intValue();
+
+                playerStatus.setEarnedCash(
+                        playerStatus.getEarnedCash() + tradeValue
+                );
+
+                playerStatus.getOrderDto().getTradeLogs().add(
+                        TradeLog.builder()
+                                .Id(String.format("%06d", playerStatus.getIdCreator().getAndIncrement() % 1000000))
+                                .price(-Math.abs(LastPrice))
+                                .quantity((int) tradeVolume)
+                                .createdAt(LocalDateTime.now())
+                                .build()
+                );
+                log.info("매도 하지 않은 주식을 처리합니다. 남아있던 매수 종목: {}", tradeVolume);
+            }
+
+            // 이번 게임에서 투자한 금액 대비 수익률 계산
+            long buyValue = 0;
+            long sellValue = 0;
+            for (TradeLog log : playerStatus.getOrderDto().getTradeLogs()) {
+                if (log.getPrice() > 0) {
+                    buyValue += Math.abs(log.getQuantity() * log.getPrice());
+                } else if (log.getPrice() < 0) {
+                    sellValue += Math.abs(log.getQuantity() * log.getPrice());
                 }
+            }
+
+            BigDecimal tradeValueAmount = new BigDecimal(sellValue);
+            BigDecimal feeValue = tradeValueAmount.multiply(DEFAULT_FEE_RATE);
+            sellValue = tradeValueAmount.subtract(feeValue).setScale(0, RoundingMode.HALF_UP).intValue();
+
+            // 수익률 계산해서 저장
+            playerStatus.setReturnRate(getReturnRate(buyValue, sellValue));
+            log.info("세션 종료 중 수익률 계산 결과 id: {}, returnRate: {} ", playerStatus.getMemberId(), playerStatus.getReturnRate());
+
+        }
 
 
-        });
-
-        // 먼저 수익률 계산해서 저장
-        playerStatusDtos.forEach((id, Dto) -> {
-            Dto.setReturnRate(getReturnRate(Dto.getPostCash(),
-                    Dto.getEarnedCash()
-            ));
-        });
-
-        if(playerStatusDtos.size() == 1){
-            log.info("유저가 한 명이라 점수는 무효처리하고 수익률과 손익금액만 저장하겠습니다");
+        if (playerStatusDtos.size() == 1) {
+            log.info("유저가 한 명이라 점수는 무효처리하고 수익률과 손익금액만 저장합니다");
 
             return playerStatusDtos;
         }
@@ -105,7 +121,7 @@ public class ScoreUtil {
                         LinkedHashMap::new
                 ));
 
-    // 플레이어 점수 계산
+        // 플레이어 점수 계산
         List<Double> weights = new ArrayList<>();
         int half = playerStatusDtos.size() / 2;
         double total = 0.0;
@@ -122,9 +138,9 @@ public class ScoreUtil {
         Deque<Integer> normalizedScores2 = new ArrayDeque<Integer>(normalizedScores);
 
         AtomicInteger midpoint = new AtomicInteger(Math.round(MAX_SCORE / 2));
-        ArrayList<PlayerStatusDto> playerStausDtoList = new ArrayList<> (playerSortedByRank.values());
+        ArrayList<PlayerStatusDto> playerStausDtoList = new ArrayList<>(playerSortedByRank.values());
 
-        IntStream.range(0, playerStausDtoList.size()/2).forEach(i -> {
+        IntStream.range(0, playerStausDtoList.size() / 2).forEach(i -> {
 
             int score = playerStausDtoList.get(i).getEarnedScore() + normalizedScores.peekFirst();
             playerStausDtoList.get(i).setEarnedScore(score);
@@ -136,7 +152,7 @@ public class ScoreUtil {
                     )
             );
 
-            int j = i + playerStausDtoList.size()/2;
+            int j = i + playerStausDtoList.size() / 2;
             score = playerStausDtoList.get(j).getEarnedScore() + normalizedScores2.peekLast();
             playerStausDtoList.get(j).setEarnedScore(score);
 

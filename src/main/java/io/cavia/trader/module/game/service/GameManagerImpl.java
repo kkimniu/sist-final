@@ -6,15 +6,20 @@ import io.cavia.trader.module.game.dto.GameDto;
 import io.cavia.trader.module.game.dto.GameSessionDto;
 import io.cavia.trader.module.game.dto.OrderDto;
 import io.cavia.trader.module.game.dto.PlayerStatusDto;
+import io.cavia.trader.module.game.dto.event.GameCompleted;
 import io.cavia.trader.module.game.repository.GameRepository;
 import io.cavia.trader.module.member.entity.GameParticipation;
 import io.cavia.trader.module.member.entity.Member;
 import io.jsonwebtoken.Claims;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
@@ -22,7 +27,8 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
@@ -34,6 +40,7 @@ public class GameManagerImpl implements GameManager {
     private final GameRepository gameRepository;
     private final GameSessionDto gameSessionDto;
     private final ScoreUtil  scoreUtil;
+    private final ApplicationEventPublisher eventPublisher;
 
     private final int GAME_LIFE_CYCLE = 1000 * 60 * 1;
 
@@ -81,26 +88,10 @@ public class GameManagerImpl implements GameManager {
                     });
                 }
 
-
-                gameDto.getChartSessions().values().forEach(chartSessions -> {
-                    try {
-                        chartSessions.close();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-
-                gameDto.getChatSessions().values().forEach(chatSessions -> {
-                    try {
-                        chatSessions.close();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+                // 게임 종료 후 DB 저장 후 세션 저장 완료 알림과 메모리 클리어를 이벤트에서 처리하기 위해 호출
+                eventPublisher.publishEvent(new GameCompleted(gameDto));
 
 
-                gameSessionDto.getGameDtos().removeFirst();
-                System.out.println("Game Session Closed, Games size: " + gameSessionDto.getGameDtos().size());
             }
         }
 
@@ -113,6 +104,44 @@ public class GameManagerImpl implements GameManager {
         System.out.println("Game Session Created, Games size: " + gameSessionDto.getGameDtos().size());
     }
 
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Override
+    public void sendGameEndProcessingCompleted(GameCompleted event) {
+        // 이 이벤트 리스너는 DB 커밋 종료 직후에 호출됨
+        event.getGameDto().getChartSessions().values().forEach(session -> {
+            synchronized (session) {
+                if(session.isOpen()){
+                    try {
+                        session.sendMessage(new TextMessage("isProsseced||"));
+                    }catch (IOException e) {
+                        throw new RuntimeException("게임 종료 처리 알림 메세지 송신 중 예외 발생", e);
+                    }
+                }
+            }
+        });
+
+        event.getGameDto().getChartSessions().values().forEach(chartSessions -> {
+            try {
+                chartSessions.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        event.getGameDto().getChatSessions().values().forEach(chatSessions -> {
+            try {
+                chatSessions.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+
+        gameSessionDto.getGameDtos().removeFirst();
+        System.out.println("Game Session Closed, Games size: " + gameSessionDto.getGameDtos().size());
+    }
+
+    @Override
     public Member getUserInfo(Claims userInfo) {
         return gameRepository.findMemberById(
                 Long.parseLong(userInfo.getSubject()

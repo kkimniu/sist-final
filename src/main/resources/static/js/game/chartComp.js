@@ -386,7 +386,13 @@ function chartSocketHandler() {
 
         let stockDataArray = event.data.split("||");
         let DataHead = stockDataArray[0];
-        let stockData = JSON.parse(stockDataArray[1]);
+
+        let stockData;
+        try {
+            stockData = JSON.parse(stockDataArray[1]);
+        }catch{
+            stockData = stockDataArray[1];
+        }
 
         if (DataHead === "trades") {
             if (relTime == null) {
@@ -541,7 +547,7 @@ function chartSocketHandler() {
             const num1 = document.getElementById("stocksHolding").innerText * stockData.stck_prpr;
             let returnRate = document.getElementById("returnRate");
             const rate = getRate(num1, holdingValue);
-            if (rate || holdingValue !== 0) {
+            if (!Number.isNaN(rate) && Number(holdingStocks.innerText) !== 0) {
                 if (rate > 0) {
                     returnRate.style.color = "red";
                     returnRate.innerText = rate + "%";
@@ -549,7 +555,6 @@ function chartSocketHandler() {
                     returnRate.style.color = "blue";
                     returnRate.innerText = rate + "%";
                 }
-
             }else{
                 returnRate.innerText = "";
             }
@@ -713,7 +718,7 @@ function chartSocketHandler() {
         } else if (DataHead === "timeLeft") {
             showTimeLeft(stockData);
         } else if (DataHead === "playerStatus") {
-            //console.log("입력 받은 플레이어스테이터스: " + JSON.stringify(stockData));
+            console.log("입력 받은 플레이어스테이터스: " + JSON.stringify(stockData));
             // 플레이어 스테이터스가 업데이트 됐을 때의 데이터를 처리해야 함
             document.getElementById("stocksHolding").innerText = stockData.stocksHolding;
             document.getElementById("cash").innerText = stockData.earnedCash;
@@ -724,6 +729,8 @@ function chartSocketHandler() {
                 sum += row.price * row.quantity;
             });
             holdingValue = sum;
+        } else if (DataHead === "isProsseced"){
+            showGameEndDisplay();
         } else {
             alert("에러 발생: 정제 되지 않은 데이터 수신!!", event);
         }
@@ -742,7 +749,7 @@ window.addEventListener("beforeunload", function (event) {
 
 function updatePromiseTable(stockData) {
 
-    if (!stockData.orderDto.orderTableDto) {
+    if (!stockData.orderDto.orderTableDtos) {
         return;
     }
 
@@ -756,7 +763,7 @@ function updatePromiseTable(stockData) {
         }
     });
 
-    stockData.orderDto.orderTableDto.forEach(row => {
+    stockData.orderDto.orderTableDtos.forEach(row => {
         const rowData = [];
 
         const id = row.id;
@@ -767,9 +774,9 @@ function updatePromiseTable(stockData) {
             createdAtData.getMinutes() + "분"
             + createdAtData.getSeconds() + "초"
 
-        rowData.push(row.id);
-        rowData.push(row.price);
-        rowData.push(row.quantity);
+        rowData.push(id);
+        rowData.push(price);
+        rowData.push(quantity);
         rowData.push(createdAt);
 
 
@@ -843,7 +850,7 @@ function getRate(number1, number2) {
 
 function showTimeLeft(stockData){
     const startedAt = new Date(stockData);
-    const endedAt = startedAt.getTime() + 1000 * 60 * 30;
+    const endedAt = startedAt.getTime() + 1000 * 60 * 1;
     // 인터발 실행 시간 때문에 먼저 1회 실행후 로딩
     const now = new Date();
     const timeLeft = Math.floor((endedAt - now) / 1000);
@@ -855,6 +862,7 @@ function showTimeLeft(stockData){
             const timeLeft = Math.floor((endedAt - now) / 1000);
             document.getElementById("timeLeft").innerText = Math.floor(timeLeft / 60) + "분 " + timeLeft % 60 + "초"
         }else{
+            showLoadingDisplay();
             clearInterval(interval);
         }
     }, 1000); // 1초마다 체크

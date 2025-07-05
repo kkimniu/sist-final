@@ -11,6 +11,7 @@ import io.cavia.trader.module.game.service.GameAdministrationService;
 import io.cavia.trader.module.game.service.GameAdministrationServiceImpl;
 import io.cavia.trader.module.game.service.GameManager;
 import io.cavia.trader.module.game.service.OrderService;
+import io.cavia.trader.module.member.entity.GameParticipation;
 import io.cavia.trader.module.member.entity.Member;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -122,9 +123,9 @@ public class GameRestController {
     public ResponseEntity<?> getLastGameParticipation(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         try {
             long memberId = userDetails.getMember().getId();
-            return new ResponseEntity<ResponseDto>(
-                    new ResponseDto(""+gameAdministrationService.getLastGameParticipation(
-                            userDetails.getMember().getId())
+            return new ResponseEntity<GameParticipation>(
+                    gameAdministrationService.getLastGameParticipation(
+                            userDetails.getMember().getId()
                     ), HttpStatus.OK);
         }catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "조회되는 게임 기록이 없습니다.");

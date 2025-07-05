@@ -6,7 +6,7 @@ const chatSend = document.getElementById("chatSend");
 const nickname = document.getElementById("nickname");
 const cash = document.getElementById("cash");
 const stockPrice = document.getElementById("stockPrice");
-const holdingStocks = document.getElementById("holdingStocks");
+const holdingStocks = document.getElementById("stocksHolding");
 const userJoinedCount = document.getElementById("userJoinedCount");
 const remainingTime = document.getElementById("remainingTime");
 let chatSocket;
