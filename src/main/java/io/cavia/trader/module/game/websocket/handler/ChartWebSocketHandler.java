@@ -18,7 +18,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
@@ -54,8 +56,10 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
             gameDto.getChartSessions().values().forEach(s -> {
                 try {
-                    if (s.isOpen()) s.sendMessage(new TextMessage("numberOfParticipation||"
-                            + gameDto.getPlayerStatusDtos().size()));
+                    synchronized (s) {
+                        if (s.isOpen()) s.sendMessage(new TextMessage("numberOfParticipation||"
+                                + gameDto.getPlayerStatusDtos().size()));
+                    }
                 } catch (Exception e) {
                     throw new RuntimeException("유저 참여 변동 사항 멀티캐스트 중 예외 발생!", e);
                 }

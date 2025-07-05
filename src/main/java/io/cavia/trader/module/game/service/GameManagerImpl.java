@@ -28,11 +28,8 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Component
 @Slf4j
@@ -67,52 +64,31 @@ public class GameManagerImpl implements GameManager {
                     Map<Long, PlayerStatusDto> playersSortedByRank = scoreUtil.evaluatePlayers(
                             gameDto.getPlayerStatusDtos(), gameDto.getTrades().get(gameDto.getTrades().size() - 1).getStckPrpr());
 
-                    // 순위 지정 후 DB 저장
-                    AtomicInteger gameRank = new AtomicInteger(1);
-
-                    List<PlayerStatusDto> list = new ArrayList<>(playersSortedByRank.values());
-
-                    int cnt = 0;
-                    for (int i = 0; i < list.size(); i++) {
-                        if (i != 0) {
-                            if (list.get(i - 1).getReturnRate().equals(list.get(i).getReturnRate())) {
-                                gameRank.set(gameRank.get() - 1);
-                                cnt++;
-                            }else{
-                                gameRank.set(gameRank.get() + cnt);
-                                cnt = 0;
-                            }
-                        }
-
-
+                    // DB 저장
+                    playersSortedByRank.values().forEach(playerStatusDto -> {
                         gameRepository.saveGameParticipation(
                                 GameParticipation.builder()
-                                        .gameId(list.get(i).getGameId())
-                                        .memberId(list.get(i).getMemberId())
-                                        .gameRank(gameRank.get())
-                                        .postCash(list.get(i).getPostCash())
-                                        .earnedCash(list.get(i).getPostCash() - list.get(i).getEarnedCash())
-                                        .postScore(list.get(i).getPostScore())
-                                        .earnedScore(list.get(i).getPostScore() - list.get(i).getEarnedScore())
-                                        .returnRate(list.get(i).getReturnRate())
+                                        .gameId(playerStatusDto.getGameId())
+                                        .memberId(playerStatusDto.getMemberId())
+                                        .gameRank(playerStatusDto.getGameRank())
+                                        .postCash(playerStatusDto.getPostCash())
+                                        .earnedCash(playerStatusDto.getPostCash() - playerStatusDto.getEarnedCash())
+                                        .postScore(playerStatusDto.getPostScore())
+                                        .earnedScore(playerStatusDto.getPostScore() - playerStatusDto.getEarnedScore())
+                                        .returnRate(playerStatusDto.getReturnRate())
                                         .enteredAt(LocalDateTime.now())
                                         .build());
 
-
-                        gameRank.set(gameRank.get() + 1);
-
-                        gameRepository.updateCashAndTotalScoreById(list.get(i).getMemberId(),
-                                list.get(i).getEarnedCash(),
-                                list.get(i).getEarnedScore()
+                        gameRepository.updateCashAndTotalScoreById(playerStatusDto.getMemberId(),
+                                playerStatusDto.getEarnedCash(),
+                                playerStatusDto.getEarnedScore()
                         );
-                    }
-
+                    });
                 }
                 // 게임 종료 후 DB 저장 후 세션 저장 완료 알림과 메모리 클리어를 이벤트에서 처리하기 위해 호출
                 eventPublisher.publishEvent(new GameCompleted(gameDto));
             }
         }
-
         // 게임 세션 1개 생성
         GameDto gameDto = gameAdministrationService.createGame();
         gameSessionDto.getGameDtos().add(gameDto);
