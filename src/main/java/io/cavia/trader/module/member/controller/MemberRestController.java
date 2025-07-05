@@ -56,6 +56,20 @@ public class MemberRestController {
         return ApiResponses.ok(memberService.getGameParticipationByMemberId(userDetails.getMember().getId()));
     }
 
+    @GetMapping("/me/game-participations/paged")
+    public ResponseEntity<ApiResponse<?>> getPagedGameParticipations(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                     @RequestParam(defaultValue = "5") int limit,
+                                                                     @RequestParam(defaultValue = "0") int offset) {
+        return ApiResponses.ok(memberService.getGameParticipationByMemberIdWithPaging(
+                userDetails.getMember().getId(), limit, offset));
+    }
+
+    @GetMapping("/me/game-participations/count")
+    public ResponseEntity<ApiResponse<?>> getGameParticipationCount(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ApiResponses.ok(memberService.getCountByMemberId(userDetails.getMember().getId()));
+
+    }
+
     /**
      * 현재 로그인된 사용자의 비밀번호가 일치하는지 검증합니다.
      *

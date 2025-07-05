@@ -25,3 +25,31 @@ function showTradeLogPanel() {
     document.getElementById("promisePanel").style.display = "none";
     document.getElementById("tradeLogPanel").style.display = "block";
 }
+
+function callBackRequestSellOrder() {
+    requestSellOrder()
+        .then(data => {
+            console.log(data);
+        });
+}
+function callBackRequestMarketSellOrder() {
+    requestMarketSellOrder()
+        .then(data => {
+            console.log(data);
+        });
+}
+
+function callBackRequestBuyOrder() {
+    requestBuyOrder()
+        .then(data => {
+            console.log(data);
+        });
+}
+
+function callBackRequestMarketBuyOrder() {
+    requestMarketBuyOrder()
+        .then(data => {
+            console.log(data);
+        });
+}
+

@@ -14,8 +14,9 @@ public interface GameMapper {
     void saveGameParticipation(@Param("gameParticipation") GameParticipation gameParticipation);
     Member findMemberById(Long id);
     Long findLastGameId();
+    GameParticipation findLastGameParticipationByMemberId(Long memberId);
     void updateCashAndTotalScoreById(@Param("id") long id,
-                                     @Param("cash") int cash,
+                                     @Param("cash") long cash,
                                      @Param("totalScore") int totalScore
     );
 }

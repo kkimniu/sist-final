@@ -16,6 +16,10 @@ public interface MemberService {
      */
     List<GameParticipation> getGameParticipationByMemberId(Long memberId);
 
+    List<GameParticipation> getGameParticipationByMemberIdWithPaging(Long memberId, int limit, int offset);
+
+    int getCountByMemberId(Long memberId);
+
     /**
      * 회원 ID로 특정 회원 정보를 조회합니다.
      *

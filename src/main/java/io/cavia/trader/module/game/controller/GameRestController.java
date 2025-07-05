@@ -7,8 +7,11 @@ import io.cavia.trader.module.game.dto.OrderTableDto;
 import io.cavia.trader.module.game.dto.request.CancelOrderDto;
 import io.cavia.trader.module.game.dto.request.MarketOrderDto;
 import io.cavia.trader.module.game.dto.response.ResponseDto;
+import io.cavia.trader.module.game.service.GameAdministrationService;
+import io.cavia.trader.module.game.service.GameAdministrationServiceImpl;
 import io.cavia.trader.module.game.service.GameManager;
 import io.cavia.trader.module.game.service.OrderService;
+import io.cavia.trader.module.member.entity.GameParticipation;
 import io.cavia.trader.module.member.entity.Member;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +34,7 @@ public class GameRestController {
     private final GameManager gameManager;
     private final GameSessionDto gameSessionDto;
     private final OrderService orderService;
+    private final GameAdministrationService gameAdministrationService;
 
     private GameDto gameDto;
 
@@ -79,7 +83,6 @@ public class GameRestController {
             if (game.getPlayerStatusDtos().containsKey(userDetails.getMember().getId())) {
                 orderService.placeSellOrder(game, orderTableDto, userDetails.getMember().getId());
             }
-            ;
         });
         return ResponseEntity.status(200).body("주문 완료");
     }
@@ -108,11 +111,24 @@ public class GameRestController {
     @PatchMapping("/market-sell")
     public ResponseEntity<?> marketSell(@AuthenticationPrincipal UserDetailsImpl
                                                 userDetails, @Valid @RequestBody MarketOrderDto marketOrderDto) {
-        gameSessionDto.getGameDtos().forEach(game -> {
-            if (game.getPlayerStatusDtos().containsKey(userDetails.getMember().getId())) {
-                orderService.placeMarketSellOrder(game, marketOrderDto, userDetails.getMember().getId());
-            }
-        });
-        return ResponseEntity.status(200).body("주문 완료");
+            gameSessionDto.getGameDtos().forEach(game -> {
+                if (game.getPlayerStatusDtos().containsKey(userDetails.getMember().getId())) {
+                    orderService.placeMarketSellOrder(game, marketOrderDto, userDetails.getMember().getId());
+                }
+            });
+            return ResponseEntity.status(200).body("주문 완료");
+    }
+
+    @GetMapping("/last-game-participation")
+    public ResponseEntity<?> getLastGameParticipation(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        try {
+            long memberId = userDetails.getMember().getId();
+            return new ResponseEntity<GameParticipation>(
+                    gameAdministrationService.getLastGameParticipation(
+                            userDetails.getMember().getId()
+                    ), HttpStatus.OK);
+        }catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "조회되는 게임 기록이 없습니다.");
+        }
     }
 }

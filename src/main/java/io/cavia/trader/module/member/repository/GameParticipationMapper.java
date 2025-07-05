@@ -9,4 +9,6 @@ import java.util.List;
 public interface GameParticipationMapper {
 
     List<GameParticipation> findByMemberId(Long memberId);
+    List<GameParticipation> findByMemberIdWithPaging(Long memberId, int limit, int offset);
+    int countByMemberId(Long memberId);
 }
