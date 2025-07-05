@@ -40,7 +40,7 @@
 <div th:replace="~{fragments/footer :: footer}"></div>
 <script src="/js/header.js"></script>
 <script>
-    const limit = 2;
+    const limit = 5;
     let offset = 0;
     let totalCount = 0;
     window.onload = async function () {
@@ -99,11 +99,15 @@
                    const date = new Date(gameDTO.enteredAt);
                    const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
                    div.innerHTML =
-                   `<p><strong>날짜:</strong> ${formatted}</p>
-                    <p><strong>수익률:</strong> ${gameDTO.returnRate}%</p>
-                    <p><strong>순위:</strong> ${gameDTO.gameRank}위</p>
-                    <p><strong>점수:</strong> ${gameDTO.earnedScore} → ${gameDTO.postScore}</p>
-                    <p><strong>캐시:</strong> ${gameDTO.earnedCash} → ${gameDTO.postCash}</p>`;
+                   `<div class="card-header">
+                        <span class="game-rank"> ${gameDTO.gameRank}위</span>
+                        <span class="game-date"> ${formatted}</span>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>수익률:</strong> ${gameDTO.returnRate}%</p>
+                        <p><strong>점수:</strong> ${gameDTO.earnedScore} → ${gameDTO.postScore}</p>
+                        <p><strong>자산:</strong> ${gameDTO.earnedCash} → ${gameDTO.postCash}</p>
+                    </div>`;
                     list.appendChild(div);
                 });
                 offset += limit;
