@@ -28,9 +28,11 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Component
 @Slf4j
@@ -67,27 +69,44 @@ public class GameManagerImpl implements GameManager {
 
                     // 순위 지정 후 DB 저장
                     AtomicInteger gameRank = new AtomicInteger(1);
-                    playersSortedByRank.forEach((memberId, playerStatusDto) -> {
+
+                    List<PlayerStatusDto> list = new ArrayList<>(playersSortedByRank.values());
+
+                    int cnt = 0;
+                    for (int i = 0; i < list.size(); i++) {
+                        if (i != 0) {
+                            if (list.get(i - 1).getReturnRate().equals(list.get(i).getReturnRate())) {
+                                gameRank.set(gameRank.get() - 1);
+                                cnt++;
+                            }else{
+                                gameRank.set(gameRank.get() + cnt);
+                                cnt = 0;
+                            }
+                        }
+
 
                         gameRepository.saveGameParticipation(
                                 GameParticipation.builder()
-                                        .gameId(playerStatusDto.getGameId())
-                                        .memberId(playerStatusDto.getMemberId())
+                                        .gameId(list.get(i).getGameId())
+                                        .memberId(list.get(i).getMemberId())
                                         .gameRank(gameRank.get())
-                                        .postCash(playerStatusDto.getPostCash())
-                                        .earnedCash(playerStatusDto.getPostCash() - playerStatusDto.getEarnedCash())
-                                        .postScore(playerStatusDto.getPostScore())
-                                        .earnedScore(playerStatusDto.getPostScore() - playerStatusDto.getEarnedScore())
-                                        .returnRate(playerStatusDto.getReturnRate())
+                                        .postCash(list.get(i).getPostCash())
+                                        .earnedCash(list.get(i).getPostCash() - list.get(i).getEarnedCash())
+                                        .postScore(list.get(i).getPostScore())
+                                        .earnedScore(list.get(i).getPostScore() - list.get(i).getEarnedScore())
+                                        .returnRate(list.get(i).getReturnRate())
                                         .enteredAt(LocalDateTime.now())
                                         .build());
+
+
                         gameRank.set(gameRank.get() + 1);
 
-                        gameRepository.updateCashAndTotalScoreById(memberId,
-                                playerStatusDto.getEarnedCash(),
-                                playerStatusDto.getEarnedScore()
+                        gameRepository.updateCashAndTotalScoreById(list.get(i).getMemberId(),
+                                list.get(i).getEarnedCash(),
+                                list.get(i).getEarnedScore()
                         );
-                    });
+                    }
+
                 }
                 // 게임 종료 후 DB 저장 후 세션 저장 완료 알림과 메모리 클리어를 이벤트에서 처리하기 위해 호출
                 eventPublisher.publishEvent(new GameCompleted(gameDto));
@@ -100,7 +119,7 @@ public class GameManagerImpl implements GameManager {
         gameRepository.saveGame(gameDto.getStockId(),
                 gameDto.getStartedAt());
         gameDto.setId(gameRepository.findLastGameId());
-        log.info("Game Session Created, Games size: {}", gameSessionDto.getGameDtos().size());
+        log.debug("Game Session Created, Games size: {}", gameSessionDto.getGameDtos().size());
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -117,7 +136,6 @@ public class GameManagerImpl implements GameManager {
                     }
                 }
             }
-            log.info("차트 세션 종료 전, 게임 결과를 조회해달라는 요청을 보냅니다");
         });
 
         event.getGameDto().getChartSessions().values().forEach(chartSessions -> {
@@ -137,7 +155,7 @@ public class GameManagerImpl implements GameManager {
         });
 
         gameSessionDto.getGameDtos().removeFirst();
-        log.info("Game Session Closed, Games size: {}", gameSessionDto.getGameDtos().size());
+        log.debug("Game Session Closed, Games size: {}", gameSessionDto.getGameDtos().size());
     }
 
     @Override

@@ -859,7 +859,6 @@ function showTimeLeft(stockData){
 
     const interval = setInterval(() => {
         const now = new Date();
-        console.log(now.getTime() + timeDif + "  vs  "+ endedAt);
         if (now.getTime() + timeDif < endedAt) {
             const timeLeft = Math.floor((endedAt - now.getTime() - timeDif) / 1000);
             document.getElementById("timeLeft").innerText = Math.floor(timeLeft / 60) + "분 " + timeLeft % 60 + "초"
