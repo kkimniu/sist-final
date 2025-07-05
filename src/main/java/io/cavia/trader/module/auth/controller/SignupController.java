@@ -10,6 +10,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 
+/**
+ * REST CONTROLLER 로 회원가입 구현하기 전의 mvc 방식의 회원가입 초안.
+ * /signup/terms 로 진입 가능함.
+ *
+ * @author KimBeomhee
+ */
 @Controller
 @RequestMapping("/signup")
 @SessionAttributes("signupDto") //signupForm 이라는 객체가 모델에 들어갈 때 세션에도 복제함
