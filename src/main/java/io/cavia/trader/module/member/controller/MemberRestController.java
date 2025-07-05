@@ -44,6 +44,21 @@ public class MemberRestController {
                 .body(memberService.getGameParticipationByMemberId(userDetails.getMember().getId()));
     }
 
+    @GetMapping("/me/game-participations/paged")
+    public ResponseEntity<List<GameParticipation>> getGameParticipationsByMemberIdWithPaging(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam(defaultValue = "5") int limit,
+            @RequestParam(defaultValue = "0") int offset) {
+        return ResponseEntity.status(200)
+                .body(memberService.getGameParticipationByMemberIdWithPaging(userDetails.getMember().getId(), limit, offset));
+    }
+
+    @GetMapping("/me/game-participations/count")
+    public ResponseEntity<Integer> getGameParticipationCount(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.status(200).body(memberService.getCountByMemberId(userDetails.getMember().getId()));
+    }
+
     @PostMapping("/me/password/verify")
     public ResponseEntity<String> getcheckPassword(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                    @Valid @RequestBody PasswordVerificationRequestDto requestDto) {
@@ -53,7 +68,7 @@ public class MemberRestController {
 
     @PatchMapping("/me/password")
     public ResponseEntity<?> changePassword(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                 @Valid @RequestBody PasswordChangeRequestDto requestDto) {
+                                            @Valid @RequestBody PasswordChangeRequestDto requestDto) {
         memberService.processPasswordChangeRequest(userDetails.getMember().getId(),
                 requestDto.getCurrentPassword(),
                 requestDto.getNewPassword());
