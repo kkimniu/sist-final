@@ -32,7 +32,7 @@ public class AuthRestController {
      *
      * @param requestDto 로그인에 필요한 이메일, 비밀번호를 담은 DTO
      * @param response   JWT를 담을 응답 헤더
-     * @return 성공 메시지를 담은 ApiResponse
+     * @return 성공 메시지를 담은 200 OK 응답
      */
     @PostMapping("/api/auth/login")
     public ResponseEntity<ApiResponse<?>> login(@Valid @RequestBody LoginRequestDto requestDto,
@@ -47,7 +47,7 @@ public class AuthRestController {
      * 현재 헤더.html의 닉네임 부분을 가져오고 있는 엔드포인트로, 원래대로라면 시큐리티 필터에서 잡아야 함
      *
      * @param userDetails SecurityContextHolder에 저장된 사용자 정보
-     * @return Member 엔티티를 data에 담은 ApiResponse
+     * @return Member 엔티티를 ApiResponse.data에 담은 200 OK 성공 응답
      */
     @GetMapping("api/auth/login-checker")
     public ResponseEntity<ApiResponse<?>> getMemberInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -61,7 +61,7 @@ public class AuthRestController {
      * 이메일 인증을 위해 입력된 이메일로 인증 코드를 발송합니다.
      *
      * @param requestDto 인증 코드를 받을 이메일 주소를 담은 DTO
-     * @return 200 OK 성공 응답
+     * @return OK 메시지를 담은 200 OK 응답
      */
     @PostMapping("/api/auth/verification/send-code")
     public ResponseEntity<ApiResponse<?>> sendVerificationEmail(@Valid @RequestBody SendCodeRequestDto requestDto) {
@@ -73,7 +73,7 @@ public class AuthRestController {
      * 이메일과 인증 코드를 검증합니다. (비밀번호 재설정 시 사용)
      *
      * @param requestDto 검증할 이메일과 인증 코드를 담은 DTO
-     * @return 200 OK 성공 응답
+     * @return OK 메시지를 담은 200 OK 응답
      */
     @PostMapping("/api/auth/verification/verify-code")
     public ResponseEntity<ApiResponse<?>> verifyPasswordResetVerification(@Valid @RequestBody VerifyCodeRequestDto requestDto) {
