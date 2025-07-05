@@ -21,7 +21,7 @@ import java.util.Queue;
 public class GameDto {
     private long id;
     private long stockId;
-    private int CurrentPriceIn10Second;
+    private int CurrentPrice;
     private List<QuotesOutput> quotes;
     private List<TradesOutput> trades;
     private Map<Long, PlayerStatusDto> playerStatusDtos;
