@@ -6,7 +6,6 @@ import io.cavia.trader.module.game.dto.GameSessionDto;
 import io.cavia.trader.module.game.dto.OrderTableDto;
 import io.cavia.trader.module.game.dto.request.CancelOrderDto;
 import io.cavia.trader.module.game.dto.request.MarketOrderDto;
-import io.cavia.trader.module.game.dto.response.ResponseDto;
 import io.cavia.trader.module.game.service.GameAdministrationService;
 import io.cavia.trader.module.game.service.GameManager;
 import io.cavia.trader.module.game.service.OrderService;
@@ -42,80 +41,72 @@ public class GameRestController {
         try {
             return new ResponseEntity<Member>(userDetails.getMember(), HttpStatus.OK);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
-    }
-
-    @GetMapping("/stocks-holding")
-    public ResponseEntity<?> getStocksHolding(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        try {
-            long memberId = userDetails.getMember().getId();
-            return new ResponseEntity<ResponseDto>(
-                    new ResponseDto("" + gameManager.findGameSessionByUserId(memberId)
-                            .getPlayerStatusDtos().get(memberId).getStocksHolding()), HttpStatus.OK);
-
-        } catch (Exception e) {
-            throw new RuntimeException("보유 주식 개수 조회 중 오류 발생", e);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "유저 인증 실패!");
         }
     }
 
     @PatchMapping("/buy")
     public ResponseEntity<?> placeBuyOrder(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody OrderTableDto orderTableDto, BindingResult bindingResult) {
-            if(bindingResult.hasErrors()){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, bindingResult.getAllErrors().get(0).getDefaultMessage());
+        if (bindingResult.hasErrors()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, bindingResult.getAllErrors().get(0).getDefaultMessage());
+        }
+        for (GameDto game : gameSessionDto.getGameDtos()) {
+            if (game.getPlayerStatusDtos().containsKey(userDetails.getMember().getId())) {
+                orderService.placeBuyOrder(game, orderTableDto, userDetails.getMember().getId());
+                return ResponseEntity.status(200).body("주문 완료");
             }
-            gameSessionDto.getGameDtos().forEach(game -> {
-                if (game.getPlayerStatusDtos().containsKey(userDetails.getMember().getId())) {
-                    orderService.placeBuyOrder(game, orderTableDto, userDetails.getMember().getId());
-                }
-            });
-        return ResponseEntity.status(200).body("주문 완료");
+        }
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "유저를 게임에서 찾을 수 없습니다.");
     }
 
     @PatchMapping("/sell")
     public ResponseEntity<?> placeSellOrder(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody OrderTableDto orderTableDto, BindingResult bindingResult) {
-        if(bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
         orderTableDto.setPrice(-Math.abs(orderTableDto.getPrice()));
-        gameSessionDto.getGameDtos().forEach(game -> {
+        for (GameDto game : gameSessionDto.getGameDtos()) {
             if (game.getPlayerStatusDtos().containsKey(userDetails.getMember().getId())) {
                 orderService.placeSellOrder(game, orderTableDto, userDetails.getMember().getId());
+                return ResponseEntity.status(200).body("주문 완료");
             }
-        });
-        return ResponseEntity.status(200).body("주문 완료");
+        }
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "유저를 게임에서 찾을 수 없습니다.");
     }
 
     @PatchMapping("/cancel")
     public ResponseEntity<?> cancelOrder(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody CancelOrderDto cancelOrderDto) {
-        gameSessionDto.getGameDtos().forEach(game -> {
+        for (GameDto game : gameSessionDto.getGameDtos()) {
             if (game.getPlayerStatusDtos().containsKey(userDetails.getMember().getId())) {
                 orderService.placeCancelOrder(game, cancelOrderDto, userDetails.getMember().getId());
+                return ResponseEntity.status(200).body("주문 취소 완료");
             }
-        });
-        return ResponseEntity.status(200).body("주문 취소 완료");
+        }
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "유저를 게임에서 찾을 수 없습니다.");
     }
 
     @PatchMapping("/market-buy")
     public ResponseEntity<?> marketBuy(@AuthenticationPrincipal UserDetailsImpl
                                                userDetails, @Valid @RequestBody MarketOrderDto marketOrderDto) {
-        gameSessionDto.getGameDtos().forEach(game -> {
+        for (GameDto game : gameSessionDto.getGameDtos()) {
             if (game.getPlayerStatusDtos().containsKey(userDetails.getMember().getId())) {
                 orderService.placeMarketBuyOrder(game, marketOrderDto, userDetails.getMember().getId());
+                return ResponseEntity.status(200).body("주문 완료");
             }
-        });
-        return ResponseEntity.status(200).body("주문 완료");
+        }
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "유저를 게임에서 찾을 수 없습니다.");
     }
 
     @PatchMapping("/market-sell")
     public ResponseEntity<?> marketSell(@AuthenticationPrincipal UserDetailsImpl
                                                 userDetails, @Valid @RequestBody MarketOrderDto marketOrderDto) {
-            gameSessionDto.getGameDtos().forEach(game -> {
-                if (game.getPlayerStatusDtos().containsKey(userDetails.getMember().getId())) {
-                    orderService.placeMarketSellOrder(game, marketOrderDto, userDetails.getMember().getId());
-                }
-            });
-            return ResponseEntity.status(200).body("주문 완료");
+        for (GameDto game : gameSessionDto.getGameDtos()) {
+            if (game.getPlayerStatusDtos().containsKey(userDetails.getMember().getId())) {
+                orderService.placeMarketSellOrder(game, marketOrderDto, userDetails.getMember().getId());
+                return ResponseEntity.status(200).body("주문 완료");
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "유저를 게임에서 찾을 수 없습니다.");
     }
 
     @GetMapping("/last-game-participation")
@@ -126,7 +117,7 @@ public class GameRestController {
                     gameAdministrationService.getLastGameParticipation(
                             userDetails.getMember().getId()
                     ), HttpStatus.OK);
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "조회되는 게임 기록이 없습니다.");
         }
     }
