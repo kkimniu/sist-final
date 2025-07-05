@@ -6,7 +6,9 @@ import io.cavia.trader.module.game.dto.OrderTableDto;
 import io.cavia.trader.module.game.dto.PlayerStatusDto;
 import io.cavia.trader.module.game.dto.request.CancelOrderDto;
 import io.cavia.trader.module.game.dto.request.MarketOrderDto;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Queue;
@@ -20,6 +22,10 @@ public class OrderServiceImpl implements OrderService {
         try {
             PlayerStatusDto playerStatusDto = gameDto.getPlayerStatusDtos().get(targetId);
             Queue<OrderTableDto> orders = playerStatusDto.getOrderDto().getOrderTableDtos();
+            if(orders.size() >= 10) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "주문 건수가 초과되었습니다. 미체결 주문을 취소해주세요.");
+            }
+
             int totalQuantity = orderTableDto.getQuantity();
             for (OrderTableDto dto : orders) {
                 if (dto.getPrice() < 0) {
@@ -30,7 +36,7 @@ public class OrderServiceImpl implements OrderService {
 
             if (gameDto.getPlayerStatusDtos().get(targetId).getStocksHolding() <
                     orderTableDto.getQuantity()) {
-                throw new RuntimeException("주식보유량이 부족합니다.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "주식보유량이 부족합니다.");
             } else {
 
 
@@ -51,6 +57,9 @@ public class OrderServiceImpl implements OrderService {
         try {
             PlayerStatusDto playerStatusDto = gameDto.getPlayerStatusDtos().get(targetId);
             Queue<OrderTableDto> orders = playerStatusDto.getOrderDto().getOrderTableDtos();
+            if(orders.size() >= 10) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "주문 건수가 초과되었습니다. 미체결 주문을 취소해주세요.");
+            }
             int totalQuantity = orderTableDto.getQuantity();
             for (OrderTableDto dto : orders) {
                 if (dto.getPrice() > 0) {
@@ -60,7 +69,7 @@ public class OrderServiceImpl implements OrderService {
             orderTableDto.setQuantity(totalQuantity);
 
             if (gameDto.getPlayerStatusDtos().get(targetId).getEarnedCash() < (long) orderTableDto.getQuantity() * orderTableDto.getPrice()) {
-                throw new RuntimeException("잔고가 부족합니다.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잔고가 부족합니다.");
             } else {
                 orderTableDto.setId(String.format("%06d", playerStatusDto.getIdCreator().getAndIncrement() % 1000000));
                 orderTableDto.setCreatedAt(LocalDateTime.now());
@@ -88,7 +97,7 @@ public class OrderServiceImpl implements OrderService {
             });
             if (isFinded.get()) {
             } else {
-                throw new RuntimeException("주문이 존재하지 않습니다.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "주문이 존재하지 않습니다.");
             }
         } catch (Exception e) {
             throw new RuntimeException("주문취소처리 중 오류 발생!!!", e);
@@ -101,7 +110,7 @@ public class OrderServiceImpl implements OrderService {
             PlayerStatusDto playerStatusDto = gameDto.getPlayerStatusDtos().get(targetId);
             if (playerStatusDto.getStocksHolding() <
                     marketOrderDto.getQuantity() + playerStatusDto.getOrderDto().getQuantityOfMarketSell()) {
-                throw new RuntimeException("주식보유량이 부족합니다.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "주식보유량이 부족합니다.");
             } else {
                 playerStatusDto.getOrderDto().setQuantityOfMarketSell(
                         playerStatusDto.getOrderDto().getQuantityOfMarketSell() +
@@ -122,7 +131,7 @@ public class OrderServiceImpl implements OrderService {
             if (playerStatusDto.getEarnedCash() < (long) (marketOrderDto.getQuantity()
                     + playerStatusDto.getOrderDto().getQuantityOfMarketBuy())
                     * gameDto.getCurrentPrice()) {
-                throw new RuntimeException("잔고가 부족합니다.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잔고가 부족합니다.");
             } else {
                 playerStatusDto.getOrderDto().setQuantityOfMarketBuy(
                         playerStatusDto.getOrderDto().getQuantityOfMarketBuy() +
