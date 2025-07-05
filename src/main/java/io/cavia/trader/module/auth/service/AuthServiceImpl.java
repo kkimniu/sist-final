@@ -11,6 +11,7 @@ import io.cavia.trader.module.jwt.JwtUtil;
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -46,17 +48,20 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void verifyCodeForPasswordReset(String email, String authKey) {
         verifyAuthKey(email, authKey);
         memberService.getMemberByEmail(email);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void verifyCodeForSignup(String email, String authKey) {
         verifyAuthKey(email, authKey);
         memberService.validateDuplicateEmail(email);
     }
 
+    @Transactional(readOnly = true)
     private void verifyAuthKey(String email, String authKey) {
         EmailVerification emailVerification = emailVerificationRepository.findByEmail(email)
                 .orElseThrow(() -> new ApiException(ErrorCode.EMAIL_VERIFICATION_NOT_FOUND));
@@ -69,6 +74,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void validateDuplicateNickname(String nickname) {
         memberService.validateDuplicateNickname(nickname);
     }
@@ -102,11 +108,12 @@ public class AuthServiceImpl implements AuthService {
                 requestDto.getPassword(),
                 requestDto.getNickname()
         );
-        System.out.println("회원가입 완료 member = " + member);
+        log.debug("회원가입 완료 : member = {}", member);
         return member;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public String login(String email, String password) {
         try {
             Member member = memberService.getMemberByEmail(email);
