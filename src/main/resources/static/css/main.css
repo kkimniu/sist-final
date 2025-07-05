@@ -1,0 +1,109 @@
+/*컨테이너를 연한 파랑색으로 감싸는 웨퍼*/
+.main-wrapper {
+  background-color: #eef4fb;
+  min-height: 80vh;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  max-width: 950px;
+  margin: 20px auto;
+}
+
+/*메인페이지 랭킹을 감싸는 컨테이너*/
+.main-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  max-width: 900px;
+  margin: 20px auto;
+}
+/*어떤 랭킹인지 알려주는 제목*/
+#message {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #333;
+}
+
+/*총 자산순, 총 점수 버튼*/
+#ranking button {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  color: #333;
+  text-decoration: none;
+}
+#ranking button:hover {
+  background-color: #007bff;
+  color: white;
+}
+/*랭킹 상단의 제목들 순위,닉네임,자산,점수*/
+.ranking-header {
+  display: grid;
+  grid-template-columns: 80px 240px 160px 160px;
+  column-gap: 16px;
+
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  color: gray;
+  padding-bottom: 20px;
+  border-bottom : 1px solid #e0e0e0;
+}
+
+/* 유저 행들을 감싸는 랭킹 리스트 컨테이너 */
+#rankingList {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 각 유저 한 줄 (순위, 닉네임, 자산, 점수) */
+.ranking-row {
+  display: grid;
+  grid-template-columns: 80px 240px 160px 160px;
+  column-gap: 16px;
+
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 10px;
+  margin-bottom: 8px;
+  color: gray;
+  padding-bottom: 10px;
+  border-bottom : 1px solid #e0e0e0;
+}
+
+/*주식 게임 버튼*/
+.game-btn input[type="button"] {
+  display: block;
+  padding: 20px 48px;
+  margin: 0 auto;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  color: #333;
+  text-decoration: none;
+}
+.game-btn input[type="button"]:hover {
+  background-color: #007bff;
+  color: white;
+}
+/* 추가된 CSS: 두 랭킹을 나란히 배치 */
+.rankings-wrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px; /* 랭킹 사이 간격 */
+}
+.ranking-container {
+    width: 48%; /* 각 랭킹 컨테이너 너비 */
+}
+.ranking-container h3 {
+    text-align: center;
+    margin-bottom: 10px;
+}

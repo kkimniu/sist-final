@@ -1,14 +1,13 @@
 package io.cavia.trader.module.auth.service;
 
 import io.cavia.trader.common.email.EmailService;
-import io.cavia.trader.module.auth.dto.LoginRequestDto;
-import io.cavia.trader.module.auth.dto.ResetPasswordRequestDto;
+import io.cavia.trader.common.exception.ApiException;
+import io.cavia.trader.common.exception.ErrorCode;
 import io.cavia.trader.module.auth.dto.SignupDto;
 import io.cavia.trader.module.auth.entity.EmailVerification;
 import io.cavia.trader.module.auth.repository.EmailVerificationRepository;
 import io.cavia.trader.module.jwt.JwtUtil;
 import io.cavia.trader.module.member.entity.Member;
-import io.cavia.trader.module.member.repository.MemberRepository;
 import io.cavia.trader.module.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +24,6 @@ public class AuthServiceImpl implements AuthService {
 
     private final EmailService emailService;
     private final EmailVerificationRepository emailVerificationRepository;
-    private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final TemplateEngine templateEngine;
@@ -44,20 +42,27 @@ public class AuthServiceImpl implements AuthService {
         emailVerificationRepository.save(EmailVerification.create(email, authKey, 60));
     }
 
-    public void verifyAuthKey(String email, String authKey) {
-        EmailVerification emailVerification = emailVerificationRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이메일로 조회된 인증키 정보가 없습니다."));
-        if (!emailVerification.getVerificationKey().equals(authKey)) {
-            throw new IllegalArgumentException("인증키가 일치하지 않습니다.");
-        }
-        if (emailVerification.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("만료된 인증키 입니다.");
-        }
+    @Override
+    public void verifyPasswordResetVerificationRequest(String email, String authKey) {
+        verifyAuthKey(email, authKey);
+        memberService.getMemberByEmail(email);
     }
 
     @Override
-    public void validateDuplicateEmail(String email) {
+    public void verifySignupVerificationRequest(String email, String authKey) {
+        verifyAuthKey(email, authKey);
         memberService.validateDuplicateEmail(email);
+    }
+
+    private void verifyAuthKey(String email, String authKey) {
+        EmailVerification emailVerification = emailVerificationRepository.findByEmail(email)
+                .orElseThrow(() -> new ApiException(ErrorCode.EMAIL_VERIFICATION_NOT_FOUND));
+        if (!emailVerification.getVerificationKey().equals(authKey)) {
+            throw new ApiException(ErrorCode.INVALID_AUTH_KEY);
+        }
+        if (emailVerification.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new ApiException(ErrorCode.EXPIRED_AUTH_KEY);
+        }
     }
 
     @Override
@@ -65,12 +70,8 @@ public class AuthServiceImpl implements AuthService {
         memberService.validateDuplicateNickname(nickname);
     }
 
-    public void validateTermsAgreement() {
-
-    }
-
     @Override
-    public void join(SignupDto signupDto) {
+    public Member join(SignupDto signupDto) {
         Member member = Member.builder()
                 .email(signupDto.getEmail())
                 .nickname(signupDto.getNickname())
@@ -83,37 +84,26 @@ public class AuthServiceImpl implements AuthService {
         memberService.validateDuplicateEmail(signupDto.getEmail());
         verifyAuthKey(signupDto.getEmail(), signupDto.getAuthKey());
         memberService.createMember(member);
-        System.out.println("회원가입 완료시 member = " + member);
+        System.out.println("회원가입 완료 member = " + member);
+        return member;
     }
 
     /**
-     * 로그인 비즈니스 로G직
+     * 로그인 비즈니스 로직
      *
-     * @param requestDto 로그인 요청 정보
+     * @param email    로그인 시도 이메일
+     * @param password 로그인 시도 비밀번호
      * @return 생성된 JWT
      */
     @Override
-    public String login(LoginRequestDto requestDto) {
-        String username = requestDto.getUsername();
-        String password = requestDto.getPassword();
-
-        // 1. 사용자 확인
-        // .orElseThrow() : Optional 객체가 비어있을 경우 예외를 던짐
-        Member member = memberService.getMemberByEmail(username);
-
-        // 2. 비밀번호 확인
-        // passwordEncoder.matches(평문, 암호화된 비밀번호)
-        if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+    public String login(String email, String password) {
+        try {
+            Member member = memberService.getMemberByEmail(email);
+            memberService.validatePassword(member.getId(), password);
+            return jwtUtil.createToken(member.getId(), member.getRole());
+        } catch (ApiException e) {
+            throw new ApiException(ErrorCode.LOGIN_FAILED);
         }
-
-        // 3. JWT 생성 및 반환
-        return jwtUtil.createToken(member.getId(), member.getRole());
-    }
-
-    @Override
-    public Member getMemberById(Long id) {
-        return memberService.getMemberById(id);
     }
 
     /**
@@ -122,8 +112,7 @@ public class AuthServiceImpl implements AuthService {
      * @param to      메일 받을 주소
      * @param authKey 사용자에게 전달할 이메일 인증을 위한 인증키
      */
-    @Override
-    public void sendAuthEmail(String to, String authKey) {
+    private void sendAuthEmail(String to, String authKey) {
         Context context = new Context();
         context.setVariable("username", to);
         context.setVariable("authKey", authKey);
@@ -134,19 +123,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean isMemberByEmail(String email) {
-        return memberService.isMemberByEmail(email);
-    }
-
-    @Override
-    public void resetPassword(ResetPasswordRequestDto requestDto) {
-        verifyAuthKey(requestDto.getEmail(), requestDto.getAuthKey());
-
-        Member member = memberService.getMemberByEmail(requestDto.getEmail());
-
-        String newEncodedPassword = passwordEncoder.encode(requestDto.getPassword());
-        if (memberRepository.updatePassword(member.getId(), newEncodedPassword, LocalDateTime.now()) == 0) {
-            throw new IllegalStateException("비밀번호 수정 작업이 실패했습니다.");
-        }
+    public void resetPassword(String email, String authKey, String rawPassword) {
+        verifyAuthKey(email, authKey);
+        Member member = memberService.getMemberByEmail(email);
+        memberService.changePassword(member.getId(), rawPassword);
     }
 }

@@ -27,8 +27,12 @@
         <input type="text" id="authKey" name="authKey" minlength="6" maxlength="6" pattern="^\d{6}$"
                inputmode="numeric" placeholder="000000" title="정확히 6자리 숫자를 입력해주세요 (예: 000000)" required/>
 
-        <div th:if="${#fields.hasErrors('authKey')}" style="color:red;">
-            <p th:text="${#fields.errors('authKey')[0]}"></p>
+        <div th:if="${#fields.hasErrors('authKey')}">
+
+            <p class="field-error" th:errors="*{authKey}">
+                에러 메시지 출력 위치
+            </p>
+
         </div>
 
         <div class="submit-area">

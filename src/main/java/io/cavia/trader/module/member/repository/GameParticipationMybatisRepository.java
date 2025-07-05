@@ -16,4 +16,14 @@ public class GameParticipationMybatisRepository implements GameParticipationRepo
     public List<GameParticipation> findByMemberId(Long memberId) {
         return gameParticipationMapper.findByMemberId(memberId);
     }
+
+    @Override
+    public List<GameParticipation> findByMemberIdWithPaging(Long memberId, int limit, int offset) {
+        return gameParticipationMapper.findByMemberIdWithPaging(memberId, limit, offset);
+    }
+
+    @Override
+    public int countByMemberId(Long memberId) {
+        return gameParticipationMapper.countByMemberId(memberId);
+    }
 }

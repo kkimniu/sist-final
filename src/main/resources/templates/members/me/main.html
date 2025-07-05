@@ -3,36 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/members.css">
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
-<div>
+<div class="member-wrapper">
     <h1>마이 페이지</h1>
-    <div>
-        <!-- 게임기록-->
-        <h2>게임기록</h2>
-        <ul id="gameDTO-list"></ul>
+    <div class="container">
+        <div class="member-container">
+            <!--닉네임 등급 자산조회 등등-->
+            <strong>닉네임</strong> <span id="nickname"></span>
+            <strong>등급</strong> <span id="total-score"></span><br>
+            <input type="button" value="닉네임변경" onclick="location.href= window.location.pathname + '/nickname'"/>
+            <input type="button" value="비밀번호변경"
+                   onclick="location.href= window.location.pathname + '/password'"/><br>
+            <h3>자산조회</h3> <span id="cash"></span> <input type="button" value="자산초기화" onclick="cashReset()"><br>
+        </div>
+        <div class="game-container">
+            <!-- 게임기록-->
+            <h2>게임기록</h2>
+            <div id="gameDTO-list"></div>
+            <button id="load-more" onclick="loadMoreGameParticipation()">더 보기</button>
+        </div>
     </div>
-    <div>
-        <!--닉네임 등급 자산조회 등등-->
-        <strong>닉네임</strong> <span id="nickname"></span>
-        <strong>등급</strong> <span id="total-score"></span><br>
-        <input type="button" value="닉네임변경" onclick="location.href= window.location.pathname + '/nickname'"/>
-        <input type="button" value="비밀번호변경" onclick="location.href= window.location.pathname + '/password'"/><br>
-        <h3>자산조회</h3> <span id="cash"></span><br>
-        <input type="button" value="자산초기화" onclick="cashReset()"><br>
+</div>
+<div class="button-wrapper">
+    <div class="withdraw">
+        <input type="button" value="회원탈퇴" onclick="location.href = window.location.pathname + '/withdraw'"><br>
+    </div>
+    <div class="logout">
+        <a href="#" id="logout-link" class="nav-button logout-button">로그아웃</a>
     </div>
 </div>
-
-<div>
-    <a href="#" id="logout-link" class="nav-button logout-button">로그아웃</a>
-</div>
-
-<div>
-    <input type="button" value="회원탈퇴" onclick="location.href = window.location.pathname + '/withdraw'"><br>
-</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
 <script src="/js/header.js"></script>
 <script>
+    const limit = 5;
+    let offset = 0;
+    let totalCount = 0;
     window.onload = async function () {
         const token = localStorage.getItem('jwt-token');
         if (!token) {
@@ -47,35 +57,65 @@
             });
             if(!res1.ok) throw new Error('회원 정보를 불러오지 못했습니다');
             setupLogout();
+
             const member = await res1.json();
             document.getElementById('nickname').innerText = member.nickname;
             document.getElementById('cash').innerText = member.cash;
             document.getElementById('total-score').innerText = member.totalScore;
 
-            const res2 = await fetch(`/api/members/me/game-participations`, {
+            //총 갯수 먼저 받기
+            const countRes = await fetch(`/api/members/me/game-participations/count`, {
                 headers: {
                     'Authorization': 'Bearer ' + token
                 }
             });
+            totalCount = await countRes.json();
+
+            await loadMoreGameParticipation();
+        }catch(err) {
+
+        }
+    }
+</script>
+<script>
+    async function loadMoreGameParticipation() {
+        const token = localStorage.getItem('jwt-token');
+        try{
+            const res2 = await fetch(`/api/members/me/game-participations/paged?limit=${limit}&offset=${offset}`, {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                    }
+                });
             if(!res2.ok) throw new Error('게임 기록을 불러오지 못했습니다');
             const gameParticipation = await res2.json();
             const list = document.getElementById('gameDTO-list');
-            if(gameParticipation.length === 0 ) {
+            if(gameParticipation.length === 0 && offset === 0 ) {
                 list.innerHTML = '<li>참여한 게임이 없습니다.</li>'
+                document.getElementById('load-more').style.display = 'none';
             }else{
                 gameParticipation.forEach(gameDTO => {
-                    const li = document.createElement('li');
-                    const date = new Date(gameDTO.enteredAt);
-                    const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-                    li.innerText = `날짜: ${formatted}
-                   | 수익률: ${gameDTO.returnId}%
-                   | 순위: ${gameDTO.gameRank}위
-                   | 점수: ${gameDTO.earnedScore} → ${gameDTO.postScore}
-                   | 캐시: ${gameDTO.earnedCash} → ${gameDTO.postCash}`;
-                    list.appendChild(li);
+                   const div = document.createElement('div');
+                   div.className = 'game-card';
+                   const date = new Date(gameDTO.enteredAt);
+                   const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                   div.innerHTML =
+                   `<div class="card-header">
+                        <span class="game-rank"> ${gameDTO.gameRank}위</span>
+                        <span class="game-date"> ${formatted}</span>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>수익률:</strong> ${gameDTO.returnRate}%</p>
+                        <p><strong>점수:</strong> ${gameDTO.earnedScore} → ${gameDTO.postScore}</p>
+                        <p><strong>자산:</strong> ${gameDTO.earnedCash} → ${gameDTO.postCash}</p>
+                    </div>`;
+                    list.appendChild(div);
                 });
+                offset += limit;
+                if (offset >= totalCount) {
+                    document.getElementById('load-more').style.display = 'none';
+                }
             }
-        }catch(err) {
+        }catch (err) {
 
         }
     }

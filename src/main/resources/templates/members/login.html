@@ -23,7 +23,7 @@
 
     <form id="login-form">
         <div>
-            <input type="email" id="username" name="username" placeholder="이메일을 입력하세요" required/>
+            <input type="email" id="email" name="email" placeholder="이메일을 입력하세요" required/>
         </div>
 
         <div>
@@ -51,13 +51,13 @@
         // form의 기본 제출 동작(페이지 새로고침)을 막습니다.
         event.preventDefault();
 
-        // username과 password 입력 필드에서 값을 가져옵니다.
-        const username = document.getElementById('username').value;
+        // email과 password 입력 필드에서 값을 가져옵니다.
+        const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
 
         // 서버로 보낼 데이터를 Javascript 객체 형태로 만듭니다.
         const loginData = {
-            username: username,
+            email: email,
             password: password
         };
 
@@ -77,8 +77,8 @@
             } else {
                 // HTTP 상태 코드가 4xx, 5xx 등 에러일 경우
                 // 응답 본문에 담긴 에러 메시지를 읽어와서 Promise를 거부(reject)합니다.
-                return response.text().then(text => {
-                    throw new Error(text || "로그인에 실패했습니다.");
+                return response.json().then(body => {
+                    throw new Error(body.message || "로그인에 실패했습니다.");
                 });
             }
         })
