@@ -4,13 +4,11 @@ import io.cavia.trader.common.exception.ApiException;
 import io.cavia.trader.common.exception.ErrorCode;
 import io.cavia.trader.common.response.ApiResponse;
 import io.cavia.trader.common.response.ApiResponses;
-import io.cavia.trader.module.auth.dto.LoginRequestDto;
-import io.cavia.trader.module.auth.dto.ResetPasswordRequestDto;
-import io.cavia.trader.module.auth.dto.SendCodeRequestDto;
-import io.cavia.trader.module.auth.dto.VerifyCodeRequestDto;
+import io.cavia.trader.module.auth.dto.*;
 import io.cavia.trader.module.auth.security.UserDetailsImpl;
 import io.cavia.trader.module.auth.service.AuthService;
 import io.cavia.trader.module.jwt.JwtUtil;
+import io.cavia.trader.module.member.entity.Member;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +18,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -93,4 +94,19 @@ public class AuthRestController {
         return ApiResponses.noContent();
     }
 
+    /**
+     * 인증된 이메일과 정보로 회원가입을 진행합니다.
+     *
+     * @param requestDto 이메일 인증 정보와 가입 정보를 담은 DTO
+     * @return Member 엔티티를 ApiResponse.data에 담은 201 Created 성공 응답
+     */
+    @PostMapping("/api/auth/signup")
+    public ResponseEntity<ApiResponse<?>> signup(@Valid @RequestBody SignupRequestDto requestDto) {
+        Member registeredMember = authService.register(requestDto);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(registeredMember.getId())
+                .toUri();
+        return ApiResponses.created(location, registeredMember);
+    }
 }

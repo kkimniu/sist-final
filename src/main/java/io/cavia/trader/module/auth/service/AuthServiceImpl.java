@@ -4,6 +4,7 @@ import io.cavia.trader.common.email.EmailService;
 import io.cavia.trader.common.exception.ApiException;
 import io.cavia.trader.common.exception.ErrorCode;
 import io.cavia.trader.module.auth.dto.SignupDto;
+import io.cavia.trader.module.auth.dto.SignupRequestDto;
 import io.cavia.trader.module.auth.entity.EmailVerification;
 import io.cavia.trader.module.auth.repository.EmailVerificationRepository;
 import io.cavia.trader.module.jwt.JwtUtil;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -20,6 +22,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthServiceImpl implements AuthService {
 
     private final EmailService emailService;
@@ -76,7 +79,7 @@ public class AuthServiceImpl implements AuthService {
                 .email(signupDto.getEmail())
                 .nickname(signupDto.getNickname())
                 .password(passwordEncoder.encode(signupDto.getPassword()))
-                .totalScore((int) DEFAULT_SCORE/2)
+                .totalScore((int) DEFAULT_SCORE / 2)
                 .cash(memberCashDefault)
                 .build();
 
@@ -84,6 +87,21 @@ public class AuthServiceImpl implements AuthService {
         memberService.validateDuplicateEmail(signupDto.getEmail());
         verifyAuthKey(signupDto.getEmail(), signupDto.getAuthKey());
         memberService.createMember(member);
+        System.out.println("회원가입 완료 member = " + member);
+        return member;
+    }
+
+    @Override
+    public Member register(SignupRequestDto requestDto) {
+        verifyAuthKey(requestDto.getEmail(), requestDto.getAuthKey());
+        memberService.validateDuplicateEmail(requestDto.getEmail());
+        memberService.validateDuplicateNickname(requestDto.getNickname());
+
+        Member member = memberService.createMember(
+                requestDto.getEmail(),
+                requestDto.getPassword(),
+                requestDto.getNickname()
+        );
         System.out.println("회원가입 완료 member = " + member);
         return member;
     }

@@ -25,7 +25,13 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
 
-    @Value("${member.cash.reset}")
+    @Value("${score.rank_max_score:5000}")
+    private Integer maxTotalScore;
+
+    @Value("${member.cash.default:10000000L}")
+    private Long memberCashDefault;
+
+    @Value("${member.cash.reset:5000000L}")
     private Long memberCashReset;
 
     @Override
@@ -129,6 +135,20 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void createMember(Member member) {
         memberRepository.save(member);
+    }
+
+    @Override
+    public Member createMember(String email, String password, String nickname) {
+        Member member = Member.builder()
+                .email(email)
+                .password(passwordEncoder.encode(password))
+                .nickname(nickname)
+                .totalScore(maxTotalScore / 2)
+                .cash(memberCashDefault)
+                .build();
+
+        memberRepository.save(member);
+        return member;
     }
 
     @Override

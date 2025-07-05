@@ -114,6 +114,15 @@ public interface MemberService {
     void createMember(Member member);
 
     /**
+     * 새로운 회원 정보를 DB에 저장합니다.
+     *
+     * @param email    회원 email
+     * @param password 회원 password
+     * @param nickname 회원 nickname
+     */
+    Member createMember(String email, String password, String nickname);
+
+    /**
      * 보유 자산 순으로 전체 회원의 랭킹을 조회합니다.
      *
      * @param limit  조회할 개수

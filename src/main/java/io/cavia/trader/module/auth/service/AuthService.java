@@ -1,12 +1,13 @@
 package io.cavia.trader.module.auth.service;
 
 import io.cavia.trader.module.auth.dto.SignupDto;
+import io.cavia.trader.module.auth.dto.SignupRequestDto;
 import io.cavia.trader.module.member.entity.Member;
 
 public interface AuthService {
 
     /**
-     * 지정된 이메일 주소로 인증 코드가 담긴 메일을 발송합니다.
+     * 지정된 이메일 주소로 6자리 정수인 인증 코드가 담긴 메일을 발송합니다.
      *
      * @param email 인증 코드를 받을 이메일
      */
@@ -41,6 +42,14 @@ public interface AuthService {
      * @return 생성된 Member 엔티티
      */
     Member join(SignupDto signupDto);
+
+    /**
+     * 전달된 DTO의 정보로 최종 회원가입을 처리하고, 생성된 회원 정보를 반환합니다.
+     *
+     * @param signupRequestDto 회원가입에 필요한 모든 정보가 담긴 DTO
+     * @return 생성된 Member 엔티티
+     */
+    Member register(SignupRequestDto signupRequestDto);
 
     /**
      * 사용자의 이메일과 비밀번호를 받아 로그인을 수행합니다.
