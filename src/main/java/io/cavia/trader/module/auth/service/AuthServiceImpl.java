@@ -30,6 +30,8 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil jwtUtil;
     private final TemplateEngine templateEngine;
     private final MemberService memberService;
+    @Value("${score.rank_max_score}")
+    private long DEFAULT_SCORE;
 
     @Value("${member.cash.default}")
     private Long memberCashDefault;
@@ -69,11 +71,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void join(SignupDto signupDto) {
-
         Member member = Member.builder()
                 .email(signupDto.getEmail())
                 .nickname(signupDto.getNickname())
                 .password(passwordEncoder.encode(signupDto.getPassword()))
+                .totalScore((int) DEFAULT_SCORE/2)
                 .cash(memberCashDefault)
                 .build();
 

@@ -69,10 +69,10 @@
 
     <update id="updateCashAndTotalScoreById">
         UPDATE
-            cash,
-            total_score
-        FROM
             members
+        SET
+            cash = #{cash},
+            total_score = #{totalScore}
         WHERE
             id = #{id}
     </update>
