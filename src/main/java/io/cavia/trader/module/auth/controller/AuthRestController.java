@@ -27,6 +27,13 @@ public class AuthRestController {
 
     private final AuthService authService;
 
+    /**
+     * 사용자의 이메일과 비밀번호로 로그인을 시도하고, 성공 시 JWT를 발급합니다.
+     *
+     * @param requestDto 로그인에 필요한 이메일, 비밀번호를 담은 DTO
+     * @param response   JWT를 담을 응답 헤더
+     * @return 성공 메시지를 담은 ApiResponse
+     */
     @PostMapping("/api/auth/login")
     public ResponseEntity<ApiResponse<?>> login(@Valid @RequestBody LoginRequestDto requestDto,
                                                 HttpServletResponse response) {
@@ -36,10 +43,11 @@ public class AuthRestController {
     }
 
     /**
-     * 인증된 사용자의 모든 정보를 반환하는 API
+     * 현재 인증된 사용자의 상세 정보를 조회합니다.
+     * 현재 헤더.html의 닉네임 부분을 가져오고 있는 엔드포인트로, 원래대로라면 시큐리티 필터에서 잡아야 함
      *
-     * @param userDetails SecurityContextHolder에 저장된 인증 객체의 principal
-     * @return body: {data: userDetails.getMember()}
+     * @param userDetails SecurityContextHolder에 저장된 사용자 정보
+     * @return Member 엔티티를 data에 담은 ApiResponse
      */
     @GetMapping("api/auth/login-checker")
     public ResponseEntity<ApiResponse<?>> getMemberInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -50,10 +58,10 @@ public class AuthRestController {
     }
 
     /**
-     * 입력된 이메일로 인증 메일을 발송함
+     * 이메일 인증을 위해 입력된 이메일로 인증 코드를 발송합니다.
      *
-     * @param requestDto 사용자가 입력한 이메일이 들어있는 dto
-     * @return 상태코드와 메시지
+     * @param requestDto 인증 코드를 받을 이메일 주소를 담은 DTO
+     * @return 200 OK 성공 응답
      */
     @PostMapping("/api/auth/verification/send-code")
     public ResponseEntity<ApiResponse<?>> sendVerificationEmail(@Valid @RequestBody SendCodeRequestDto requestDto) {
@@ -62,23 +70,22 @@ public class AuthRestController {
     }
 
     /**
-     * 인증 코드를 입력받아, 이메일과 인증 코드를 검증하고,
-     * 그 이메일의 회원가입 여부에 따라 참 거짓을 응답
+     * 이메일과 인증 코드를 검증합니다. (비밀번호 재설정 시 사용)
      *
-     * @param requestDto 사용자가 입력한 이메일과 인증코드가 들어있는 dto
-     * @return 상태코드, is-our-member : true/false
+     * @param requestDto 검증할 이메일과 인증 코드를 담은 DTO
+     * @return 200 OK 성공 응답
      */
     @PostMapping("/api/auth/verification/verify-code")
     public ResponseEntity<ApiResponse<?>> verifyPasswordResetVerification(@Valid @RequestBody VerifyCodeRequestDto requestDto) {
-        authService.verifyPasswordResetVerificationRequest(requestDto.getEmail(), requestDto.getAuthKey());
+        authService.verifyCodeForPasswordReset(requestDto.getEmail(), requestDto.getAuthKey());
         return ApiResponses.ok();
     }
 
     /**
-     * 완성된 requestDto를 가지고 비밀번호를 재설정함
+     * 인증된 이메일과 새 비밀번호로 비밀번호를 재설정합니다.
      *
-     * @param requestDto 사용자가 입력한 이메일, 인증코드, 비밀번호가 들어있는 dto
-     * @return 응답 body가 없는 204 no content 성공 응답
+     * @param requestDto 이메일, 인증 코드, 새 비밀번호를 담은 DTO
+     * @return 본문 없는 204 No Content 성공 응답
      */
     @PostMapping("/api/auth/password-reset")
     public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordRequestDto requestDto) {

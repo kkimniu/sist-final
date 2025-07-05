@@ -85,7 +85,7 @@ public class SignupController {
             return "members/signup/verify";
         }
         try {
-            authService.verifySignupVerificationRequest(signupDto.getEmail(), signupDto.getAuthKey());
+            authService.verifyCodeForSignup(signupDto.getEmail(), signupDto.getAuthKey());
         } catch (ApiException e) {
             bindingResult.rejectValue("authKey", "runtimeError", e.getErrorCode().getMessage());
             return "members/signup/verify";
