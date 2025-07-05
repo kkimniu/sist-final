@@ -42,7 +42,7 @@
     <!--
        회원이 참여한 게임 전체 기록에 개수를 가져오는 쿼리 입니다.
     -->
-    <select id="countByMemberId" resultType="int">
+    <select id="countByMemberId" resultType="Long">
         SELECT count(*)
         FROM game_participations
         WHERE member_id = #{memberId}

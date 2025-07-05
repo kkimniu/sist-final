@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ApiResponse<?>> handleCustomException(ApiException e) {
 
         ErrorCode errorCode = e.getErrorCode();
-        log.warn("Business Exception Occurred: {}", errorCode.getMessage());
+        log.debug("Business Exception Occurred: {}", errorCode.getMessage());
 
         return ApiResponses.of(errorCode.getHttpStatus(), errorCode.getMessage());
     }

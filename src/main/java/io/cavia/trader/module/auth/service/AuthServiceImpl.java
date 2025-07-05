@@ -43,13 +43,13 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void verifyPasswordResetVerificationRequest(String email, String authKey) {
+    public void verifyCodeForPasswordReset(String email, String authKey) {
         verifyAuthKey(email, authKey);
         memberService.getMemberByEmail(email);
     }
 
     @Override
-    public void verifySignupVerificationRequest(String email, String authKey) {
+    public void verifyCodeForSignup(String email, String authKey) {
         verifyAuthKey(email, authKey);
         memberService.validateDuplicateEmail(email);
     }
@@ -88,13 +88,6 @@ public class AuthServiceImpl implements AuthService {
         return member;
     }
 
-    /**
-     * 로그인 비즈니스 로직
-     *
-     * @param email    로그인 시도 이메일
-     * @param password 로그인 시도 비밀번호
-     * @return 생성된 JWT
-     */
     @Override
     public String login(String email, String password) {
         try {
@@ -104,6 +97,13 @@ public class AuthServiceImpl implements AuthService {
         } catch (ApiException e) {
             throw new ApiException(ErrorCode.LOGIN_FAILED);
         }
+    }
+
+    @Override
+    public void resetPassword(String email, String authKey, String rawPassword) {
+        verifyAuthKey(email, authKey);
+        Member member = memberService.getMemberByEmail(email);
+        memberService.changePassword(member.getId(), rawPassword);
     }
 
     /**
@@ -120,12 +120,5 @@ public class AuthServiceImpl implements AuthService {
         String htmlBody = templateEngine.process("email/auth-email", context);
 
         emailService.sendEmail(to, "[TRADER.IO] 이메일 인증", htmlBody);
-    }
-
-    @Override
-    public void resetPassword(String email, String authKey, String rawPassword) {
-        verifyAuthKey(email, authKey);
-        Member member = memberService.getMemberByEmail(email);
-        memberService.changePassword(member.getId(), rawPassword);
     }
 }
