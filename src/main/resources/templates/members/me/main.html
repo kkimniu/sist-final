@@ -69,7 +69,8 @@
                     'Authorization': 'Bearer ' + token
                 }
             });
-            totalCount = await countRes.json();
+            const countResBody = await countRes.json();
+            const totalCount = countResBody.data;
 
             await loadMoreGameParticipation();
         }catch(err) {
@@ -85,9 +86,12 @@
                 headers: {
                     'Authorization': 'Bearer ' + token
                     }
-                });
-            if(!res2.ok) throw new Error('게임 기록을 불러오지 못했습니다');
-            const gameParticipation = await res2.json();
+            });
+            const res2Body = await res2.json();
+            if(!res2.ok) {
+                throw new Error(res2Body.message || '게임 기록을 불러오지 못했습니다');
+            }
+            const gameParticipation = res2Body.data;
             const list = document.getElementById('gameDTO-list');
             if(gameParticipation.length === 0 && offset === 0 ) {
                 list.innerHTML = '<li>참여한 게임이 없습니다.</li>'

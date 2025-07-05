@@ -66,7 +66,7 @@ public class MemberRestController {
 
     @GetMapping("/me/game-participations/count")
     public ResponseEntity<ApiResponse<?>> getGameParticipationCount(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ApiResponses.ok(memberService.getCountByMemberId(userDetails.getMember().getId()));
+        return ApiResponses.ok(memberService.getGameParticipationCountByMemberId(userDetails.getMember().getId()));
 
     }
 
