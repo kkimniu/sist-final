@@ -38,6 +38,20 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public List<GameParticipation> getGameParticipationByMemberIdWithPaging(Long memberId, int limit, int offset) {
+        List<GameParticipation> list = gameParticipationRepository.findByMemberIdWithPaging(memberId, limit, offset);
+        if (list == null || list.isEmpty()) {
+            throw new ApiException(ErrorCode.GAME_HISTORY_NOT_FOUND);
+        }
+        return list;
+    }
+
+    @Override
+    public int getCountByMemberId(Long memberId) {
+        return gameParticipationRepository.countByMemberId(memberId);
+    }
+
+    @Override
     public Member getMemberById(Long id) {
         return memberRepository.findById(id).orElseThrow(
                 () -> new ApiException(ErrorCode.MEMBER_NOT_FOUND));

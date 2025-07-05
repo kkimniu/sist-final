@@ -10,6 +10,10 @@ public interface MemberService {
 
     List<GameParticipation> getGameParticipationByMemberId(Long memberId);
 
+    List<GameParticipation> getGameParticipationByMemberIdWithPaging(Long memberId, int limit, int offset);
+
+    int getCountByMemberId(Long memberId);
+
     Member getMemberById(Long id);
 
     Member getMemberByEmail(String email);
