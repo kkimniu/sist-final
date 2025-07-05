@@ -84,6 +84,18 @@ public class AuthRestController {
     }
 
     /**
+     * 이메일과 인증 코드를 검증합니다. (회원가입 시 사용)
+     *
+     * @param requestDto 검증할 이메일과 인증 코드를 담은 DTO
+     * @return OK 메시지를 담은 200 OK 응답
+     */
+    @PostMapping("/api/auth/signup/verify-code")
+    public ResponseEntity<ApiResponse<?>> verifySignupVerification(@Valid @RequestBody VerifyCodeRequestDto requestDto) {
+        authService.verifyCodeForSignup(requestDto.getEmail(), requestDto.getAuthKey());
+        return ApiResponses.ok();
+    }
+
+    /**
      * 인증된 이메일과 새 비밀번호로 비밀번호를 재설정합니다.
      *
      * @param requestDto 이메일, 인증 코드, 새 비밀번호를 담은 DTO
@@ -117,7 +129,7 @@ public class AuthRestController {
      * @param requestDto 회원가입을 진행할 닉네임
      * @return 성공 메시지를 담은 200 OK 응답
      */
-    @GetMapping("/api/auth/nickname/check")
+    @GetMapping("/api/auth/validate-nickname")
     public ResponseEntity<ApiResponse<?>> checkNickname(@Validated NicknameValidationRequestDto requestDto) {
         authService.validateDuplicateNickname(requestDto.getNickname());
         return ApiResponses.ok("사용 가능한 닉네임입니다.", null);
