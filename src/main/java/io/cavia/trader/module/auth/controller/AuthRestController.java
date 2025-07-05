@@ -129,8 +129,9 @@ public class AuthRestController {
      * @param requestDto 회원가입을 진행할 닉네임
      * @return 성공 메시지를 담은 200 OK 응답
      */
-    @GetMapping("/api/auth/validate-nickname")
-    public ResponseEntity<ApiResponse<?>> checkNickname(@Validated NicknameValidationRequestDto requestDto) {
+    @PostMapping("/api/auth/validate-nickname")
+    public ResponseEntity<ApiResponse<?>> checkNickname(
+            @Validated @RequestBody NicknameValidationRequestDto requestDto) {
         authService.validateDuplicateNickname(requestDto.getNickname());
         return ApiResponses.ok("사용 가능한 닉네임입니다.", null);
     }

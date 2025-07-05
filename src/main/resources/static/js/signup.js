@@ -7,11 +7,25 @@ const signupData = {
     nickname: '',
     password: ''
 };
+// 페이지 전환을 위한 함수
+function showPage(pageId) {
+    // 1. 모든 페이지 div를 찾아서 숨깁니다.
+    document.querySelectorAll('.page').forEach(page => {
+        page.style.display = 'none';
+    });
+    // 2. 요청된 ID를 가진 페이지만 찾아서 보여줍니다.
+    document.getElementById(pageId).style.display = 'block';
+}
 
-// 페이지 전환 함수
-function showPage(pageId) { /* ... */ }
-// 메시지 표시 함수
-function showMessage(elementId, message, isError = true) { /* ... */ }
+// 에러 또는 성공 메시지를 표시하는 함수
+function showMessage(elementId, message, isError = true) {
+    const el = document.getElementById(elementId);
+    if (el) {
+        el.innerText = message;
+        // isError가 true이면 빨간색, false이면 녹색으로 설정
+        el.style.color = isError ? 'red' : 'green';
+    }
+}
 
 // 1. 약관 동의
 document.getElementById('btn-terms-next').addEventListener('click', () => {
@@ -39,7 +53,7 @@ document.getElementById('btn-email-next').addEventListener('click', () => {
 
 async function sendCodeInBackground() {
     try {
-        const res = await fetch('/api/auth/send-verification-email', {
+        const res = await fetch('/api/auth/verification/send-code', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: signupData.email })
@@ -58,9 +72,8 @@ async function sendCodeInBackground() {
 // 3. 인증 코드 검증 및 페이지 이동
 document.getElementById('btn-verify-next').addEventListener('click', async () => {
     signupData.authKey = document.getElementById('authKey').value;
-    showMessage('verify-error', '인증을 확인 중입니다...', false);
     try {
-        const res = await fetch('/api/auth/verify-code', {
+        const res = await fetch('/api/auth/signup/verify-code', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: signupData.email, authKey: signupData.authKey })
@@ -78,7 +91,6 @@ document.getElementById('btn-verify-next').addEventListener('click', async () =>
 // 4. 닉네임 검증 및 페이지 이동
 document.getElementById('btn-nickname-next').addEventListener('click', async () => {
     signupData.nickname = document.getElementById('nickname').value;
-    showMessage('nickname-error', '중복을 확인 중입니다...', false);
     try {
         const res = await fetch('/api/auth/validate-nickname', {
             method: 'POST',
