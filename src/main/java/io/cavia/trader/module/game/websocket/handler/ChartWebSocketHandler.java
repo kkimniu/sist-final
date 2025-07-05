@@ -6,6 +6,7 @@ import io.cavia.trader.module.client.dto.TradesOutput;
 import io.cavia.trader.module.game.dto.GameDto;
 import io.cavia.trader.module.game.dto.OrderTableDto;
 import io.cavia.trader.module.game.dto.TradeLog;
+import io.cavia.trader.module.game.dto.response.ResponseDto;
 import io.cavia.trader.module.game.service.GameManager;
 import io.cavia.trader.module.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -157,63 +158,96 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                             if (orderTableDto.getPrice() < 0) {
                                                 if (trades.get(tradeIndex.get()).getStckPrpr() >= Math.abs(orderTableDto.getPrice())) {
 
-                                                    playerStatusDto.setStocksHolding(
-                                                            playerStatusDto.getStocksHolding() - orderTableDto.getQuantity());
+                                                    if (playerStatusDto.getStocksHolding() < orderTableDto.getQuantity()) {
+                                                        synchronized (orderSession) {
+                                                            try {
+                                                                if (orderSession.isOpen()) {
+                                                                    orderSession.sendMessage(
+                                                                            new TextMessage("error||" +
+                                                                                    objectMapper.writeValueAsString(
+                                                                                            new ResponseDto("매도: 보유 주식이 부족합니다."))
+                                                                            ));
+                                                                }
+                                                            }catch (Exception e){
+                                                                throw new RuntimeException("예외 메세지 전송 중 예외 발생!", e);
+                                                            }
+                                                        }
+                                                    } else {
+                                                        playerStatusDto.setStocksHolding(
+                                                                playerStatusDto.getStocksHolding() - orderTableDto.getQuantity());
 
-                                                    // 보유 자산 변동
-                                                    // 가능한 안전하게 계산해봄
-                                                    long tradeValue = (long) orderTableDto.getQuantity() * trades.get(tradeIndex.get()).getStckPrpr();
-                                                    BigDecimal tradeValueAmount = new BigDecimal(tradeValue);
-                                                    BigDecimal feeValue = tradeValueAmount.multiply(DEFAULT_FEE_RATE);
-                                                    tradeValue = tradeValueAmount.subtract(feeValue).setScale(0, RoundingMode.HALF_UP).intValue();
+                                                        // 보유 자산 변동
+                                                        // 가능한 안전하게 계산해봄
+                                                        long tradeValue = (long) orderTableDto.getQuantity() * trades.get(tradeIndex.get()).getStckPrpr();
+                                                        BigDecimal tradeValueAmount = new BigDecimal(tradeValue);
+                                                        BigDecimal feeValue = tradeValueAmount.multiply(DEFAULT_FEE_RATE);
+                                                        tradeValue = tradeValueAmount.subtract(feeValue).setScale(0, RoundingMode.HALF_UP).intValue();
 
-                                                    log.debug("매도 전: {}", playerStatusDto.getEarnedCash());
-                                                    playerStatusDto.setEarnedCash(
-                                                            playerStatusDto.getEarnedCash() + tradeValue
-                                                    );
-                                                    log.debug("매도 후: {}", playerStatusDto.getEarnedCash());
+                                                        log.debug("매도 전: {}", playerStatusDto.getEarnedCash());
+                                                        playerStatusDto.setEarnedCash(
+                                                                playerStatusDto.getEarnedCash() + tradeValue
+                                                        );
+                                                        log.debug("매도 후: {}", playerStatusDto.getEarnedCash());
 
-                                                    // 로그 추가
-                                                    Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
-                                                    tradeLog.add(
-                                                            TradeLog.builder()
-                                                                    .Id(orderTableDto.getId())
-                                                                    .price(-Math.abs(trades.get(tradeIndex.get()).getStckPrpr()))
-                                                                    .quantity(orderTableDto.getQuantity())
-                                                                    .createdAt(LocalDateTime.now())
-                                                                    .build()
-                                                    );
+                                                        // 로그 추가
+                                                        Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
+                                                        tradeLog.add(
+                                                                TradeLog.builder()
+                                                                        .Id(orderTableDto.getId())
+                                                                        .price(-Math.abs(trades.get(tradeIndex.get()).getStckPrpr()))
+                                                                        .quantity(orderTableDto.getQuantity())
+                                                                        .createdAt(LocalDateTime.now())
+                                                                        .build()
+                                                        );
 
-                                                    // 매도 거래 삭제
-                                                    Deals.remove(orderTableDto);
+                                                        // 매도 거래 삭제
+                                                        Deals.remove(orderTableDto);
+                                                    }
                                                 }
                                             } else {
                                                 if (trades.get(tradeIndex.get()).getStckPrpr() <= Math.abs(orderTableDto.getPrice())) {
 
-                                                    playerStatusDto.setStocksHolding(
-                                                            playerStatusDto.getStocksHolding() + orderTableDto.getQuantity());
+                                                    if (playerStatusDto.getEarnedCash() < (long) orderTableDto.getQuantity() * orderTableDto.getPrice()) {
+                                                        synchronized (orderSession) {
+                                                            try {
+                                                                if (orderSession.isOpen()) {
+                                                                    orderSession.sendMessage(
+                                                                            new TextMessage("error||" +
+                                                                                    objectMapper.writeValueAsString(
+                                                                                            new ResponseDto("매도 실패: 보유 자산이 부족합니다."))
+                                                                            ));
+                                                                }
+                                                            }catch (Exception e){
+                                                                throw new RuntimeException("예외 메세지 전송 중 예외 발생!", e);
+                                                            }
+                                                        }
+                                                    } else {
 
-                                                    // 보유 자산 변동
-                                                    log.debug("매수 전: {}", playerStatusDto.getEarnedCash());
-                                                    playerStatusDto.setEarnedCash(
-                                                            playerStatusDto.getEarnedCash() -
-                                                                    (long) orderTableDto.getQuantity() * trades.get(tradeIndex.get()).getStckPrpr()
-                                                    );
-                                                    log.debug("매수 후: {}", playerStatusDto.getEarnedCash());
+                                                        playerStatusDto.setStocksHolding(
+                                                                playerStatusDto.getStocksHolding() + orderTableDto.getQuantity());
 
-                                                    // 로그 추가
-                                                    Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
-                                                    tradeLog.add(
-                                                            TradeLog.builder()
-                                                                    .Id(orderTableDto.getId())
-                                                                    .price(trades.get(tradeIndex.get()).getStckPrpr())
-                                                                    .quantity(orderTableDto.getQuantity())
-                                                                    .createdAt(LocalDateTime.now())
-                                                                    .build()
-                                                    );
+                                                        // 보유 자산 변동
+                                                        log.debug("매수 전: {}", playerStatusDto.getEarnedCash());
+                                                        playerStatusDto.setEarnedCash(
+                                                                playerStatusDto.getEarnedCash() -
+                                                                        (long) orderTableDto.getQuantity() * trades.get(tradeIndex.get()).getStckPrpr()
+                                                        );
+                                                        log.debug("매수 후: {}", playerStatusDto.getEarnedCash());
 
-                                                    // 매수 거래 삭제
-                                                    Deals.remove(orderTableDto);
+                                                        // 로그 추가
+                                                        Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
+                                                        tradeLog.add(
+                                                                TradeLog.builder()
+                                                                        .Id(orderTableDto.getId())
+                                                                        .price(trades.get(tradeIndex.get()).getStckPrpr())
+                                                                        .quantity(orderTableDto.getQuantity())
+                                                                        .createdAt(LocalDateTime.now())
+                                                                        .build()
+                                                        );
+
+                                                        // 매수 거래 삭제
+                                                        Deals.remove(orderTableDto);
+                                                    }
                                                 }
                                             }
 
@@ -223,59 +257,92 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                                     // 시장가 매도주문이 존재할 경우 현재 체결가로 주문 처리
                                     if (quantityOfMarketSell != 0) {
-                                        playerStatusDto.setStocksHolding(
-                                                playerStatusDto.getStocksHolding() - quantityOfMarketSell
-                                        );
 
-                                        long tradeValue = (long) quantityOfMarketSell * trades.get(tradeIndex.get()).getStckPrpr();
-                                        BigDecimal tradeValueAmount = new BigDecimal(tradeValue);
-                                        BigDecimal feeValue = tradeValueAmount.multiply(DEFAULT_FEE_RATE);
-                                        tradeValue = tradeValueAmount.subtract(feeValue).setScale(0, RoundingMode.HALF_UP).intValue();
+                                        if (playerStatusDto.getStocksHolding() < quantityOfMarketSell) {
+                                            synchronized (orderSession) {
+                                                try {
+                                                    if (orderSession.isOpen()) {
+                                                        orderSession.sendMessage(
+                                                                new TextMessage("error||" +
+                                                                        objectMapper.writeValueAsString(
+                                                                                new ResponseDto("시장가 매도 실패: 보유 주식이 부족합니다."))
+                                                                ));
+                                                    }
+                                                }catch (Exception e){
+                                                    throw new RuntimeException("예외 메세지 전송 중 예외 발생!", e);
+                                                }
+                                            }
+                                        } else {
+                                            playerStatusDto.setStocksHolding(
+                                                    playerStatusDto.getStocksHolding() - quantityOfMarketSell
+                                            );
 
-                                        log.debug("시장가 매도 전: {}", playerStatusDto.getEarnedCash());
-                                        playerStatusDto.setEarnedCash(
-                                                playerStatusDto.getEarnedCash() + tradeValue
-                                        );
-                                        log.debug("시장가 매도 후: {}", playerStatusDto.getEarnedCash());
+                                            long tradeValue = (long) quantityOfMarketSell * trades.get(tradeIndex.get()).getStckPrpr();
+                                            BigDecimal tradeValueAmount = new BigDecimal(tradeValue);
+                                            BigDecimal feeValue = tradeValueAmount.multiply(DEFAULT_FEE_RATE);
+                                            tradeValue = tradeValueAmount.subtract(feeValue).setScale(0, RoundingMode.HALF_UP).intValue();
 
-                                        playerStatusDto.getOrderDto().setQuantityOfMarketSell(0);
+                                            log.debug("시장가 매도 전: {}", playerStatusDto.getEarnedCash());
+                                            playerStatusDto.setEarnedCash(
+                                                    playerStatusDto.getEarnedCash() + tradeValue
+                                            );
+                                            log.debug("시장가 매도 후: {}", playerStatusDto.getEarnedCash());
+
+                                            playerStatusDto.getOrderDto().setQuantityOfMarketSell(0);
 
 
-                                        // 로그 추가 해야겠지?
-                                        Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
-                                        tradeLog.add(
-                                                TradeLog.builder()
-                                                        .Id(String.format("%06d", playerStatusDto.getIdCreator().getAndIncrement() % 1000000))
-                                                        .price(-Math.abs(trades.get(tradeIndex.get()).getStckPrpr()))
-                                                        .quantity(quantityOfMarketSell)
-                                                        .createdAt(LocalDateTime.now())
-                                                        .build()
-                                        );
+                                            // 로그 추가 해야겠지?
+                                            Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
+                                            tradeLog.add(
+                                                    TradeLog.builder()
+                                                            .Id(String.format("%06d", playerStatusDto.getIdCreator().getAndIncrement() % 1000000))
+                                                            .price(-Math.abs(trades.get(tradeIndex.get()).getStckPrpr()))
+                                                            .quantity(quantityOfMarketSell)
+                                                            .createdAt(LocalDateTime.now())
+                                                            .build()
+                                            );
+                                        }
                                     }
 
                                     // 시장가 매수주문이 존재할 경우 현재 체결가로 주문 처리
                                     if (quantityOfMarketBuy != 0) {
-                                        playerStatusDto.setStocksHolding(
-                                                playerStatusDto.getStocksHolding() + quantityOfMarketBuy
-                                        );
-                                        log.debug("시장가 매수 전: {}", playerStatusDto.getEarnedCash());
-                                        playerStatusDto.setEarnedCash(
-                                                playerStatusDto.getEarnedCash() - quantityOfMarketBuy * (long) trades.get(tradeIndex.get()).getStckPrpr()
-                                        );
-                                        log.debug("시장가 매수 후: {}", playerStatusDto.getEarnedCash());
+                                        if (quantityOfMarketBuy * (long) trades.get(tradeIndex.get()).getStckPrpr() > playerStatusDto.getEarnedCash()) {
+                                            synchronized (orderSession) {
+                                                try {
+                                                    if (orderSession.isOpen()) {
+                                                        orderSession.sendMessage(
+                                                                new TextMessage("error||" +
+                                                                        objectMapper.writeValueAsString(
+                                                                                new ResponseDto("시장가 매수 실패: 보유 자산이 부족합니다."))
+                                                                ));
+                                                    }
+                                                }catch (Exception e){
+                                                    throw new RuntimeException("예외 메세지 전송 중 예외 발생!", e);
+                                                }
+                                            }
+                                        } else {
+                                            playerStatusDto.setStocksHolding(
+                                                    playerStatusDto.getStocksHolding() + quantityOfMarketBuy
+                                            );
+                                            log.debug("시장가 매수 전: {}", playerStatusDto.getEarnedCash());
+                                            playerStatusDto.setEarnedCash(
+                                                    playerStatusDto.getEarnedCash() - quantityOfMarketBuy * (long) trades.get(tradeIndex.get()).getStckPrpr()
+                                            );
+                                            log.debug("시장가 매수 후: {}", playerStatusDto.getEarnedCash());
 
-                                        playerStatusDto.getOrderDto().setQuantityOfMarketBuy(0);
+                                            playerStatusDto.getOrderDto().setQuantityOfMarketBuy(0);
 
-                                        // 로그 추가 해야겠지?
-                                        Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
-                                        tradeLog.add(
-                                                TradeLog.builder()
-                                                        .Id(String.format("%06d", playerStatusDto.getIdCreator().getAndIncrement() % 1000000))
-                                                        .price(trades.get(tradeIndex.get()).getStckPrpr())
-                                                        .quantity(quantityOfMarketBuy)
-                                                        .createdAt(LocalDateTime.now())
-                                                        .build()
-                                        );
+                                            // 로그 추가 해야겠지?
+                                            Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
+                                            tradeLog.add(
+                                                    TradeLog.builder()
+                                                            .Id(String.format("%06d", playerStatusDto.getIdCreator().getAndIncrement() % 1000000))
+                                                            .price(trades.get(tradeIndex.get()).getStckPrpr())
+                                                            .quantity(quantityOfMarketBuy)
+                                                            .createdAt(LocalDateTime.now())
+                                                            .build()
+                                            );
+                                        }
                                     }
                                     // 거래가 발생했으니 새로고침 된 데이터를 전송
                                     if (playerStatusDto.isUpdated()) {
