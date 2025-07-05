@@ -34,8 +34,10 @@
                         nickname: nickname
                     })
                 });
+
                 if(!res.ok){
-                    throw new Error('닉네임 변경에 실패했습니다.');
+                    const errorData = await res.json();
+                    throw new Error(errorData.message ||'닉네임 변경에 실패했습니다.');
                 }
                 alert('닉네임 변경에 성공했습니다.');
                 location.href = '/members/me';
