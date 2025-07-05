@@ -25,11 +25,6 @@ public class SignupController {
         return new SignupDto();
     }
 
-    @GetMapping
-    public String moveToSignupProcess() {
-        return "redirect:/signup/terms";
-    }
-
     @GetMapping("/terms")
     public String showTermsForm() {
 

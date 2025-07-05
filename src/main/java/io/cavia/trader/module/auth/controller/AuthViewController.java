@@ -21,4 +21,8 @@ public class AuthViewController {
         return "members/password-reset";
     }
 
+    @GetMapping("/signup")
+    public String showSignupForm() {
+        return "members/signup";
+    }
 }

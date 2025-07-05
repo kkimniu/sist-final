@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -108,5 +109,17 @@ public class AuthRestController {
                 .buildAndExpand(registeredMember.getId())
                 .toUri();
         return ApiResponses.created(location, registeredMember);
+    }
+
+    /**
+     * 입력된 닉네임이 사용 가능한지 확인합니다.
+     *
+     * @param requestDto 회원가입을 진행할 닉네임
+     * @return 성공 메시지를 담은 200 OK 응답
+     */
+    @GetMapping("/api/auth/nickname/check")
+    public ResponseEntity<ApiResponse<?>> checkNickname(@Validated NicknameValidationRequestDto requestDto) {
+        authService.validateDuplicateNickname(requestDto.getNickname());
+        return ApiResponses.ok("사용 가능한 닉네임입니다.", null);
     }
 }
