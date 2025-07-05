@@ -56,7 +56,7 @@ public class GameRestController {
                             .getPlayerStatusDtos().get(memberId).getStocksHolding()), HttpStatus.OK);
 
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            throw new RuntimeException("보유 주식 개수 조회 중 오류 발생", e);
         }
     }
 

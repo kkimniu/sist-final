@@ -18,8 +18,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
@@ -33,7 +32,6 @@ public class ChartWebSocketHandler implements WebSocketHandler {
     private final ObjectMapper objectMapper;
     private final JwtUtil jwtUtil;
 
-    private GameDto gameDto;
     @Value("${stock.default-fee-rate}")
     private BigDecimal DEFAULT_FEE_RATE;
 
@@ -43,6 +41,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
     @Override
     public void handleMessage(WebSocketSession chartSession, WebSocketMessage<?> message) throws Exception {
+        GameDto gameDto;
         String token = message.getPayload().toString();
         if (jwtUtil.validateToken(token)) {
 
@@ -87,15 +86,14 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                 // 새로운 시간 계산법
                 // 로직 세션 시작 시간에 타임 존만 추가해서 클라이언트에게 던져주고 시간 계산은 클라이언트에게 넘겨버리기
-
+                List<Object> timeList = new ArrayList<>();
+                timeList.add(gameDto.getStartedAt().atZone(ZoneId.systemDefault()));
+                timeList.add(LocalDateTime.now().atZone(ZoneId.systemDefault()));
 
                 synchronized (chartSession) {
                     if (chartSession.isOpen())
-                        chartSession.sendMessage(new TextMessage("timeLeft||" + (objectMapper.writeValueAsString(
-                                gameDto.getStartedAt()
-                                        .atZone(
-                                                ZoneId.systemDefault()))))
-                        );
+                        chartSession.sendMessage(new TextMessage("timeLeft||" +
+                                objectMapper.writeValueAsString(timeList)));
                 }
 
 

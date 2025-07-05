@@ -86,10 +86,12 @@ public class GameManagerImpl implements GameManager {
                                 playerStatusDto.getEarnedScore()
                                 );
                     });
+
+                    // 게임 종료 후 DB 저장 후 세션 저장 완료 알림과 메모리 클리어를 이벤트에서 처리하기 위해 호출
+                    eventPublisher.publishEvent(new GameCompleted(gameDto));
                 }
 
-                // 게임 종료 후 DB 저장 후 세션 저장 완료 알림과 메모리 클리어를 이벤트에서 처리하기 위해 호출
-                eventPublisher.publishEvent(new GameCompleted(gameDto));
+
 
 
             }
