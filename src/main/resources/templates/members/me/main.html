@@ -70,7 +70,7 @@
                 }
             });
             const countResBody = await countRes.json();
-            const totalCount = countResBody.data;
+            totalCount = countResBody.data;
 
             await loadMoreGameParticipation();
         }catch(err) {
