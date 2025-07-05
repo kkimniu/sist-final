@@ -1,21 +1,25 @@
 /*members/me/main페이지*/
+/*로그아웃 회원탈퇴 버튼 감쌈*/
+.button-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 16px; /* 버튼 사이 간격 */
+    margin-top: 20px;
+}
 /*로그아웃*/
 .logout {
-  display: flex;
-  align-items: center;
-  justify-content: right;
   margin-top: 30px;
-  margin-right: 250px;
- }
+}
 .logout a {
   display: inline-block;
-  padding: 6px 12px;
+  font-size:14px;
+  padding: 5px 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
   border-radius: 6px;
   border: 1px solid #ddd;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  background-color: white;
-  border: none;
-  color: black;
+  background-color: #f9f9f9;
+  color: #333;
   text-decoration: none;
 }
 .logout a:hover {
@@ -37,6 +41,7 @@
 /*게임 기록과 닉네임/등급/자산 각각에 컨테이너를 양옆으로 함*/
 .container{
     display: flex;
+    flex-direction: column;
     gap: 24px;
     align-items: flex-start;
 }
@@ -47,7 +52,8 @@
   padding: 40px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  flex: 2
+  width: 100%;
+  max-width: 850px;
 }
 
 /*게임 기록들 */
@@ -60,13 +66,48 @@
 
 /*게임기록들을 박스형태로 보여줌*/
 .game-card {
-  background-color: white;
-  padding: 16px 24px;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  max-width: 800px;
+}
+/*순위 날짜*/
+.card-header {
+  display: flex;
+  font-size: 13px;
+  color: #666;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 16px;
+}
+.card-header .game-rank {
+  margin-right: 8px; /* 순위와 날짜 간 간격 */
+}
+
+/*자산,수익률,점수*/
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 15px;
+}
+
+/*더보기 버튼*/
+#load-more {
+  display: block;
+  width: 97%;
+  padding: 10px 18px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  border-radius: 6px;
   border: 1px solid #ddd;
-  font-size: 14px;
-  line-height: 1.6; /*줄 간견 1.6배*/
+  background-color: #f9f9f9;
+  color: #333;
+  text-decoration: none;
+  box-sizing: border-box;
 }
 
 /*닉네임/등급/자산*/
@@ -75,7 +116,8 @@
   padding: 40px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  flex: 1
+  width: 100%;
+  max-width: 850px;
 }
 
 /*닉네임/비밀번호 변경 버튼*/
@@ -97,11 +139,10 @@
 
 /*회원탈퇴*/
 .withdraw {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   margin-top: 30px;
 }
+
+/*회원탈퇴 버튼*/
 .withdraw input[type="button"] {
   display: inline-block;
   padding: 5px 10px;
