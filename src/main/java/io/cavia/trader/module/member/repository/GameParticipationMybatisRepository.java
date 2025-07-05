@@ -23,7 +23,7 @@ public class GameParticipationMybatisRepository implements GameParticipationRepo
     }
 
     @Override
-    public int countByMemberId(Long memberId) {
+    public Long countByMemberId(Long memberId) {
         return gameParticipationMapper.countByMemberId(memberId);
     }
 }

@@ -47,7 +47,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public int getCountByMemberId(Long memberId) {
+    public Long getGameParticipationCountByMemberId(Long memberId) {
         return gameParticipationRepository.countByMemberId(memberId);
     }
 

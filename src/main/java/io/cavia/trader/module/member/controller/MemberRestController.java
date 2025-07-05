@@ -1,20 +1,17 @@
 package io.cavia.trader.module.member.controller;
 
+import io.cavia.trader.common.response.ApiResponse;
 import io.cavia.trader.common.response.ApiResponses;
 import io.cavia.trader.module.auth.security.UserDetailsImpl;
-import io.cavia.trader.module.member.entity.GameParticipation;
 import io.cavia.trader.module.member.dto.NicknameUpdateRequestDto;
 import io.cavia.trader.module.member.dto.PasswordChangeRequestDto;
 import io.cavia.trader.module.member.dto.PasswordVerificationRequestDto;
-import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/members")
@@ -23,49 +20,77 @@ public class MemberRestController {
 
     private final MemberService memberService;
 
+    /**
+     * 현재 로그인된 사용자의 상세 정보를 조회합니다.
+     *
+     * @param userDetails SecurityContextHolder에 저장된 사용자 정보
+     * @return Member 엔티티를 ApiResponse.data에 담은 200 OK 응답
+     */
     @GetMapping("/me")
-    public ResponseEntity<Member> getMembersByEmail(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-
-        return ResponseEntity.status(200)
-                .body(memberService.getMemberById(userDetails.getMember().getId()));
+    public ResponseEntity<ApiResponse<?>> getMembersByEmail(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ApiResponses.ok(userDetails.getMember());
     }
 
+    /**
+     * 현재 로그인된 사용자의 회원 탈퇴를 처리합니다.
+     *
+     * @param userDetails SecurityContextHolder에 저장된 사용자 정보
+     * @param requestDto  현재 비밀번호 확인을 위한 DTO
+     * @return 본문 없는 204 No Content 응답
+     */
     @DeleteMapping("/me")
-    public ResponseEntity<String> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                               @RequestBody PasswordVerificationRequestDto requestDto) {
+    public ResponseEntity<Void> deleteMember(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                             @RequestBody PasswordVerificationRequestDto requestDto) {
         memberService.withdrawMember(userDetails.getMember().getId(), requestDto.getCurrentPassword());
-        return ResponseEntity.status(200).body("회원 삭제완료");
+        return ApiResponses.noContent();
     }
 
+    /**
+     * 현재 로그인된 사용자의 모든 게임 참여 기록을 조회합니다.
+     *
+     * @param userDetails SecurityContextHolder에 저장된 사용자 정보
+     * @return 게임 참여 기록 리스트를 ApiResponse.data에 담은 200 OK 응답
+     */
     @GetMapping("/me/game-participations")
-    public ResponseEntity<List<GameParticipation>> getGameParticipationsByMemberId(
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.status(200)
-                .body(memberService.getGameParticipationByMemberId(userDetails.getMember().getId()));
+    public ResponseEntity<ApiResponse<?>> getGameParticipations(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ApiResponses.ok(memberService.getGameParticipationByMemberId(userDetails.getMember().getId()));
     }
 
     @GetMapping("/me/game-participations/paged")
-    public ResponseEntity<List<GameParticipation>> getGameParticipationsByMemberIdWithPaging(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam(defaultValue = "5") int limit,
-            @RequestParam(defaultValue = "0") int offset) {
-        return ResponseEntity.status(200)
-                .body(memberService.getGameParticipationByMemberIdWithPaging(userDetails.getMember().getId(), limit, offset));
+    public ResponseEntity<ApiResponse<?>> getPagedGameParticipations(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                     @RequestParam(defaultValue = "5") int limit,
+                                                                     @RequestParam(defaultValue = "0") int offset) {
+        return ApiResponses.ok(memberService.getGameParticipationByMemberIdWithPaging(
+                userDetails.getMember().getId(), limit, offset));
     }
 
     @GetMapping("/me/game-participations/count")
-    public ResponseEntity<Integer> getGameParticipationCount(
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.status(200).body(memberService.getCountByMemberId(userDetails.getMember().getId()));
+    public ResponseEntity<ApiResponse<?>> getGameParticipationCount(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ApiResponses.ok(memberService.getGameParticipationCountByMemberId(userDetails.getMember().getId()));
+
     }
 
+    /**
+     * 현재 로그인된 사용자의 비밀번호가 일치하는지 검증합니다.
+     *
+     * @param userDetails SecurityContextHolder에 저장된 사용자 정보
+     * @param requestDto  검증할 현재 비밀번호를 담은 DTO
+     * @return OK 메시지를 담은 200 OK 응답
+     */
     @PostMapping("/me/password/verify")
-    public ResponseEntity<String> getcheckPassword(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                   @Valid @RequestBody PasswordVerificationRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<?>> verifyPassword(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                         @Valid @RequestBody PasswordVerificationRequestDto requestDto) {
         memberService.validatePassword(userDetails.getMember().getId(), requestDto.getCurrentPassword());
-        return ResponseEntity.status(200).body("비밀번호 일치함");
+        return ApiResponses.ok();
     }
 
+    /**
+     * 현재 로그인된 사용자의 비밀번호를 입력받아 새로운 비밀번호로 변경합니다.
+     *
+     * @param userDetails SecurityContextHolder에 저장된 사용자 정보
+     * @param requestDto  현재 비밀번호와 새 비밀번호를 담은 DTO
+     * @return 본문 없는 204 No Content 응답
+     */
     @PatchMapping("/me/password")
     public ResponseEntity<?> changePassword(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                             @Valid @RequestBody PasswordChangeRequestDto requestDto) {
@@ -75,16 +100,29 @@ public class MemberRestController {
         return ApiResponses.noContent();
     }
 
+    /**
+     * 현재 로그인된 사용자의 보유 자산을 초기화합니다.
+     *
+     * @param userDetails SecurityContextHolder에 저장된 사용자 정보
+     * @return 본문 없는 204 No Content 응답
+     */
     @PostMapping("/me/cash/reset")
-    public ResponseEntity<String> resetCash(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<Void> resetCash(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         memberService.resetCash(userDetails.getMember().getId());
-        return ResponseEntity.status(200).body("변경성공");
+        return ApiResponses.noContent();
     }
 
+    /**
+     * 현재 로그인된 사용자의 닉네임을 변경합니다.
+     *
+     * @param userDetails SecurityContextHolder에 저장된 사용자 정보
+     * @param requestDto  변경할 새 닉네임을 담은 DTO
+     * @return 본문 없는 204 No Content 응답
+     */
     @PatchMapping("/me/nickname")
-    public ResponseEntity<String> updateNickname(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                 @Valid @RequestBody NicknameUpdateRequestDto requestDto) {
+    public ResponseEntity<Void> updateNickname(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                               @Valid @RequestBody NicknameUpdateRequestDto requestDto) {
         memberService.changeNickname(userDetails.getMember().getId(), requestDto.getNickname());
-        return ResponseEntity.status(200).body("변경성공");
+        return ApiResponses.noContent();
     }
 }

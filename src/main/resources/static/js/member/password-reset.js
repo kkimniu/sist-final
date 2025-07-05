@@ -47,9 +47,9 @@ formStep1.addEventListener('submit', (e) => {
         // 응답이 성공(2xx)이 아니면 에러를 발생시켜 .catch()로 넘깁니다.
         if (!response.ok) {
             // 서버가 보낸 에러 메시지를 얻기 위해 response.json()을 시도합니다.
-            return response.json().then(errorData => {
+            return response.json().then(body => {
                 // 실제 에러 객체를 만들어서 구체적인 에러 메시지를 전달합니다.
-                throw new Error(errorData.message || '알 수 없는 오류로 이메일 발송에 실패했습니다.');
+                throw new Error(body.message || '알 수 없는 오류로 이메일 발송에 실패했습니다.');
             });
         }
         // 성공 시에는 아무것도 할 필요가 없습니다. 사용자는 이미 다음 단계에 있습니다.
@@ -89,7 +89,7 @@ formStep2.addEventListener('submit', (e) => {
     .then(response => {
         if (!response.ok) {
             return response.json().then(body => {
-                throw new Error(body.message || '비밀번호 변경에 실패했습니다.');
+                throw new Error(body.message || '인증에 오류가 발생했습니다.');
             });
         }
         return response.json();
