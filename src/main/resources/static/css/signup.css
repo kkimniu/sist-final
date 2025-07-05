@@ -1,0 +1,7 @@
+/*members/signup*/
+/*로그인 전체 컨테이너*/
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
