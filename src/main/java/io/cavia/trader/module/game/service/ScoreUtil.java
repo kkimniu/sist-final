@@ -1,6 +1,9 @@
 package io.cavia.trader.module.game.service;
 
+import io.cavia.trader.module.client.dto.TradesDto;
 import io.cavia.trader.module.game.dto.PlayerStatusDto;
+import io.cavia.trader.module.game.dto.TradeLog;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Component
+@Slf4j(topic = "ScoreUtil")
 public class ScoreUtil {
 
     @Value("${score.rank_points_per_player}")
@@ -46,21 +50,35 @@ public class ScoreUtil {
                         totalTrade.set(
                                 totalTrade.get() +
                                 orderTableDto.getQuantity() * LastPrice);
-                    }else{
-                        totalTrade.set(
-                                totalTrade.get() -
-                                        orderTableDto.getQuantity() * LastPrice);
                     }
-
                 });
 
                 playerStatus.setEarnedCash(
                         playerStatus.getEarnedCash() +
-                        totalTrade.get());
+                                totalTrade.get());
+
+                log.debug("남아 있던 미체결 매도 거래를 처리합니다. 남아있던 미체결 거래: " + totalTrade.get());
             }
+
+                long tradeVolume = 0;
+                for(TradeLog log : playerStatus.getOrderDto().getTradeLogs()){
+                    if(log.getPrice() > 0){
+                        tradeVolume += log.getQuantity();
+                    }else if(log.getPrice() < 0){
+                        tradeVolume -= log.getQuantity();
+                    }
+                }
+                if (tradeVolume > 0){
+
+                    playerStatus.setEarnedCash(
+                            playerStatus.getEarnedCash() +
+                                    tradeVolume * LastPrice
+                    );
+                    log.debug("매도 하지 않은 주식을 처리합니다. 남아있던 매수 종목: " + tradeVolume);
+                }
+
+
         });
-
-
 
         // 먼저 수익률 계산해서 저장
         playerStatusDtos.forEach((id, Dto) -> {
@@ -68,6 +86,12 @@ public class ScoreUtil {
                     Dto.getEarnedCash()
             ));
         });
+
+        if(playerStatusDtos.size() == 1){
+            log.info("유저가 한 명이라 점수는 무효처리하고 수익률과 손익금액만 저장하겠습니다");
+
+            return playerStatusDtos;
+        }
 
         // 수익률 기반 내림차순 정렬
         Map<Long, PlayerStatusDto> playerSortedByRank = playerStatusDtos.entrySet().stream()
@@ -91,24 +115,33 @@ public class ScoreUtil {
             weights.add(weight);
             total += weight;
         }
-        double[] normalizedScores = weights.stream()
-                .mapToDouble(w -> w * totalReward / playerStatusDtos.size())
-                .toArray();
+        Deque<Integer> normalizedScores = weights.stream()
+                .map(w -> (int) Math.round(w * totalReward / playerStatusDtos.size()))
+                .collect(Collectors.toCollection(ArrayDeque::new));
+
+        Deque<Integer> normalizedScores2 = new ArrayDeque<Integer>(normalizedScores);
 
         AtomicInteger midpoint = new AtomicInteger(Math.round(MAX_SCORE / 2));
         ArrayList<PlayerStatusDto> playerStausDtoList = new ArrayList<> (playerSortedByRank.values());
 
         IntStream.range(0, playerStausDtoList.size()/2).forEach(i -> {
-            int score = playerStausDtoList.get(i).getEarnedScore() + (int) normalizedScores[i];
-            playerStausDtoList.get(i).setEarnedScore(score);
-        });
 
-        IntStream.range(playerStausDtoList.size()/2, playerStausDtoList.size()).forEach(i -> {
-            // 순위에 따라 가중치가 적용된 점수 계산
-            int score = playerStausDtoList.get(i).getEarnedScore() - (int) normalizedScores[i];
+            int score = playerStausDtoList.get(i).getEarnedScore() + normalizedScores.peekFirst();
+            playerStausDtoList.get(i).setEarnedScore(score);
 
             // 점수 한계 (0, 5000)에 가까워질 수록 점수 변동폭 조절
             playerStausDtoList.get(i).setEarnedScore(
+                    (int) Math.round(
+                            0.5 * (1 + Math.cos(Math.PI * Math.abs(score - midpoint.get()) / midpoint.get()))
+                    )
+            );
+
+            int j = i + playerStausDtoList.size()/2;
+            score = playerStausDtoList.get(j).getEarnedScore() + normalizedScores2.peekLast();
+            playerStausDtoList.get(j).setEarnedScore(score);
+
+            // 점수 한계 (0, 5000)에 가까워질 수록 점수 변동폭 조절
+            playerStausDtoList.get(j).setEarnedScore(
                     (int) Math.round(
                             0.5 * (1 + Math.cos(Math.PI * Math.abs(score - midpoint.get()) / midpoint.get()))
                     )

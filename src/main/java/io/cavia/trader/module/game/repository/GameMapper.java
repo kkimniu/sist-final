@@ -16,7 +16,7 @@ public interface GameMapper {
     Long findLastGameId();
     GameParticipation findLastGameParticipationByMemberId(Long memberId);
     void updateCashAndTotalScoreById(@Param("id") long id,
-                                     @Param("cash") int cash,
+                                     @Param("cash") long cash,
                                      @Param("totalScore") int totalScore
     );
 }

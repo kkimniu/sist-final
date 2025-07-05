@@ -5,6 +5,7 @@ import io.cavia.trader.module.client.dto.StocksOutput;
 import io.cavia.trader.module.game.dto.ChatLog;
 import io.cavia.trader.module.game.dto.GameDto;
 import io.cavia.trader.module.game.dto.PlayerStatusDto;
+import io.cavia.trader.module.game.repository.GameRepository;
 import io.cavia.trader.module.member.entity.GameParticipation;
 import io.cavia.trader.module.member.repository.GameParticipationRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class GameAdministrationServiceImpl implements GameAdministrationService {
 
     private final RestWebClientImpl restWebClient;
-    private final GameParticipationRepository gameParticipationRepository;
+    private final GameRepository gameRepository;
 
     private List<StocksOutput> stocks;
 
@@ -59,8 +60,7 @@ public class GameAdministrationServiceImpl implements GameAdministrationService 
 
     @Override
     public GameParticipation getLastGameParticipation(long memberId) {
-        gameParticipationRepository.findByMemberId(memberId).forEach(gameParticipation -> {})
-        return
+        return gameRepository.findLastGameParticipationByMemberId(memberId);
     };
 
 

@@ -6,13 +6,12 @@ import io.cavia.trader.module.game.dto.GameDto;
 import io.cavia.trader.module.game.dto.GameSessionDto;
 import io.cavia.trader.module.game.dto.OrderDto;
 import io.cavia.trader.module.game.dto.PlayerStatusDto;
-import io.cavia.trader.module.game.repository.GameRepositoryImpl;
+import io.cavia.trader.module.game.repository.GameRepository;
 import io.cavia.trader.module.member.entity.GameParticipation;
 import io.cavia.trader.module.member.entity.Member;
 import io.jsonwebtoken.Claims;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +24,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -33,11 +31,11 @@ import java.util.stream.Collectors;
 public class GameManagerImpl implements GameManager {
 
     private final GameAdministrationService gameAdministrationService;
-    private final GameRepositoryImpl gameRepositoryImpl;
+    private final GameRepository gameRepository;
     private final GameSessionDto gameSessionDto;
     private final ScoreUtil  scoreUtil;
 
-    private final int GAME_LIFE_CYCLE = 1000 * 60 * 5;
+    private final int GAME_LIFE_CYCLE = 1000 * 60 * 1;
 
     //@Scheduled(cron = "0 */10 * * * *")
     @Scheduled(cron = "*/10 * * * * *")
@@ -52,31 +50,36 @@ public class GameManagerImpl implements GameManager {
 
             // 세션의 생명 주기가 끝났으면 선입 세션 삭제
             if (timesBetween >= GAME_LIFE_CYCLE) {
-                // TODO 게임 세션 삭제 전 DB 저장 필요(game 객체는 세션 만들어 질때 저장 했음)
-                Map<Long, PlayerStatusDto> playersSortedByRank = scoreUtil.evaluatePlayers(
-                        gameDto.getPlayerStatusDtos(), gameDto.getTrades().get(gameDto.getTrades().size()-1).getStckPrpr());
 
-                // 순위 지정 후 DB 저장
-            AtomicInteger gameRank = new AtomicInteger(1);
-                playersSortedByRank.forEach((memberId, playerStatusDto) -> {
+                if(!gameDto.getPlayerStatusDtos().isEmpty()) {
+                    // TODO 게임 세션 삭제 전 DB 저장 필요(game 객체는 세션 만들어 질때 저장 했음)
+                    Map<Long, PlayerStatusDto> playersSortedByRank = scoreUtil.evaluatePlayers(
+                            gameDto.getPlayerStatusDtos(), gameDto.getTrades().get(gameDto.getTrades().size() - 1).getStckPrpr());
 
-                    gameRepositoryImpl.saveGameParticipation(
-                            GameParticipation.builder()
-                                    .gameId(playerStatusDto.getGameId())
-                                    .memberId(playerStatusDto.getMemberId())
-                                    .gameRank(gameRank.get())
-                                    .postCash(playerStatusDto.getPostCash())
-                                    .earnedCash(playerStatusDto.getEarnedCash())
-                                    .postScore(playerStatusDto.getPostScore())
-                                    .earnedScore(playerStatusDto.getEarnedScore())
-                                    .returnRate(playerStatusDto.getReturnRate())
-                                    .enteredAt(LocalDateTime.now())
-                                    .build());
+                    // 순위 지정 후 DB 저장
+                    AtomicInteger gameRank = new AtomicInteger(1);
+                    playersSortedByRank.forEach((memberId, playerStatusDto) -> {
 
-                    gameRank.set(
-                            gameRank.get()+1
-                    );
-                });
+                        gameRepository.saveGameParticipation(
+                                GameParticipation.builder()
+                                        .gameId(playerStatusDto.getGameId())
+                                        .memberId(playerStatusDto.getMemberId())
+                                        .gameRank(gameRank.get())
+                                        .postCash(playerStatusDto.getPostCash())
+                                        .earnedCash(playerStatusDto.getPostCash() - playerStatusDto.getEarnedCash())
+                                        .postScore(playerStatusDto.getPostScore())
+                                        .earnedScore(playerStatusDto.getPostScore() - playerStatusDto.getEarnedScore())
+                                        .returnRate(playerStatusDto.getReturnRate())
+                                        .enteredAt(LocalDateTime.now())
+                                        .build());
+                        gameRank.set(gameRank.get() + 1);
+
+                        gameRepository.updateCashAndTotalScoreById(memberId,
+                                playerStatusDto.getEarnedCash(),
+                                playerStatusDto.getEarnedScore()
+                                );
+                    });
+                }
 
 
                 gameDto.getChartSessions().values().forEach(chartSessions -> {
@@ -104,14 +107,14 @@ public class GameManagerImpl implements GameManager {
         // 게임 세션 1개 생성
         GameDto gameDto = gameAdministrationService.createGame();
         gameSessionDto.getGameDtos().add(gameDto);
-        gameRepositoryImpl.saveGame(gameDto.getStockId(),
+        gameRepository.saveGame(gameDto.getStockId(),
                 gameDto.getStartedAt());
-        gameDto.setId(gameRepositoryImpl.findLastGameId());
+        gameDto.setId(gameRepository.findLastGameId());
         System.out.println("Game Session Created, Games size: " + gameSessionDto.getGameDtos().size());
     }
 
     public Member getUserInfo(Claims userInfo) {
-        return gameRepositoryImpl.findMemberById(
+        return gameRepository.findMemberById(
                 Long.parseLong(userInfo.getSubject()
                 )
         );

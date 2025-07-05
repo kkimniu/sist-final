@@ -48,6 +48,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
             gameDto = gameManager.addChartSessionToGameAndGetYoungestSession(
                     jwtUtil.getUserInfoFromToken(token), chartSession);
 
+            long memberId = gameManager.getUserInfo(jwtUtil.getUserInfoFromToken(token)).getId();
             // 게임 입장 처리 완료, 자신이 포함된 게임 참가 인원 수 게임에 참여중인 모든 세션에 전달
 
             gameDto.getChartSessions().values().forEach(s -> {
@@ -76,8 +77,11 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                 String previewersTradesJson = objectMapper.writeValueAsString(previewersTrades);
 
-                if (chartSession.isOpen())
-                    chartSession.sendMessage(new TextMessage("previewersTrades||" + previewersTradesJson));
+                synchronized (chartSession) {
+                    if (chartSession.isOpen())
+                        chartSession.sendMessage(new TextMessage("previewersTrades||" + previewersTradesJson));
+                }
+
 
                 // 새로운 시간 계산법
                 // 로직 세션 시작 시간에 타임 존만 추가해서 클라이언트에게 던져주고 시간 계산은 클라이언트에게 넘겨버리기
@@ -119,7 +123,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                             Thread.sleep(timeDifference);
 
                             //TODO 체결가가 바뀌는 시점. 사용자 거래 요청 목록을 보고 체결가와 맞는 항목의 거래를 발생시킨다
-                            gameDto.setCurrentPriceIn10Second(trades.get(i).getStckPrpr());
+                            gameDto.setCurrentPrice(trades.get(i).getStckPrpr());
 
                             AtomicInteger tradeIndex = new AtomicInteger(i);
 
@@ -128,6 +132,8 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                 // 언제 확인이 필요 없을까?
                                 // 매도 주문이 있을 때, 매수 주문이 있을 때, 시장가 매도 주문이 있을 때, 시장가 매수 주문이 있을 때
                                 // 주문 자체를 검증하는 건 service계층에서
+
+                                WebSocketSession orderSession = gameDto.getChartSessions().get(playerStatusDto.getMemberId());
 
                                 Queue<OrderTableDto> Deals = playerStatusDto.getOrderDto().getOrderTableDtos();
 
@@ -157,15 +163,17 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                     BigDecimal feeValue = tradeValueAmount.multiply(DEFAULT_FEE_RATE);
                                                     tradeValue = tradeValueAmount.subtract(feeValue).setScale(0, RoundingMode.HALF_UP).intValue();
 
+                                                    System.out.println("매도 전:" + playerStatusDto.getEarnedCash());
                                                     playerStatusDto.setEarnedCash(
                                                             playerStatusDto.getEarnedCash() + tradeValue
                                                     );
+                                                    System.out.println("매도 후:" + playerStatusDto.getEarnedCash());
 
                                                     // 로그 추가
                                                     Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
                                                     tradeLog.add(
                                                             TradeLog.builder()
-                                                                    .Id(String.format("%06d", playerStatusDto.getIdCreator().getAndIncrement() % 1000000))
+                                                                    .Id(orderTableDto.getId())
                                                                     .price(-Math.abs(trades.get(tradeIndex.get()).getStckPrpr()))
                                                                     .quantity(orderTableDto.getQuantity())
                                                                     .createdAt(LocalDateTime.now())
@@ -182,16 +190,18 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                             playerStatusDto.getStocksHolding() + orderTableDto.getQuantity());
 
                                                     // 보유 자산 변동
+                                                    System.out.println("매수 전:" + playerStatusDto.getEarnedCash());
                                                     playerStatusDto.setEarnedCash(
                                                             playerStatusDto.getEarnedCash() -
                                                                     (long) orderTableDto.getQuantity() * trades.get(tradeIndex.get()).getStckPrpr()
                                                     );
+                                                    System.out.println("매수 후:" + playerStatusDto.getEarnedCash());
 
                                                     // 로그 추가
                                                     Queue<TradeLog> tradeLog = playerStatusDto.getOrderDto().getTradeLogs();
                                                     tradeLog.add(
                                                             TradeLog.builder()
-                                                                    .Id(String.format("%06d", playerStatusDto.getIdCreator().getAndIncrement() % 1000000))
+                                                                    .Id(orderTableDto.getId())
                                                                     .price(trades.get(tradeIndex.get()).getStckPrpr())
                                                                     .quantity(orderTableDto.getQuantity())
                                                                     .createdAt(LocalDateTime.now())
@@ -218,9 +228,11 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                         BigDecimal feeValue = tradeValueAmount.multiply(DEFAULT_FEE_RATE);
                                         tradeValue = tradeValueAmount.subtract(feeValue).setScale(0, RoundingMode.HALF_UP).intValue();
 
+                                        System.out.println("시장가 매도 전:" + playerStatusDto.getEarnedCash());
                                         playerStatusDto.setEarnedCash(
                                                 playerStatusDto.getEarnedCash() + tradeValue
                                         );
+                                        System.out.println("시장가 매도 후:" + playerStatusDto.getEarnedCash());
 
                                         playerStatusDto.getOrderDto().setQuantityOfMarketSell(0);
 
@@ -242,9 +254,11 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                         playerStatusDto.setStocksHolding(
                                                 playerStatusDto.getStocksHolding() + quantityOfMarketBuy
                                         );
+                                        System.out.println("시장가 매수 전:" + playerStatusDto.getEarnedCash());
                                         playerStatusDto.setEarnedCash(
                                                 playerStatusDto.getEarnedCash() - quantityOfMarketBuy * (long) trades.get(tradeIndex.get()).getStckPrpr()
                                         );
+                                        System.out.println("시장가 매수 후:" + playerStatusDto.getEarnedCash());
 
                                         playerStatusDto.getOrderDto().setQuantityOfMarketBuy(0);
 
@@ -263,8 +277,15 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                     if (playerStatusDto.isUpdated()) {
                                         try {
                                             String playerStatusJson = objectMapper.writeValueAsString(playerStatusDto);
-                                            synchronized (chartSession) {
-                                                chartSession.sendMessage(new TextMessage("playerStatus||" + playerStatusJson));
+                                            synchronized (orderSession) {
+
+                                                if (orderSession.isOpen()) {
+                                                    orderSession
+                                                            .sendMessage(
+                                                                    new TextMessage("playerStatus||" + playerStatusJson
+                                                                    )
+                                                            );
+                                                }
                                             }
                                             playerStatusDto.setUpdated(false);
                                         } catch (Exception e) {
@@ -330,8 +351,9 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                             // 메시지 전송 부분 동기화
                             synchronized (chartSession) {
-                                if (chartSession.isOpen())
+                                if (chartSession.isOpen()) {
                                     chartSession.sendMessage(new TextMessage("quotes||" + quotesJson));
+                                }
                             }
                         }
 
