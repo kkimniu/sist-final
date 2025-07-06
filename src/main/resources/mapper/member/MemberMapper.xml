@@ -68,6 +68,7 @@
         email,
         password,
         nickname,
+        role,
         cash,
         total_score,
         created_at,
