@@ -166,6 +166,10 @@ public class AuthServiceImpl implements AuthService {
         // 템플릿을 사용하여 HTML 본문 생성
         String htmlBody = templateEngine.process("email/auth-email", context);
 
-        emailService.sendEmail(to, "[TRADER.IO] 이메일 인증", htmlBody);
+        try {
+            emailService.sendEmail(to, "[TRADER.IO] 이메일 인증", htmlBody);
+        } catch (RuntimeException e) {
+            throw new ApiException(ErrorCode.EMAIL_SEND_FAILED);
+        }
     }
 }
