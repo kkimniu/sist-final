@@ -17,7 +17,7 @@
         }
 
         // 토큰이 존재하면, 서버에 '내 정보 조회' API를 호출하여 토큰의 유효성을 검증합니다.
-        fetch('/api/auth/login-checker', { // ❗️ 내 정보 조회 API 경로
+        fetch('/api/members/me', {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + token
@@ -35,7 +35,7 @@
         })
         .then(body => {
             const userInfo = body.data;
-            // ❗️ API 호출 성공 시: 로그인 상태 UI를 표시합니다.
+            // API 호출 성공 시: 로그인 상태 UI를 표시합니다.
             // 서버로부터 받은 최신 닉네임 정보를 사용합니다.
             console.log(userInfo);
             console.log(userInfo.nickname);
@@ -45,11 +45,11 @@
             authenticatedHeader.style.display = 'flex';
         })
         .catch(error => {
-            // ❗️ API 호출 실패 시 (네트워크 에러, 401 등): 로그아웃 상태로 처리합니다.
+            // API 호출 실패 시 (네트워크 에러, 401 등): 로그아웃 상태로 처리합니다.
             console.error('로그인 상태 확인 실패:', error.message);
 
             // 유효하지 않은 토큰은 즉시 삭제합니다.
-//            localStorage.removeItem('jwt-token');
+            localStorage.removeItem('jwt-token');
 
             anonymousHeader.style.display = 'block';
             authenticatedHeader.style.display = 'none';

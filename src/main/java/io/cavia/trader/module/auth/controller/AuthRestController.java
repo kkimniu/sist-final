@@ -51,9 +51,6 @@ public class AuthRestController {
      */
     @GetMapping("api/auth/login-checker")
     public ResponseEntity<ApiResponse<?>> getMemberInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        if (userDetails == null) {
-            throw new ApiException(ErrorCode.LOGIN_FAILED);
-        }
         return ApiResponses.ok(userDetails.getMember());
     }
 
