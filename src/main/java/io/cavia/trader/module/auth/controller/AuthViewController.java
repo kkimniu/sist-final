@@ -8,21 +8,21 @@ public class AuthViewController {
 
     @GetMapping("/login")
     public String showLoginForm() {
-        return "members/login";
+        return "auth/login";
     }
 
     @GetMapping("/login-checker")
     public String showLoginChecker() {
-        return "members/login-checker";
+        return "auth/login-checker";
     }
 
     @GetMapping("/forgot-password")
     public String showPasswordForm() {
-        return "members/password-reset";
+        return "auth/password-reset";
     }
 
     @GetMapping("/signup")
     public String showSignupForm() {
-        return "members/signup";
+        return "auth/signup";
     }
 }
