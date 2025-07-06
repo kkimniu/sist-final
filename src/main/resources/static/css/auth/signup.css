@@ -33,16 +33,11 @@
     line-height: 1.4;
 }
 
-/*terms*/
 /*회원가입 전체 컨테이너*/
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-/*회원가입 폼*/
-.container form {
- width: 30%;
 }
 
 /*이용약관 동의와 개인정보 처리방침*/
@@ -60,13 +55,8 @@
   font-size: 14px;
 }
 
-/*계속 버튼을 감싸는 div*/
-.submit-area {
-  text-align: center;
-}
-
 /*계속 버튼*/
-.submit-area button {
+.next-btn {
   display: block;
   width: 100%;
   padding: 12px;
@@ -80,51 +70,15 @@
   background-color: #a8cfff;
   border: none;
   color: white;
-  margin-top: 60px;
+  margin-top: 30px;
 }
-.submit-area button:hover {
+.next-btn:hover {
   background-color: #007bff;
   color: white;
 }
 
-/*email*/
-/*input type text 이메일 칸*/
-#email {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 14px;
-  box-sizing: border-box;
-}
-/*오류났을때 보여주는 메세지*/
-.container form > div > p {
-  font-size: 13px;
-  margin-top: 6px;
-  display: block;
-}
-
-/*verify*/
-/*인증번호 문구*/
-.signup-content {
-  font-size: 13px;
-  margin-top: 6px;
-  color: #9FA4AA;
-  display: block;
-}
-
-/*인증번호 입력하는 칸*/
-#authKey {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 14px;
-  box-sizing: border-box;
-}
-
 /*돌아가기 링크*/
-.container form > div > a {
+.prev-link {
   display: block;
   width: 100%;
   padding: 12px;
@@ -137,13 +91,76 @@
   text-decoration: none;
   background-color: #bdbdbd;
   color: #fff;
+  margin-top: 30px;
 }
-.container form > div > a:nth-of-type(1):hover {
+.prev-link:hover {
   background-color: #007bff;
   color: white;
 }
 
+/*이메일 인증 이메일 입력쪽*/
+#page-email {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50%;
+}
+/*오류났을때 보여주는 메세지*/
+.error-message {
+  font-size: 13px;
+  margin-top: 6px;
+  display: block;
+}
+
+/*page-email*/
+#page-email {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50%;
+}
+/*input type text*/
+#email {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/*verify*/
+#page-verify {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50%;
+}
+
+/*인증번호 입력하는 칸*/
+#authKey {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+/*인증번호 문구*/
+.signup-content {
+  font-size: 13px;
+  margin-top: 6px;
+  color: #9FA4AA;
+  display: block;
+}
+
 /*닉네임 입력*/
+#page-nickname {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50%;
+}
 /*닉네임 입력하는 칸*/
 #nickname {
   width: 100%;
@@ -154,8 +171,13 @@
   box-sizing: border-box;
 }
 
-/*password*/
-
+/*비밀번호 전체 틀*/
+#page-password {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50%;
+}
 /*비밀번호 입력칸*/
 #password,
 #passwordConfirm {
@@ -170,10 +192,10 @@
   margin-bottom:20px
 }
 
-/*오류 메시지*/
-.container form > div > div > p {
-  font-size: 13px;
-  margin-top: 6px;
-  display: block;
+/*환영하는 페이지 전체틀*/
+#page-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50%;
 }
-
