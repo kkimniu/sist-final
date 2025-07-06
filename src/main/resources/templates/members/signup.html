@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>회원가입</title>
-    <link rel="stylesheet" href="/css/signup-style.css">
+    <link rel="stylesheet" href="/css/members/signup.css">
 </head>
 <body>
 
@@ -14,19 +14,26 @@
     </div>
 
     <div id="page-terms" class="page">
-        <h2>서비스 이용약관 동의</h2>
+        <h2>약관 동의</h2>
         <div class="terms-group">
-            <h3>이용약관</h3>
-            <textarea readonly rows="6">서비스 이용약관 내용...</textarea>
-            <div><input type="checkbox" id="termsOfServiceAgreed"> <label for="termsOfServiceAgreed">이용약관에 동의합니다. (필수)</label></div>
+            <h4>서비스 이용약관</h4>
+            <div id="terms-content" class="terms-display-box"></div>
+            <div>
+                <input type="checkbox" id="termsOfServiceAgreed">
+                <label for="termsOfServiceAgreed">이용약관에 동의합니다. (필수)</label>
+            </div>
         </div>
         <div class="terms-group">
-            <h3>개인정보 처리방침</h3>
-            <textarea readonly rows="6">개인정보 처리방침 내용...</textarea>
-            <div><input type="checkbox" id="privacyPolicyAgreed"> <label for="privacyPolicyAgreed">개인정보 처리방침에 동의합니다. (필수)</label></div>
+            <h4>개인정보 처리방침</h4>
+            <div id="privacy-content" class="terms-display-box"></div>
+            <div>
+                <input type="checkbox" id="privacyPolicyAgreed">
+                <label for="privacyPolicyAgreed">개인정보 처리방침에 동의합니다. (필수)</label>
+            </div>
         </div>
-        <div id="terms-error" class="error-message"></div>
-        <button id="btn-terms-next" class="next-btn">계속</button>
+        <div class="nav-links">
+            <button id="btn-terms-next" class="next-btn">계속</button>
+        </div>
     </div>
 
     <div id="page-email" class="page" style="display: none;">
@@ -91,6 +98,7 @@
 
 </div>
 
-<script src="/js/signup.js"></script>
+<script src="/js/member/signup.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </body>
 </html>

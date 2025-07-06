@@ -15,14 +15,16 @@ public interface AuthService {
 
     /**
      * 비밀번호 재설정을 위해 이메일과 인증 코드를 검증합니다.
-     * @param email 사용자 이메일
+     *
+     * @param email   사용자 이메일
      * @param authKey 사용자가 입력한 인증 코드
      */
     void verifyCodeForPasswordReset(String email, String authKey);
 
     /**
      * 회원가입을 위해 이메일과 인증 코드를 검증합니다.
-     * @param email 사용자 이메일
+     *
+     * @param email   사용자 이메일
      * @param authKey 사용자가 입력한 인증 코드
      */
     void verifyCodeForSignup(String email, String authKey);
@@ -69,4 +71,11 @@ public interface AuthService {
      * @param rawPassword 암호화되지 않은 새 비밀번호
      */
     void resetPassword(String email, String authKey, String rawPassword);
+
+    /**
+     * 약관 파일 이름으로 약관 파일의 text 그대로 반환합니다.
+     *
+     * @param type 약관 파일 이름 문자열
+     */
+    String getTermAsRawText(String type);
 }

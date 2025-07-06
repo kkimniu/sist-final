@@ -13,12 +13,19 @@ import io.cavia.trader.module.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -129,6 +136,21 @@ public class AuthServiceImpl implements AuthService {
         verifyAuthKey(email, authKey);
         Member member = memberService.getMemberByEmail(email);
         memberService.changePassword(member.getId(), rawPassword);
+    }
+
+    @Override
+    public String getTermAsRawText(String type) {
+        String path = "texts/terms/" + type + ".md";
+        Resource resource = new ClassPathResource(path);
+        if (!resource.exists()) {
+            throw new ApiException(ErrorCode.USER_RANKING_NOT_FOUND);
+        }
+        try {
+            Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
+            return FileCopyUtils.copyToString(reader);
+        } catch (IOException e) {
+            throw new ApiException(ErrorCode.TERMS_OUTPUT_FAILED);
+        }
     }
 
     /**

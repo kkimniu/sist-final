@@ -1,0 +1,34 @@
+/* 약관 내용이 표시되는 박스*/
+.terms-display-box {
+    height: 180px; /* 기존 textarea와 비슷한 높이 */
+    overflow-y: auto; /* 내용이 길어지면 스크롤바 생성 */
+    border: 1px solid #ccc;
+    padding: 5px;
+    background-color: #f9f9f9;
+}
+/* 약관 내용이 표시되는 박스 내부의 태그들에 대한 스타일 */
+
+.terms-display-box h1 {
+    font-size: 16px; /* H1 태그의 글자 크기 (기본값보다 작게) */
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
+.terms-display-box h2 {
+    font-size: 14px; /* H2 태그의 글자 크기 (기본값보다 작게) */
+    margin-top: 0.8em;
+    margin-bottom: 0.4em;
+}
+
+.terms-display-box h3 {
+    font-size: 12px; /* H3 태그의 글자 크기 (기본값보다 작게) */
+    margin-top: 0.6em;
+    margin-bottom: 0.3em;
+}
+
+/* 일반 본문과 목록(li) 글자 크기 */
+.terms-display-box p,
+.terms-display-box li {
+    font-size: 12px;
+    line-height: 1.4;
+}

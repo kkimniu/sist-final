@@ -7,6 +7,40 @@ const signupData = {
     nickname: '',
     password: ''
 };
+
+window.onload = function() {
+    // 약관 내용을 불러오는 함수 호출
+    loadTerms();
+};
+
+// 약관 내용을 서버에서 불러와서 화면에 표시하는 함수
+async function loadTerms() {
+    try {
+        // Promise.all로 두 개의 파일을 동시에 요청
+        const [termsRes, policyRes] = await Promise.all([
+            fetch('/api/auth/terms/terms-of-service'),
+            fetch('/api/auth/terms/privacy-policy')
+        ]);
+
+        // 각 응답을 텍스트로 변환
+        const termsText = await termsRes.json();
+        const policyText = await policyRes.json();
+
+        if(!termsRes){
+            throw new Error(termsText.data || "terms-of-service 요청 중 실패 응답")
+        }
+        if(!policyRes){
+            throw new Error(policyText.data || "privacy-policy 요청 중 실패 응답")
+        }
+        document.getElementById('terms-content').innerHTML = marked.parse(termsText.data);
+        document.getElementById('privacy-content').innerHTML = marked.parse(policyText.data);
+
+    } catch (error) {
+        console.error("약관을 불러오는 중 에러 발생:", error);
+        showMessage('terms-error', "약관을 불러오지 못했습니다.", true);
+    }
+}
+
 // 페이지 전환을 위한 함수
 function showPage(pageId) {
     // 1. 모든 페이지 div를 찾아서 숨깁니다.

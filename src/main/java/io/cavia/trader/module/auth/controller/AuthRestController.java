@@ -15,12 +15,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 
 @RestController
@@ -134,5 +132,10 @@ public class AuthRestController {
             @Validated @RequestBody NicknameValidationRequestDto requestDto) {
         authService.validateDuplicateNickname(requestDto.getNickname());
         return ApiResponses.ok("사용 가능한 닉네임입니다.", null);
+    }
+
+    @GetMapping("/api/auth/terms/{type}")
+    public ResponseEntity<ApiResponse<?>> getTextContent(@PathVariable String type) throws IOException {
+        return ApiResponses.ok(authService.getTermAsRawText(type));
     }
 }

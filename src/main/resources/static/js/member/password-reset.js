@@ -92,7 +92,9 @@ formStep2.addEventListener('submit', (e) => {
                 throw new Error(body.message || '인증에 오류가 발생했습니다.');
             });
         }
-        return response.json();
+        step2Div.style.display = 'none';
+        step3Div.style.display = 'block';
+        return;
     })
     .catch(error => {
         step2Message.textContent = error.message || '서버와 통신 중 오류가 발생했습니다.';
