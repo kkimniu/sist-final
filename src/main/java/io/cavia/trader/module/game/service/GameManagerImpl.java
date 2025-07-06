@@ -72,7 +72,7 @@ public class GameManagerImpl implements GameManager {
                                         .memberId(playerStatusDto.getMemberId())
                                         .gameRank(playerStatusDto.getGameRank())
                                         .postCash(playerStatusDto.getPostCash())
-                                        .earnedCash(playerStatusDto.getPostCash() - playerStatusDto.getEarnedCash())
+                                        .earnedCash(playerStatusDto.getEarnedCash() - playerStatusDto.getPostCash())
                                         .postScore(playerStatusDto.getPostScore())
                                         .earnedScore(playerStatusDto.getPostScore() - playerStatusDto.getEarnedScore())
                                         .returnRate(playerStatusDto.getReturnRate())

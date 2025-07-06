@@ -146,6 +146,38 @@
         width: 300px;
     }
 
+    .modal {
+        display: none;
+        position: fixed;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        border: 1px solid #ccc;
+        z-index: 1000;
+        width: 300px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        border-radius: 8px;
+    }
+
+    .modal-header {
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        cursor: move;
+        font-weight: bold;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    .modal-content {
+        padding: 20px;
+    }
+
+    .close {
+        float: right;
+        font-size: 20px;
+        cursor: pointer;
+    }
 </style>
 <body>
 <div id="gameProgressDisplay">
@@ -159,6 +191,13 @@
     </div>
 
     <div id="graphContainer">
+        <div>
+            <ul id="graphLegend">
+                <li class="tab active" data-target="">30초봉</li>
+                <li class="tab" data-target= "">3분봉</li>
+                <li class="tab" data-target="#">5분봉</li>
+            </ul>
+        </div>
         <div id="priceChartContainer">
             <canvas id="priceChartLayout"></canvas>
             <canvas id="priceChartWriter"></canvas>
@@ -327,6 +366,17 @@
             <input type="submit" id="chatSend" value="보내기"/>
         </div>
     </div>
+
+    <div id = "orderInfoModal" class="modal" style="display: none">
+        <div id="modalHeader" class="modal-header">
+            <span class="close" onclick="closeModal();">&times;</span>
+        </div>
+        <h2>주문 정보 알림 모달창</h2>
+        <div class="modal-content">
+            <label id = "orderInfoModalText"></label>
+        </div>
+    </div>
+
 </div>
 <div id="gameEndDisplay" style="display: none">
     <H1>게임 결과</H1>
@@ -344,5 +394,6 @@
 <script src="/js/game/chartComp.js"></script>
 <script src="/js/game/orderPanelComp.js"></script>
 <script src="/js/game/gameEndDisplayComp.js"></script>
+<script src="/js/game/modalComp.js"></script>
 </body>
 </html>
