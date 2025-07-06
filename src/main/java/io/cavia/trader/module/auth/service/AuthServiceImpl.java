@@ -3,7 +3,6 @@ package io.cavia.trader.module.auth.service;
 import io.cavia.trader.common.email.EmailService;
 import io.cavia.trader.common.exception.ApiException;
 import io.cavia.trader.common.exception.ErrorCode;
-import io.cavia.trader.module.auth.dto.SignupDto;
 import io.cavia.trader.module.auth.dto.SignupRequestDto;
 import io.cavia.trader.module.auth.entity.EmailVerification;
 import io.cavia.trader.module.auth.repository.EmailVerificationRepository;
@@ -12,7 +11,6 @@ import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,15 +34,9 @@ public class AuthServiceImpl implements AuthService {
 
     private final EmailService emailService;
     private final EmailVerificationRepository emailVerificationRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final TemplateEngine templateEngine;
     private final MemberService memberService;
-    @Value("${score.rank_max_score}")
-    private long DEFAULT_SCORE;
-
-    @Value("${member.cash.default}")
-    private Long memberCashDefault;
 
     @Override
     public void sendVerificationEmail(String email) {
@@ -84,24 +76,6 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(readOnly = true)
     public void validateDuplicateNickname(String nickname) {
         memberService.validateDuplicateNickname(nickname);
-    }
-
-    @Override
-    public Member join(SignupDto signupDto) {
-        Member member = Member.builder()
-                .email(signupDto.getEmail())
-                .nickname(signupDto.getNickname())
-                .password(passwordEncoder.encode(signupDto.getPassword()))
-                .totalScore((int) DEFAULT_SCORE / 2)
-                .cash(memberCashDefault)
-                .build();
-
-        memberService.validateDuplicateNickname(signupDto.getNickname());
-        memberService.validateDuplicateEmail(signupDto.getEmail());
-        verifyAuthKey(signupDto.getEmail(), signupDto.getAuthKey());
-        memberService.createMember(member);
-        System.out.println("회원가입 완료 member = " + member);
-        return member;
     }
 
     @Override

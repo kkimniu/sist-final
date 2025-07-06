@@ -1,7 +1,5 @@
 package io.cavia.trader.module.auth.controller;
 
-import io.cavia.trader.common.exception.ApiException;
-import io.cavia.trader.common.exception.ErrorCode;
 import io.cavia.trader.common.response.ApiResponse;
 import io.cavia.trader.common.response.ApiResponses;
 import io.cavia.trader.module.auth.dto.*;
@@ -18,7 +16,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.IOException;
 import java.net.URI;
 
 @RestController
@@ -131,8 +128,14 @@ public class AuthRestController {
         return ApiResponses.ok("사용 가능한 닉네임입니다.", null);
     }
 
+    /**
+     * 약관 md 파일을 약관 이름으로 가져옵니다.
+     *
+     * @param type 약관 이름
+     * @return 약관 텍스트를 ApiResponse.data에 담은 200 OK 성공 응답
+     */
     @GetMapping("/api/auth/terms/{type}")
-    public ResponseEntity<ApiResponse<?>> getTextContent(@PathVariable String type) throws IOException {
+    public ResponseEntity<ApiResponse<?>> getTerm(@PathVariable String type) {
         return ApiResponses.ok(authService.getTermAsRawText(type));
     }
 }

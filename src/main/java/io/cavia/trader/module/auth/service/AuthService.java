@@ -1,6 +1,5 @@
 package io.cavia.trader.module.auth.service;
 
-import io.cavia.trader.module.auth.dto.SignupDto;
 import io.cavia.trader.module.auth.dto.SignupRequestDto;
 import io.cavia.trader.module.member.entity.Member;
 
@@ -36,14 +35,6 @@ public interface AuthService {
      * @throws io.cavia.trader.common.exception.ApiException 닉네임이 이미 존재할 경우
      */
     void validateDuplicateNickname(String nickname);
-
-    /**
-     * 전달된 DTO의 정보로 최종 회원가입을 처리하고, 생성된 회원 정보를 반환합니다.
-     *
-     * @param signupDto 회원가입에 필요한 모든 정보가 담긴 DTO
-     * @return 생성된 Member 엔티티
-     */
-    Member join(SignupDto signupDto);
 
     /**
      * 전달된 DTO의 정보로 최종 회원가입을 처리하고, 생성된 회원 정보를 반환합니다.
