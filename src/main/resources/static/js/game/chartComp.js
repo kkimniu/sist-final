@@ -43,7 +43,7 @@ graphLayout.addEventListener("scroll", function (event) {
     } else {
         onCode = false;
     }
-})
+});
 
 // 컴포넌트 크기 설정(html 크기 속성이랑 css 크기 속성이 다르게 먹어서 둘다 설정)
 
@@ -729,8 +729,10 @@ function chartSocketHandler() {
             holdingValue = sum;
         } else if (DataHead === "isProsseced"){
             showGameEndDisplay();
-        } else {
-            alert("에러 발생: 정제 되지 않은 데이터 수신!!", event);
+        } else if (DataHead === "error") {
+            alert("에러 발생: " + stockData.message);
+        }else {
+            alert("에러 발생: 정제 되지 않은 데이터 수신!!", JSON.stringify(stockData));
         }
     };
     chartSocket.onerror = function (event) {

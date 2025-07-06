@@ -10,27 +10,13 @@ async function certificationToken() {
     if (response.status === 200) {
         return response.json();
     } else {
-        throw new Error("토큰 인증 실패!");
-    }
-}
-
-async function getStocksHolding() {
-    const stocksHolding = await fetch("/api/game/stocks-holding", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + localStorage.getItem("jwt-token")
-        }
-    });
-    if (stocksHolding.status === 200) {
-        return stocksHolding.json();
-    } else {
-        throw new Error("보유 종목 요청 실패!");
+        alert("로그인이 필요한 페이지 입니다.");
+        location.href = "/login";
     }
 }
 
 async function requestSellOrder() {
-    let responseSellOrder = await fetch("/api/game/sell", {
+    let responseOrder = await fetch("/api/game/sell", {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
@@ -41,16 +27,20 @@ async function requestSellOrder() {
             "quantity": document.getElementById("sellOrderQuantity").value
         })
     });
-    if (responseSellOrder.status === 200) {
-        return responseSellOrder;
+    if (responseOrder.status === 200) {
+        return responseOrder;
+    }else if (responseOrder.status === 403) {
+        const errorData = await responseOrder.text();
+        throw new Error("조회 권한이 없는 유저 입니다!" + errorData);
+    } else if (responseOrder.status === 422) {
+        showModal("주식보유수량이 부족합니다.");
     } else {
-        const errorData = await responseSellOrder.text();
-        throw new Error("매도 요청 실패!" + errorData);
+        showModal("주식보유수량이 부족합니다.");
     }
 }
 
 async function requestBuyOrder() {
-    let responseBuyOrder = await fetch("/api/game/buy", {
+    let responseOrder = await fetch("/api/game/buy", {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
@@ -61,16 +51,22 @@ async function requestBuyOrder() {
             "quantity": document.getElementById("buyOrderQuantity").value
         })
     });
-    if (responseBuyOrder.status === 200) {
-        return responseBuyOrder;
+    if (responseOrder.status === 200) {
+        return responseOrder;
+    }else if (responseOrder.status === 403) {
+        const errorData = await responseOrder.text();
+        throw new Error("조회 권한이 없는 유저 입니다!" + errorData);
+    } else if (responseOrder.status === 422) {
+        showModal("잔금이 부족합니다.");
+    } else if (responseOrder.status === 429) {
+        showModal("더 이상 주문을 할 수 없습니다. 미체결 거래를 취소해주세요.");
     } else {
-        const errorData = await responseBuyOrder.text();
-        throw new Error("매수 요청 실패!" + errorData);
+        showModal("잔금이 부족합니다.");
     }
 }
 
 async function requestCancelOrder(orderId) {
-    let responseBuyOrder = await fetch("/api/game/cancel", {
+    let responseOrder = await fetch("/api/game/cancel", {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
@@ -80,16 +76,20 @@ async function requestCancelOrder(orderId) {
             "orderId": orderId
         })
     });
-    if (responseBuyOrder.status === 200) {
-        return responseBuyOrder;
+    if (responseOrder.status === 200) {
+        return responseOrder;
+    }else if (responseOrder.status === 403) {
+        const errorData = await responseOrder.text();
+        throw new Error("조회 권한이 없는 유저 입니다!" + errorData);
+    } else if (responseOrder.status === 422) {
+        showModal("잘못된 주문번호가 입력되었습니다.");
     } else {
-        const errorData = await responseBuyOrder.text();
-        throw new Error("주문 취소 요청 실패!" + errorData);
+        showModal("잘못된 주문번호가 입력되었습니다.")
     }
 }
 
 async function requestMarketSellOrder() {
-    let responseSellOrder = await fetch("/api/game/market-sell", {
+    let responseOrder = await fetch("/api/game/market-sell", {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
@@ -99,16 +99,22 @@ async function requestMarketSellOrder() {
             "quantity": document.getElementById("sellOrderQuantity").value
         })
     });
-    if (responseSellOrder.status === 200) {
-        return responseSellOrder;
+    if (responseOrder.status === 200) {
+        return responseOrder;
+    }else if (responseOrder.status === 403) {
+        const errorData = await responseOrder.text();
+        throw new Error("조회 권한이 없는 유저 입니다!" + errorData);
+    } else if (responseOrder.status === 422) {
+        showModal("주식보유수량이 부족합니다.");
+    } else if (responseOrder.status === 429) {
+        showModal("더 이상 주문을 할 수 없습니다. 미체결 거래를 취소해주세요.");
     } else {
-        const errorData = await responseSellOrder.text();
-        throw new Error("시장가 매도 요청 실패!" + errorData);
+        showModal("주식보유수량이 부족합니다.");
     }
 }
 
 async function requestMarketBuyOrder() {
-    let responseBuyOrder = await fetch("/api/game/market-buy", {
+    let responseOrder = await fetch("/api/game/market-buy", {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
@@ -118,26 +124,33 @@ async function requestMarketBuyOrder() {
             "quantity": document.getElementById("buyOrderQuantity").value
         })
     });
-    if (responseBuyOrder.status === 200) {
-        return responseBuyOrder;
+    if (responseOrder.status === 200) {
+        return responseOrder;
+    }else if (responseOrder.status === 403) {
+        const errorData = await responseOrder.text();
+        throw new Error("조회 권한이 없는 유저 입니다!" + errorData);
+    } else if (responseOrder.status === 422){
+        showModal("잔금이 부족합니다.");
     } else {
-        const errorData = await responseBuyOrder.text();
-        throw new Error("시장가 매수 요청 실패!" + errorData);
+        showModal("잔금이 부족합니다.");
     }
 }
 
 async function requestEndedGameInfo() {
-    let responseBuyOrder = await fetch("/api/game/last-game-participation", {
+    let responseOrder = await fetch("/api/game/last-game-participation", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer " + localStorage.getItem("jwt-token")
         }
     });
-    if (responseBuyOrder.status === 200) {
-        return responseBuyOrder.json();
-    } else {
-        const errorData = await responseBuyOrder.text();
+    if (responseOrder.status === 200) {
+        return responseOrder.json();
+    } else if (responseOrder.status === 403) {
+        const errorData = await responseOrder.text();
+        throw new Error("조회 권한이 없는 유저 입니다!" + errorData);
+    }else {
+        const errorData = await responseOrder.text();
         throw new Error("게임 히스토리 조회 실패!" + errorData);
     }
 }
