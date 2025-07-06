@@ -93,6 +93,12 @@
                     'Authorization': 'Bearer ' + token
                     }
             });
+            if (res2.status === 404 && offset === 0) {
+                const list = document.getElementById('gameDTO-list');
+                list.innerHTML = '<p>참여한 게임이 없습니다.</p>';
+                document.getElementById('load-more').style.display = 'none';
+                return;
+            }
             const res2Body = await res2.json();
             if(!res2.ok) {
                 throw new Error(res2Body.message || '게임 기록을 불러오지 못했습니다');
@@ -126,7 +132,8 @@
                 }
             }
         }catch (err) {
-
+            console.error("❌ 게임 기록 로딩 실패:", err);
+            document.getElementById('load-more').style.display = 'none';
         }
     }
 </script>
