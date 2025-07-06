@@ -177,6 +177,10 @@ function onloadBody() {
     chartSocketHandler();
     chatSocketHandler();
 
+
+    document.getElementById("stocksHolding").innerText = 0;
+
+
     drowGuideLine(guideLineLengthX, guideLineLengthY, priceChartLayoutCtx, priceChartHeight);
     drowGuideLine(guideLineLengthX, guideLineLengthY, tradeVolumeChartLayoutCtx, tradeVolumeChartHeight);
 }
@@ -378,12 +382,6 @@ function chartSocketHandler() {
         chartSocket.send(localStorage.getItem("jwt-token"));
     };
     chartSocket.onmessage = function (event) {
-
-        getStocksHolding()
-            .then(data => {
-                document.getElementById("stocksHolding").innerText = data.message;
-            })
-
         let stockDataArray = event.data.split("||");
         let DataHead = stockDataArray[0];
 
@@ -718,7 +716,7 @@ function chartSocketHandler() {
         } else if (DataHead === "timeLeft") {
             showTimeLeft(stockData);
         } else if (DataHead === "playerStatus") {
-            console.log("입력 받은 플레이어스테이터스: " + JSON.stringify(stockData));
+            //console.log("입력 받은 플레이어스테이터스: " + JSON.stringify(stockData));
             // 플레이어 스테이터스가 업데이트 됐을 때의 데이터를 처리해야 함
             document.getElementById("stocksHolding").innerText = stockData.stocksHolding;
             document.getElementById("cash").innerText = stockData.earnedCash;
@@ -849,17 +847,20 @@ function getRate(number1, number2) {
 }
 
 function showTimeLeft(stockData){
-    const startedAt = new Date(stockData);
+    const startedAt = new Date(stockData[0]);
+    const serverNow = new Date(stockData[1]);
+    const now = new Date();
+    const timeDif =  serverNow.getTime() - now.getTime();
     const endedAt = startedAt.getTime() + 1000 * 60 * 1;
     // 인터발 실행 시간 때문에 먼저 1회 실행후 로딩
-    const now = new Date();
-    const timeLeft = Math.floor((endedAt - now) / 1000);
+
+    const timeLeft = Math.floor((endedAt - now.getTime() - timeDif) / 1000);
     document.getElementById("timeLeft").innerText = Math.floor(timeLeft / 60) + "분 " + timeLeft % 60 + "초"
 
     const interval = setInterval(() => {
         const now = new Date();
-        if (now < endedAt) {
-            const timeLeft = Math.floor((endedAt - now) / 1000);
+        if (now.getTime() + timeDif < endedAt) {
+            const timeLeft = Math.floor((endedAt - now.getTime() - timeDif) / 1000);
             document.getElementById("timeLeft").innerText = Math.floor(timeLeft / 60) + "분 " + timeLeft % 60 + "초"
         }else{
             showLoadingDisplay();

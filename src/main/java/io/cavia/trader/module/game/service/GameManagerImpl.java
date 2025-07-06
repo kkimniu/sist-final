@@ -13,6 +13,7 @@ import io.cavia.trader.module.member.entity.Member;
 import io.jsonwebtoken.Claims;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -29,9 +30,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 @Getter
 public class GameManagerImpl implements GameManager {
@@ -39,7 +40,7 @@ public class GameManagerImpl implements GameManager {
     private final GameAdministrationService gameAdministrationService;
     private final GameRepository gameRepository;
     private final GameSessionDto gameSessionDto;
-    private final ScoreUtil  scoreUtil;
+    private final ScoreUtil scoreUtil;
     private final ApplicationEventPublisher eventPublisher;
 
     private final int GAME_LIFE_CYCLE = 1000 * 60 * 1;
@@ -58,20 +59,18 @@ public class GameManagerImpl implements GameManager {
             // 세션의 생명 주기가 끝났으면 선입 세션 삭제
             if (timesBetween >= GAME_LIFE_CYCLE) {
 
-                if(!gameDto.getPlayerStatusDtos().isEmpty()) {
+                if (!gameDto.getPlayerStatusDtos().isEmpty()) {
                     // TODO 게임 세션 삭제 전 DB 저장 필요(game 객체는 세션 만들어 질때 저장 했음)
                     Map<Long, PlayerStatusDto> playersSortedByRank = scoreUtil.evaluatePlayers(
                             gameDto.getPlayerStatusDtos(), gameDto.getTrades().get(gameDto.getTrades().size() - 1).getStckPrpr());
 
-                    // 순위 지정 후 DB 저장
-                    AtomicInteger gameRank = new AtomicInteger(1);
-                    playersSortedByRank.forEach((memberId, playerStatusDto) -> {
-
+                    // DB 저장
+                    playersSortedByRank.values().forEach(playerStatusDto -> {
                         gameRepository.saveGameParticipation(
                                 GameParticipation.builder()
                                         .gameId(playerStatusDto.getGameId())
                                         .memberId(playerStatusDto.getMemberId())
-                                        .gameRank(gameRank.get())
+                                        .gameRank(playerStatusDto.getGameRank())
                                         .postCash(playerStatusDto.getPostCash())
                                         .earnedCash(playerStatusDto.getPostCash() - playerStatusDto.getEarnedCash())
                                         .postScore(playerStatusDto.getPostScore())
@@ -79,29 +78,24 @@ public class GameManagerImpl implements GameManager {
                                         .returnRate(playerStatusDto.getReturnRate())
                                         .enteredAt(LocalDateTime.now())
                                         .build());
-                        gameRank.set(gameRank.get() + 1);
 
-                        gameRepository.updateCashAndTotalScoreById(memberId,
+                        gameRepository.updateCashAndTotalScoreById(playerStatusDto.getMemberId(),
                                 playerStatusDto.getEarnedCash(),
                                 playerStatusDto.getEarnedScore()
-                                );
+                        );
                     });
                 }
-
                 // 게임 종료 후 DB 저장 후 세션 저장 완료 알림과 메모리 클리어를 이벤트에서 처리하기 위해 호출
                 eventPublisher.publishEvent(new GameCompleted(gameDto));
-
-
             }
         }
-
         // 게임 세션 1개 생성
         GameDto gameDto = gameAdministrationService.createGame();
         gameSessionDto.getGameDtos().add(gameDto);
         gameRepository.saveGame(gameDto.getStockId(),
                 gameDto.getStartedAt());
         gameDto.setId(gameRepository.findLastGameId());
-        System.out.println("Game Session Created, Games size: " + gameSessionDto.getGameDtos().size());
+        log.debug("Game Session Created, Games size: {}", gameSessionDto.getGameDtos().size());
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -110,10 +104,10 @@ public class GameManagerImpl implements GameManager {
         // 이 이벤트 리스너는 DB 커밋 종료 직후에 호출됨
         event.getGameDto().getChartSessions().values().forEach(session -> {
             synchronized (session) {
-                if(session.isOpen()){
+                if (session.isOpen()) {
                     try {
                         session.sendMessage(new TextMessage("isProsseced||"));
-                    }catch (IOException e) {
+                    } catch (IOException e) {
                         throw new RuntimeException("게임 종료 처리 알림 메세지 송신 중 예외 발생", e);
                     }
                 }
@@ -136,9 +130,8 @@ public class GameManagerImpl implements GameManager {
             }
         });
 
-
         gameSessionDto.getGameDtos().removeFirst();
-        System.out.println("Game Session Closed, Games size: " + gameSessionDto.getGameDtos().size());
+        log.debug("Game Session Closed, Games size: {}", gameSessionDto.getGameDtos().size());
     }
 
     @Override
