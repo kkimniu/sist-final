@@ -37,6 +37,8 @@
                 <label for="privacyPolicyAgreed">개인정보 처리방침에 동의합니다. (필수)</label>
             </div>
         </div>
+        <div id="terms-error" class="error-message"></div>
+
         <div class="nav-links">
             <button id="btn-terms-next" class="next-btn">계속</button>
         </div>
@@ -49,6 +51,15 @@
             <input type="email" id="email" placeholder="yourname@example.com">
         </div>
         <div id="email-error" class="error-message"></div>
+
+        <div class="recaptcha-container">
+            <div class="g-recaptcha"
+                 data-sitekey="6Ldk7XkrAAAAAAxuqQEO1tipReB8mCJcEx515UmD"
+                 data-callback="onRecaptchaSuccess"
+                 data-expired-callback="onRecaptchaExpired">
+            </div>
+        </div>
+
         <div class="nav-links">
             <a href="#" class="prev-link" data-page="page-terms">돌아가기</a>
             <button id="btn-email-next" class="next-btn">계속</button>
@@ -106,5 +117,6 @@
 
 <script src="/js/auth/signup.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </body>
 </html>
