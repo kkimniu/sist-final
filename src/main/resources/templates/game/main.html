@@ -11,23 +11,37 @@
 
     #priceChartContainer {
         position: relative;
+        right: 30px;
     }
 
     #tradeVolumeChartContainer {
         position: relative;
-        margin-top: 30px;
+        margin-top: 10px;
+        right: 30px;
+    }
+
+    #graphType {
+        display: flex;
+        align-items: center;
+        align-content: center;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
+        width: 100%;
     }
 
     #priceChartWriter {
         position: absolute;
         left: 0;
         top: 0;
+        margin-right: 30px;
     }
 
     #priceChartLayout {
         position: absolute;
         left: 0;
         top: 0;
+        margin-right: 30px;
     }
 
     #tradeVolumeChartWriter {
@@ -41,7 +55,6 @@
         left: 0;
         top: 0;
     }
-
 
     #orderContainer {
         display: flex;
@@ -190,14 +203,13 @@
         <label>남은 세션 시간: </label><label id=timeLeft></label>
     </div>
 
+    <div id = "graphType">
+        <div id = "graph30Sec" onclick = "show30SecChart();">30초</div>
+        <div id = "graph1Min" onclick = "show1MinChart();">1분</div>
+        <div id = "graph3Min" onclick = "show3MinChart();">3분</div>
+        <div id = "graph5Min" onclick = "show5MinChart();">5분</div>
+    </div>
     <div id="graphContainer">
-        <div>
-            <ul id="graphLegend">
-                <li class="tab active" data-target="">30초봉</li>
-                <li class="tab" data-target= "">3분봉</li>
-                <li class="tab" data-target="#">5분봉</li>
-            </ul>
-        </div>
         <div id="priceChartContainer">
             <canvas id="priceChartLayout"></canvas>
             <canvas id="priceChartWriter"></canvas>
@@ -205,6 +217,9 @@
         <div id="tradeVolumeChartContainer">
             <canvas id="tradeVolumeChartLayout"></canvas>
             <canvas id="tradeVolumeChartWriter"></canvas>
+            <div id="timeScale1"></div>
+            <div id="timeScale2"></div>
+            <div id="timeScale3"></div>
         </div>
     </div>
 

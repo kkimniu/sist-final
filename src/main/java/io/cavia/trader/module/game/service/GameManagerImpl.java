@@ -43,7 +43,7 @@ public class GameManagerImpl implements GameManager {
     private final ScoreUtil scoreUtil;
     private final ApplicationEventPublisher eventPublisher;
 
-    private final int GAME_LIFE_CYCLE = 1000 * 60 * 1;
+    private final int GAME_LIFE_CYCLE = 1000 * 60 * 30;
 
     //@Scheduled(cron = "0 */10 * * * *")
     @Scheduled(cron = "*/10 * * * * *")

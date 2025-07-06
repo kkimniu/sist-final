@@ -1,8 +1,6 @@
 package io.cavia.trader.module.game.controller;
 
 import io.cavia.trader.common.exception.ApiException;
-import io.cavia.trader.common.exception.ErrorCode;
-import io.cavia.trader.common.exception.GlobalExceptionHandler;
 import io.cavia.trader.module.auth.security.UserDetailsImpl;
 import io.cavia.trader.module.game.dto.GameDto;
 import io.cavia.trader.module.game.dto.GameSessionDto;
@@ -136,22 +134,15 @@ public class GameRestController {
     public ResponseEntity<?> getLastGameParticipation(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         try {
             long memberId = userDetails.getMember().getId();
-
-            for (GameDto game : gameSessionDto.getGameDtos()) {
-                if (game.getPlayerStatusDtos().containsKey(userDetails.getMember().getId())) {
-                    try {
-                        return new ResponseEntity<GameParticipation>(
-                                gameAdministrationService.getLastGameParticipation(
-                                        userDetails.getMember().getId()
-                                ), HttpStatus.OK);
-                    } catch (Exception e) {
-                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "조회되는 게임 기록이 없습니다.");
-                    }
-                }
-            }
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "유저를 게임에서 찾을 수 없습니다.");
-        } catch (ResponseStatusException e) {
-            throw e;
+            return new ResponseEntity<GameParticipation>(
+                    gameAdministrationService.getLastGameParticipation(
+                            userDetails.getMember().getId()
+                    ), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "조회되는 게임 기록이 없습니다.");
         }
+
     }
+
+
 }
