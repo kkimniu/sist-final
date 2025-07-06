@@ -13,14 +13,14 @@ import java.lang.annotation.Target;
 /**
  * 아래의 조건이 포함된 커스텀 애노테이션입니다.
  * <p>
- * {@code @NotBlank(message = "닉네임을 입력해주세요.")}<br>
+ * {@code @NotBlank(message = "닉네임을 입력해주세요")}<br>
  * {@code @Pattern(regexp = "^[가-힣a-zA-Z0-9]{1,16}$"}
  * <p>
  * 필드에 사용가능합니다.
  *
  * @author Kim Beomhee
  */
-@NotBlank(message = "닉네임을 입력해주세요.")
+@NotBlank(message = "닉네임을 입력해주세요")
 @Pattern(regexp = "^[가-힣a-zA-Z0-9]{1,16}$")
 
 @Target({ElementType.FIELD})

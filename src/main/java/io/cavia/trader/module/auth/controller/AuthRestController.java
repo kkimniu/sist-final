@@ -4,22 +4,22 @@ import io.cavia.trader.common.exception.ApiException;
 import io.cavia.trader.common.exception.ErrorCode;
 import io.cavia.trader.common.response.ApiResponse;
 import io.cavia.trader.common.response.ApiResponses;
-import io.cavia.trader.module.auth.dto.LoginRequestDto;
-import io.cavia.trader.module.auth.dto.ResetPasswordRequestDto;
-import io.cavia.trader.module.auth.dto.SendCodeRequestDto;
-import io.cavia.trader.module.auth.dto.VerifyCodeRequestDto;
+import io.cavia.trader.module.auth.dto.*;
 import io.cavia.trader.module.auth.security.UserDetailsImpl;
 import io.cavia.trader.module.auth.service.AuthService;
 import io.cavia.trader.module.jwt.JwtUtil;
+import io.cavia.trader.module.member.entity.Member;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.io.IOException;
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -79,6 +79,18 @@ public class AuthRestController {
     }
 
     /**
+     * 이메일과 인증 코드를 검증합니다. (회원가입 시 사용)
+     *
+     * @param requestDto 검증할 이메일과 인증 코드를 담은 DTO
+     * @return OK 메시지를 담은 200 OK 응답
+     */
+    @PostMapping("/api/auth/signup/verify-code")
+    public ResponseEntity<ApiResponse<?>> verifySignupVerification(@Valid @RequestBody VerifyCodeRequestDto requestDto) {
+        authService.verifyCodeForSignup(requestDto.getEmail(), requestDto.getAuthKey());
+        return ApiResponses.ok();
+    }
+
+    /**
      * 인증된 이메일과 새 비밀번호로 비밀번호를 재설정합니다.
      *
      * @param requestDto 이메일, 인증 코드, 새 비밀번호를 담은 DTO
@@ -90,4 +102,37 @@ public class AuthRestController {
         return ApiResponses.noContent();
     }
 
+    /**
+     * 인증된 이메일과 정보로 회원가입을 진행합니다.
+     *
+     * @param requestDto 이메일 인증 정보와 가입 정보를 담은 DTO
+     * @return Member 엔티티를 ApiResponse.data에 담은 201 Created 성공 응답
+     */
+    @PostMapping("/api/auth/signup")
+    public ResponseEntity<ApiResponse<?>> signup(@Valid @RequestBody SignupRequestDto requestDto) {
+        Member registeredMember = authService.register(requestDto);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(registeredMember.getId())
+                .toUri();
+        return ApiResponses.created(location, registeredMember);
+    }
+
+    /**
+     * 입력된 닉네임이 사용 가능한지 확인합니다.
+     *
+     * @param requestDto 회원가입을 진행할 닉네임
+     * @return 성공 메시지를 담은 200 OK 응답
+     */
+    @PostMapping("/api/auth/validate-nickname")
+    public ResponseEntity<ApiResponse<?>> checkNickname(
+            @Validated @RequestBody NicknameValidationRequestDto requestDto) {
+        authService.validateDuplicateNickname(requestDto.getNickname());
+        return ApiResponses.ok("사용 가능한 닉네임입니다.", null);
+    }
+
+    @GetMapping("/api/auth/terms/{type}")
+    public ResponseEntity<ApiResponse<?>> getTextContent(@PathVariable String type) throws IOException {
+        return ApiResponses.ok(authService.getTermAsRawText(type));
+    }
 }

@@ -12,12 +12,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MemberServiceImpl implements MemberService {
 
     private final GameParticipationRepository gameParticipationRepository;
@@ -25,10 +27,17 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
 
-    @Value("${member.cash.reset}")
+    @Value("${score.rank_max_score:5000}")
+    private Integer maxTotalScore;
+
+    @Value("${member.cash.default:10000000L}")
+    private Long memberCashDefault;
+
+    @Value("${member.cash.reset:5000000L}")
     private Long memberCashReset;
 
     @Override
+    @Transactional(readOnly = true)
     public List<GameParticipation> getGameParticipationByMemberId(Long memberId) {
         List<GameParticipation> list = gameParticipationRepository.findByMemberId(memberId);
         if (list == null || list.isEmpty()) {
@@ -38,6 +47,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<GameParticipation> getGameParticipationByMemberIdWithPaging(Long memberId, int limit, int offset) {
         List<GameParticipation> list = gameParticipationRepository.findByMemberIdWithPaging(memberId, limit, offset);
         if (list == null || list.isEmpty()) {
@@ -47,17 +57,20 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Long getGameParticipationCountByMemberId(Long memberId) {
         return gameParticipationRepository.countByMemberId(memberId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Member getMemberById(Long id) {
         return memberRepository.findById(id).orElseThrow(
                 () -> new ApiException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Member getMemberByEmail(String email) {
         return memberRepository.findByEmail(email).orElseThrow(
                 () -> new ApiException(ErrorCode.MEMBER_NOT_FOUND));
@@ -74,6 +87,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void validatePassword(Long id, String password) {
         Member member = memberRepository.findById(id).orElseThrow(
                 () -> new ApiException(ErrorCode.MEMBER_NOT_FOUND)
@@ -113,6 +127,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void validateDuplicateEmail(String email) {
         if (memberRepository.existsByEmail(email)) {
             throw new ApiException(ErrorCode.DUPLICATE_EMAIL);
@@ -120,9 +135,10 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void validateDuplicateNickname(String nickname) {
         if (memberRepository.existsByNickname(nickname)) {
-            throw new IllegalStateException("이미 존재하는 닉네임입니다.");
+            throw new ApiException(ErrorCode.DUPLICATE_NICKNAME);
         }
     }
 
@@ -132,6 +148,21 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public Member createMember(String email, String password, String nickname) {
+        Member member = Member.builder()
+                .email(email)
+                .password(passwordEncoder.encode(password))
+                .nickname(nickname)
+                .totalScore(maxTotalScore / 2)
+                .cash(memberCashDefault)
+                .build();
+
+        memberRepository.save(member);
+        return member;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<UserRankingDto> findAllOrderByCash(Long limit, Long offset) {
         List<UserRankingDto> list = memberRepository.findAllByOrderByCashDesc(limit, offset);
         if (list == null || list.isEmpty()) {
@@ -141,6 +172,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserRankingDto> findAllOrderByTotalScore(Long limit, Long offset) {
         List<UserRankingDto> list = memberRepository.findAllByOrderByTotalScoreDesc(limit, offset);
         if (list == null || list.isEmpty()) {

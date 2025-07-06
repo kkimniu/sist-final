@@ -4,22 +4,34 @@ import io.cavia.trader.common.email.EmailService;
 import io.cavia.trader.common.exception.ApiException;
 import io.cavia.trader.common.exception.ErrorCode;
 import io.cavia.trader.module.auth.dto.SignupDto;
+import io.cavia.trader.module.auth.dto.SignupRequestDto;
 import io.cavia.trader.module.auth.entity.EmailVerification;
 import io.cavia.trader.module.auth.repository.EmailVerificationRepository;
 import io.cavia.trader.module.jwt.JwtUtil;
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthServiceImpl implements AuthService {
 
     private final EmailService emailService;
@@ -43,17 +55,20 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void verifyCodeForPasswordReset(String email, String authKey) {
         verifyAuthKey(email, authKey);
         memberService.getMemberByEmail(email);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void verifyCodeForSignup(String email, String authKey) {
         verifyAuthKey(email, authKey);
         memberService.validateDuplicateEmail(email);
     }
 
+    @Transactional(readOnly = true)
     private void verifyAuthKey(String email, String authKey) {
         EmailVerification emailVerification = emailVerificationRepository.findByEmail(email)
                 .orElseThrow(() -> new ApiException(ErrorCode.EMAIL_VERIFICATION_NOT_FOUND));
@@ -66,6 +81,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void validateDuplicateNickname(String nickname) {
         memberService.validateDuplicateNickname(nickname);
     }
@@ -76,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
                 .email(signupDto.getEmail())
                 .nickname(signupDto.getNickname())
                 .password(passwordEncoder.encode(signupDto.getPassword()))
-                .totalScore((int) DEFAULT_SCORE/2)
+                .totalScore((int) DEFAULT_SCORE / 2)
                 .cash(memberCashDefault)
                 .build();
 
@@ -89,6 +105,22 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public Member register(SignupRequestDto requestDto) {
+        verifyAuthKey(requestDto.getEmail(), requestDto.getAuthKey());
+        memberService.validateDuplicateEmail(requestDto.getEmail());
+        memberService.validateDuplicateNickname(requestDto.getNickname());
+
+        Member member = memberService.createMember(
+                requestDto.getEmail(),
+                requestDto.getPassword(),
+                requestDto.getNickname()
+        );
+        log.debug("회원가입 완료 : member = {}", member);
+        return member;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public String login(String email, String password) {
         try {
             Member member = memberService.getMemberByEmail(email);
@@ -104,6 +136,21 @@ public class AuthServiceImpl implements AuthService {
         verifyAuthKey(email, authKey);
         Member member = memberService.getMemberByEmail(email);
         memberService.changePassword(member.getId(), rawPassword);
+    }
+
+    @Override
+    public String getTermAsRawText(String type) {
+        String path = "texts/terms/" + type + ".md";
+        Resource resource = new ClassPathResource(path);
+        if (!resource.exists()) {
+            throw new ApiException(ErrorCode.USER_RANKING_NOT_FOUND);
+        }
+        try {
+            Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
+            return FileCopyUtils.copyToString(reader);
+        } catch (IOException e) {
+            throw new ApiException(ErrorCode.TERMS_OUTPUT_FAILED);
+        }
     }
 
     /**

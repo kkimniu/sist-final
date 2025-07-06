@@ -31,6 +31,7 @@ public enum ErrorCode {
     EMAIL_VERIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이메일의 인증 정보를 찾을 수 없습니다"),
     GAME_HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "게임 참여 이력을 찾을 수 없습니다"),
     USER_RANKING_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자 랭킹 정보를 찾을 수 없습니다"),
+    TERMS_NOT_FOUND(HttpStatus.NOT_FOUND, "약관 파일을 찾을 수 없습니다"),
 
 
     // ========== 409 CONFLICT ==========
@@ -43,7 +44,8 @@ public enum ErrorCode {
      * DB UPDATE/DELETE 실패 등 예측하지 못한 서버 에러
      */
     DATABASE_OPERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 작업에 실패했습니다"),
-    EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 발송에 실패했습니다");
+    EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 발송에 실패했습니다"),
+    TERMS_OUTPUT_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "약관 파일 불러오기에 실패했습니다");
 
 
     private final HttpStatus httpStatus;
