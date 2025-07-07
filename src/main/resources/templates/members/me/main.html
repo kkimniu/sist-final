@@ -122,8 +122,8 @@
                     </div>
                     <div class="card-body">
                         <p><strong>수익률:</strong> ${(gameDTO.returnRate * 100).toFixed(2)}%</p>
-                        <p><strong>점수:</strong> ${gameDTO.earnedScore} → ${gameDTO.postScore}</p>
-                        <p><strong>자산:</strong> ${gameDTO.earnedCash} → ${gameDTO.postCash}</p>
+                        <p><strong>점수:</strong> ${gameDTO.postScore-gameDTO.earnedScore} → ${gameDTO.postScore}</p>
+                        <p><strong>자산:</strong> ${gameDTO.postCash} → ${gameDTO.postCash-gameDTO.earnedCash}</p>
                     </div>`;
                     list.appendChild(div);
                 });
