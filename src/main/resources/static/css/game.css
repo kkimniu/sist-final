@@ -30,6 +30,7 @@
     width: 300px;
     height: 100%;
     margin-left: 50px;
+    margin-top: 20px;
 }
 
 .chat {
@@ -47,6 +48,7 @@
     position: sticky;
     width: 80%;
     bottom: 20px;
+    left: 10px;
 }
 
 #chatInput {
@@ -208,7 +210,6 @@
 }
 
 #PanelLayout {
-    display: flex;
     align-items: center;
     align-content: center;
     flex-direction: row;
@@ -232,12 +233,14 @@
 
 #promisePanel {
     display: none;
+    top: 10px;
     width: 100%;
     height: 100%;
 }
 
 #tradeLogPanel {
     display: none;
+    top: 10px;
     width: 100%;
     height: 100%;
 }
@@ -297,4 +300,15 @@
     margin-bottom: 16px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* 약한 그림자 */
     min-height: 150px;
+}
+
+.input-group {
+    font-size: 25px;
+    gap: 10px;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
 }

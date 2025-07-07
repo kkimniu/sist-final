@@ -164,20 +164,28 @@
                 </div>
                 <div id="PanelLayout" class="component-box">
                     <div id="sellPanel">
-                        <input type="text" id="sellOrderPrice" placeholder="매도 가격"/>
-                        <input type="text" id="sellOrderQuantity" placeholder="매도 수량"/>
-                        <input type="button" id="sellOrderButton" class="btn" value="매도"
-                               onclick="callBackRequestSellOrder();"/>
-                        <input type="button" id="marketSellOrderButton" class="btn" value="시장가 매도"
-                               onclick="callBackRequestMarketSellOrder();"/>
+                        <div class="input-group">
+                            <input type="text" id="sellOrderPrice" placeholder="매도 가격"/>
+                            <input type="text" id="sellOrderQuantity" placeholder="매도 수량"/>
+                        </div>
+                        <div class="button-group">
+                            <input type="button" id="sellOrderButton" class="btn" value="매도"
+                                   onclick="callBackRequestSellOrder();"/>
+                            <input type="button" id="marketSellOrderButton" class="btn" value="시장가 매도"
+                                   onclick="callBackRequestMarketSellOrder();"/>
+                        </div>
                     </div>
                     <div id="buyPanel">
-                        <input type="text" id="buyOrderPrice" placeholder="매수 가격"/>
-                        <input type="text" id="buyOrderQuantity" placeholder="매수 수량"/>
-                        <input type="button" id="buyOrderButton" class="btn" value="매수"
-                               onclick="callBackRequestBuyOrder();"/>
-                        <input type="button" id="marketBuyOrderButton" class="btn" value="시장가 매수"
-                               onclick="callBackRequestMarketBuyOrder();"/>
+                        <div class="input-group">
+                            <input type="text" id="buyOrderPrice" placeholder="매수 가격"/>
+                            <input type="text" id="buyOrderQuantity" placeholder="매수 수량"/>
+                        </div>
+                        <div class="button-group">
+                            <input type="button" id="buyOrderButton" class="btn" value="매수"
+                                   onclick="callBackRequestBuyOrder();"/>
+                            <input type="button" id="marketBuyOrderButton" class="btn" value="시장가 매수"
+                                   onclick="callBackRequestMarketBuyOrder();"/>
+                        </div>
                     </div>
                     <div id="promisePanel">
                         <table id="promiseTable">

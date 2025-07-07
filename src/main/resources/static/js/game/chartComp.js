@@ -47,6 +47,61 @@ graphLayout.addEventListener("scroll", function (event) {
     }
 });
 
+window.addEventListener("resize", function (event) {
+    mainWidth = window.innerWidth * 0.7;
+
+    graphLayout.width = mainWidth;
+    graphLayout.height = mainHeight + 40;
+
+    graphLayout.style.width = mainWidth + "px";
+    graphLayout.style.height = mainHeight + 40 + "px";
+
+
+    graphDisplay.width = mainWidth;
+    graphDisplay.height = graphLayout.height + 10;
+
+    graphDisplay.style.width = mainWidth + "px";
+    graphDisplay.style.height = graphLayout.height + 10 + "px";
+
+    graphScale.height = graphLayout.height;
+
+    graphScale.style.width = 40 + "px";
+    graphScale.style.height = graphLayout.style.height + "px";
+
+
+    priceChartLayout.width = mainWidth;
+    priceChartLayout.height = priceChartHeight;
+    priceChartWriter.width = mainWidth;
+    priceChartWriter.height = priceChartHeight;
+    priceChartContainer.width = mainWidth;
+    priceChartContainer.height = priceChartHeight;
+
+    tradeVolumeChartLayout.width = mainWidth;
+    tradeVolumeChartLayout.height = tradeVolumeChartHeight;
+    tradeVolumeChartWriter.width = mainWidth;
+    tradeVolumeChartWriter.height = tradeVolumeChartHeight;
+    tradeVolumeChartContainer.width = mainWidth;
+    tradeVolumeChartContainer.height = tradeVolumeChartHeight;
+
+    priceChartLayout.style.width = mainWidth + "px";
+    priceChartLayout.style.height = priceChartHeight + "px";
+    priceChartWriter.style.width = mainWidth + "px";
+    priceChartWriter.style.height = priceChartHeight + "px";
+    priceChartContainer.style.height = priceChartHeight + "px";
+    priceChartContainer.style.width = mainWidth + "px";
+
+    tradeVolumeChartLayout.style.width = mainWidth + "px";
+    tradeVolumeChartLayout.style.height = tradeVolumeChartHeight + "px";
+    tradeVolumeChartWriter.style.width = mainWidth + "px";
+    tradeVolumeChartWriter.style.height = tradeVolumeChartHeight + "px";
+    tradeVolumeChartContainer.style.width = mainWidth + "px";
+    tradeVolumeChartContainer.style.height = tradeVolumeChartHeight + "px";
+
+
+    drowGuideLine(guideLineLengthX, guideLineLengthY, priceChartLayoutCtx, priceChartHeight);
+    drowGuideLine(guideLineLengthX, guideLineLengthY, tradeVolumeChartLayoutCtx, tradeVolumeChartHeight);
+});
+
 // 컴포넌트 크기 설정(html 크기 속성이랑 css 크기 속성이 다르게 먹어서 둘다 설정)
 
 
@@ -99,7 +154,7 @@ tradeVolumeChartContainer.style.height = tradeVolumeChartHeight + "px";
 
 
 // 기본 봉 개수
-let graphComp = 10;
+let graphComp = 20;
 
 let stickRefX = mainWidth;
 let stickRefY = tradeVolumeChartHeight;
@@ -110,7 +165,7 @@ let candleRefY = priceChartHeight / 2;
 const guideLineLengthY = 8;
 let guideLineLengthX = graphComp / 3;
 
-const valueStickWidth = 10;
+const valueStickWidth = 15;
 
 // 그래프의 각 틱 시간정보
 let relTime30Sec;

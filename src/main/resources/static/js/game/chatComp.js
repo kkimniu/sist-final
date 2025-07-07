@@ -39,7 +39,7 @@ function chatSocketHandler() {
 
     chatSocket.onmessage = function (event) {
         let msgJson = JSON.parse(event.data);
-        chatLog.innerText = chatLog.innerText + "\n" + msgJson.memberNickname + ": " + msgJson.msg + "\n";
+        chatLog.innerText = chatLog.innerText + "\n" + msgJson.memberNickname + ": " + msgJson.msg;
         if (chatAutoScroll) {
             chatLayout.scrollTop = chatLayout.scrollHeight;
         }
