@@ -1,5 +1,6 @@
 package io.cavia.trader.module.post.entity;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
  * @author KimBeomhee
  */
 @Data
+@Builder
 public class Post {
 
     private Long id;

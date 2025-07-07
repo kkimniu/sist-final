@@ -13,14 +13,14 @@
         created_at,
         updated_at
         FROM
-        post
+        posts
         ORDER BY
         created_at DESC
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
     <insert id="save" parameterType="io.cavia.trader.module.post.entity.Post" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO post (content, member_id, created_at, updated_at)
+        INSERT INTO posts (content, member_id, created_at, updated_at)
         VALUES (#{content}, #{memberId}, #{createdAt}, #{updatedAt})
     </insert>
 
