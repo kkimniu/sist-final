@@ -116,7 +116,7 @@ public class AuthServiceImpl implements AuthService {
         String path = "texts/terms/" + type + ".md";
         Resource resource = new ClassPathResource(path);
         if (!resource.exists()) {
-            throw new ApiException(ErrorCode.USER_RANKING_NOT_FOUND);
+            throw new ApiException(ErrorCode.TERMS_NOT_FOUND);
         }
         try {
             Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
