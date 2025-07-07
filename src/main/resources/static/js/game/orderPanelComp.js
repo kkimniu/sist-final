@@ -1,4 +1,18 @@
+const sellTab = document.getElementById("sellTab");
+const buyTab = document.getElementById("buyTab");
+const promiseTab = document.getElementById("promiseTab");
+const tradeLogTab = document.getElementById("tradeLogTab");
+const panelLayout = document.getElementById("panelLayout");
+
+const promisePanel = document.getElementById("promisePanel");
+const tradeLogPanel = document.getElementById("tradeLogPanel");
+
+
 function showSellPanel(){
+
+    panelLayout.classList.remove('component-boxRed');
+    panelLayout.classList.add('component-box');
+
     document.getElementById("buyPanel").style.display = "none";
     document.getElementById("promisePanel").style.display = "none";
     document.getElementById("tradeLogPanel").style.display = "none";
@@ -6,6 +20,10 @@ function showSellPanel(){
 }
 
 function showBuyPanel(){
+
+    panelLayout.classList.remove('component-box');
+    panelLayout.classList.add('component-boxRed');
+
     document.getElementById("sellPanel").style.display = "none";
     document.getElementById("promisePanel").style.display = "none";
     document.getElementById("tradeLogPanel").style.display = "none";
@@ -13,17 +31,26 @@ function showBuyPanel(){
 }
 
 function showPromisePanel(){
+
+    panelLayout.classList.remove('component-boxRed');
+    panelLayout.classList.add('component-box');
     document.getElementById("sellPanel").style.display = "none";
     document.getElementById("buyPanel").style.display = "none";
     document.getElementById("tradeLogPanel").style.display = "none";
-    document.getElementById("promisePanel").style.display = "block";
+    promisePanel.style.display = "block";
+    promisePanel.style.top = "10px";
 }
 
 function showTradeLogPanel() {
+
+    panelLayout.classList.remove('component-boxRed');
+    panelLayout.classList.add('component-box');
+
     document.getElementById("sellPanel").style.display = "none";
     document.getElementById("buyPanel").style.display = "none";
     document.getElementById("promisePanel").style.display = "none";
-    document.getElementById("tradeLogPanel").style.display = "block";
+    tradeLogPanel.style.display = "block";
+    tradeLogPanel.style.top = "10px";
 }
 
 function callBackRequestSellOrder() {

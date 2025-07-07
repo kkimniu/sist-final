@@ -257,6 +257,7 @@ function onloadBody() {
     certificationToken()
         .then(data => {
             nickname.innerText = data.nickname;
+            document.getElementById("totalScore").innerText = data.totalScore;
             cash.innerText = data.cash;
         });
 
@@ -467,7 +468,6 @@ function chartSocketHandler() {
     chartSocket = new WebSocket("/ws/chart");
 
     chartSocket.onopen = function (event) {
-        console.log("연결 성공");
         chartSocket.send(localStorage.getItem("jwt-token"));
     };
     chartSocket.onmessage = function (event) {

@@ -90,7 +90,7 @@ async function requestCancelOrder(orderId) {
         alert("게임에 참여하지 않은 유저 입니다, 메인 페이지로 이동합니다.");
         location.href = "/";
     } else if (responseOrder.status === 404) {
-        showModal("해당 주문을 찾을 수 없습니다");
+        showModal("이미 처리 중 입니다.");
     } else {
         showModal("주문 실패")
     }
