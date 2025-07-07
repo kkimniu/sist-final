@@ -43,7 +43,7 @@ public class GameManagerImpl implements GameManager {
     private final ScoreUtil scoreUtil;
     private final ApplicationEventPublisher eventPublisher;
 
-    private final int GAME_LIFE_CYCLE = 1000 * 60 * 1;
+    private final int GAME_LIFE_CYCLE = 1000 * 60 * 30;
 
     //@Scheduled(cron = "0 */10 * * * *")
     @Scheduled(cron = "*/10 * * * * *")
@@ -71,9 +71,9 @@ public class GameManagerImpl implements GameManager {
                                         .gameId(playerStatusDto.getGameId())
                                         .memberId(playerStatusDto.getMemberId())
                                         .gameRank(playerStatusDto.getGameRank())
-                                        .postCash(playerStatusDto.getPostCash())
-                                        .earnedCash(playerStatusDto.getPostCash() - playerStatusDto.getEarnedCash())
-                                        .postScore(playerStatusDto.getPostScore())
+                                        .postCash(playerStatusDto.getEarnedCash())
+                                        .earnedCash(playerStatusDto.getEarnedCash() - playerStatusDto.getPostCash())
+                                        .postScore(playerStatusDto.getEarnedScore())
                                         .earnedScore(playerStatusDto.getPostScore() - playerStatusDto.getEarnedScore())
                                         .returnRate(playerStatusDto.getReturnRate())
                                         .enteredAt(LocalDateTime.now())
