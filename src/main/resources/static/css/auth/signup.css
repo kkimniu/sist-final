@@ -5,6 +5,7 @@
     border: 1px solid #ccc;
     padding: 5px;
     background-color: #f9f9f9;
+    width: 100%
 }
 /* 약관 내용이 표시되는 박스 내부의 태그들에 대한 스타일 */
 
@@ -42,7 +43,13 @@
 
 /*이용약관 동의와 개인정보 처리방침*/
 .terms-group {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  width: 100%
+}
+
+.terms-group h4{
+  margin-top: 0.6em;
+  margin-bottom: 0.3em;
 }
 
 /*이용약관 동의 체크박스*/
@@ -101,7 +108,7 @@
 #page-terms {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: left;
   width: 50%;
 }
 
@@ -120,13 +127,6 @@
   display: block;
 }
 
-/*page-email*/
-#page-email {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 50%;
-}
 /*input type text*/
 #email {
   width: 100%;
