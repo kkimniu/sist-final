@@ -6,14 +6,6 @@
   align-items: center;
 }
 
-/*로그인 제목*/
-.login-title h2 {
-  font-size: 12px;
-  margin: 24px 0 16px;
-  border-bottom: 1px solid #eee;
-  width: 100%;
-}
-
 /*로그인 입력폼 이메일 비밀번호 로그인 회원등록 비밀번호 찾기*/
 /* 입력 필드 */
 #login-form {
@@ -33,9 +25,7 @@
   font-size: 14px;
   box-sizing: border-box;
 }
-#password {
-  margin-bottom: 70px;
-}
+
 /* 버튼들 */
 #login-form button,
 #login-form a {
@@ -78,5 +68,12 @@
 #login-form a:nth-of-type(2):hover {
   background-color: #007bff;
   color: white;
+}
+/*오류났을때 보여주는 메세지*/
+.error-message {
+  height: 22px;
+  font-size: 15px;
+  margin-top: 6px;
+  display: block;
 }
 
