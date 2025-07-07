@@ -18,7 +18,7 @@ public interface PostMapper {
      * @param offset 시작 위치
      * @return 게시글 목록
      */
-    List<Post> findPosts(@Param("limit") int limit, @Param("offset") long offset);
+    List<PostResponseDto> findPosts(@Param("limit") int limit, @Param("offset") long offset);
 
     Optional<PostResponseDto> findPostResponseDtoById(Long id);
 

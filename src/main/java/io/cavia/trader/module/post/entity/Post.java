@@ -16,12 +16,12 @@ public class Post {
 
     private Long id;
 
-    private String content; // 내용
+    private String content;
 
-    private Long memberId; // 작성자 ID (FK)
+    private Long memberId;
 
     @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now(); // 작성일
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    private LocalDateTime updatedAt; // 수정일
+    private LocalDateTime updatedAt;
 }

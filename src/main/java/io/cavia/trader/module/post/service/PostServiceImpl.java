@@ -15,12 +15,12 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
-    
+
     private final PostRepository postRepository;
 
     @Transactional(readOnly = true)
     @Override
-    public List<Post> getPosts(int limit, long offset) {
+    public List<PostResponseDto> getPosts(int limit, long offset) {
         return postRepository.findPosts(limit, offset);
     }
 

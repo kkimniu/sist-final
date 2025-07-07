@@ -15,7 +15,7 @@ public class PostMybatisRepository implements PostRepository {
     private final PostMapper postMapper;
 
     @Override
-    public List<Post> findPosts(int limit, long offset) {
+    public List<PostResponseDto> findPosts(int limit, long offset) {
         return postMapper.findPosts(limit, offset);
     }
 

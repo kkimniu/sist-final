@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface PostService {
 
-    List<Post> getPosts(int limit, long offset);
+    List<PostResponseDto> getPosts(int limit, long offset);
 
     PostResponseDto createPost(PostCreateRequestDto requestDto, Long id);
 }
