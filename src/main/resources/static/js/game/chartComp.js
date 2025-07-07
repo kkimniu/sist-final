@@ -835,7 +835,15 @@ function chartSocketHandler() {
         } else if (DataHead === "timeLeft") {
             showTimeLeft(stockData);
         } else if (DataHead === "playerStatus") {
-            //console.log("입력 받은 플레이어스테이터스: " + JSON.stringify(stockData));
+            console.log("입력 받은 플레이어스테이터스: " + JSON.stringify(stockData));
+
+            //공지 띄우기
+            const feedback = document.getElementById("orderFeedback");
+            feedback.style.display = "block";
+            setTimeout(() => {
+                feedback.style.display = "none";
+            }, 3000);
+
             // 플레이어 스테이터스가 업데이트 됐을 때의 데이터를 처리해야 함
             document.getElementById("stocksHolding").innerText = stockData.stocksHolding;
             document.getElementById("cash").innerText = stockData.earnedCash;

@@ -41,6 +41,9 @@ async function requestSellOrder() {
     } else {
         alert("주문 실패");
     }
+
+    document.getElementById("sellOrderPrice").value = "";
+    document.getElementById("sellOrderQuantity").value = "";
 }
 
 async function requestBuyOrder() {
@@ -69,6 +72,8 @@ async function requestBuyOrder() {
     } else {
         alert("주문 실패");
     }
+    document.getElementById("buyOrderPrice").value = "";
+    document.getElementById("buyOrderQuantity").value = "";
 }
 
 async function requestCancelOrder(orderId) {
@@ -119,6 +124,7 @@ async function requestMarketSellOrder() {
     } else {
         showModal("주문 실패");
     }
+    document.getElementById("sellOrderQuantity").value = "";
 }
 
 async function requestMarketBuyOrder() {
@@ -144,6 +150,7 @@ async function requestMarketBuyOrder() {
     } else {
         showModal("주문 실패");
     }
+    document.getElementById("buyOrderQuantity").value = "";
 }
 
 async function requestEndedGameInfo() {
