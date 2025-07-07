@@ -104,12 +104,7 @@ formStep2.addEventListener('submit', async (e) => {
             window.location.href = '/members/me';
         } else {
             const errorData = await response.json();
-            // @Valid에서 발생한 에러의 경우, 상세 에러 메시지를 표시
-            if (errorData.errors && errorData.errors.length > 0) {
-                step2Message.textContent = errorData.errors[0].reason;
-            } else {
-                step2Message.textContent = errorData.message || '비밀번호 변경에 실패했습니다.';
-            }
+            step2Message.textContent = errorData.message || '비밀번호 변경에 실패했습니다.';
         }
     } catch (error) {
         step2Message.textContent = '오류가 발생했습니다. 다시 시도해주세요.';

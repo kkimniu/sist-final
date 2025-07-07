@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인</title>
+    <link rel="stylesheet" href="/css/auth/login.css">
+</head>
+<body>
+
+<div class="container">
+
+    <div class="logo-area">
+        <a href="/">
+            <img src="/images/logo.png" alt="서비스 로고">
+        </a>
+    </div>
+
+    <div class="login-title">
+        <h2>로그인</h2>
+    </div>
+    <div class="login-content">
+        <p></p>
+    </div>
+
+    <form id="login-form">
+        <div>
+            <input type="email" id="email" name="email" placeholder="이메일을 입력하세요" required/>
+        </div>
+
+        <div>
+            <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" required/>
+        </div>
+
+        <div id="error-message" class="error-message" style="color: red;"></div>
+
+        <div class="submit-area">
+            <button type="submit">로그인</button>
+        </div>
+
+        <div>
+            <a th:href="@{/signup}">회원 등록하기</a>
+        </div>
+        <div>
+            <a th:href="@{/forgot-password}">비밀번호를 잊으셨나요?</a>
+        </div>
+
+    </form>
+
+</div>
+<script src="/js/auth/login.js"></script>
+
+</body>
+</html>

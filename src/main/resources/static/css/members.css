@@ -38,7 +38,7 @@
     margin: 40px auto;
 }
 
-/*게임 기록과 닉네임/등급/자산 각각에 컨테이너를 양옆으로 함*/
+/*게임 기록과 닉네임/등급/자산*/
 .container{
     display: flex;
     flex-direction: column;
@@ -108,6 +108,10 @@
   color: #333;
   text-decoration: none;
   box-sizing: border-box;
+}
+#load-more:hover {
+  background-color: #007bff;
+  color: white;
 }
 
 /*닉네임/등급/자산*/
@@ -512,4 +516,19 @@ label[for="new-password-input"] {
   font-size: 14px;
   color: #3366cc;
   text-decoration: underline;
+}
+
+.positive {
+    color: #d93025; /* 붉은색 */
+    font-weight: bold;
+}
+
+.negative {
+    color: #1a73e8; /* 파란색 */
+    font-weight: bold;
+}
+
+.neutral {
+    color: #5f6368; /* 회색 */
+    font-weight: bold;
 }

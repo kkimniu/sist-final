@@ -4,14 +4,14 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.cavia.trader.module.notice.mapper.NoticeMapper">
     <insert id="saveNotice" parameterType="io.cavia.trader.module.notice.dto.NoticeDto">
-        insert into notices (
+        INSERT INTO notices (
         title,
         content,
         created_at,
         updated_at,
         pinned
         )
-        values(
+        VALUES(
         #{title},
         #{content},
         #{createdAt},
@@ -20,65 +20,65 @@
         )
     </insert>
     <select id="findAll" resultType="io.cavia.trader.module.notice.dto.NoticeDto">
-        select
+        SELECT
         id,
         title,
         content,
         created_at as createdAt,
         updated_at as updatedAt,
         pinned
-        from notices
+        FROM notices
     </select>
     <select id="findById" resultType="io.cavia.trader.module.notice.dto.NoticeDto">
-        select
+        SELECT
         id,
         title,
         content,
         created_at as createdAt,
         updated_at as updatedAt,
         pinned
-        from notices
-        where id = #{id}
+        FROM notices
+        WHERE id = #{id}
     </select>
     <select id="findPinned" resultType="io.cavia.trader.module.notice.dto.NoticeDto">
-        select
+        SELECT
         id,
         title,
         content,
         created_at as createdAt,
         updated_at as updatedAt,
         pinned
-        from notices
-        where pinned = true;
+        FROM notices
+        WHERE pinned = true
     </select>
     <select id="noticeList" resultType="io.cavia.trader.module.notice.dto.NoticeDto">
-        select
+        SELECT
         id,
         title,
         content,
         created_at as createdAt,
         updated_at as updatedAt,
         pinned
-        from notices
-        order by pinned DESC, created_at DESC
+        FROM notices
+        ORDER BY pinned DESC, created_at DESC
         LIMIT #{limit} OFFSET #{offset}
     </select>
     <select id="noticeCount" parameterType="int" resultType="int">
-        select count(*)
-        from notices
+        SELECT count(*)
+        FROM notices
     </select>
     <select id="countById" parameterType="int" resultType="int">
-        select count(*)
-        from notices
-        where id = #{id}
+        SELECT count(*)
+        FROM notices
+        WHERE id = #{id}
     </select>
     <delete id="deleteNotice" parameterType="io.cavia.trader.module.notice.dto.NoticeDto">
-        delete
-        from notices
-        where id = #{id}
+        DELETE
+        FROM notices
+        WHERE id = #{id}
     </delete>
     <update id="updateNotice" parameterType="map">
-        update notices
+        UPDATE notices
         <set>
             <if test="title != null">
                 title=#{title},
@@ -87,20 +87,20 @@
                 content=#{content},
             </if>
             updated_at=#{updatedAt},
-            pinned=#{pinned},
+            pinned=#{pinned}
         </set>
-        where id=#{id}
+        WHERE id=#{id}
     </update>
     <update id="updateOnlyPinned" parameterType="map">
-        update notices
+        UPDATE notices
         <set>
             updated_at=#{updatedAt},
-            pinned=#{pinned},
+            pinned=#{pinned}
         </set>
-        where id=#{id}
+        WHERE id=#{id}
     </update>
     <update id="updateTitleAndContent" parameterType="map">
-        update notices
+        UPDATE notices
         <set>
             <if test="title != null">
                 title=#{title},
@@ -108,8 +108,8 @@
             <if test="content != null">
                 content=#{content},
             </if>
-            updated_at=#{updatedAt},
+            updated_at=#{updatedAt}
         </set>
-        where id=#{id}
+        WHERE id=#{id}
     </update>
 </mapper>

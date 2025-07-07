@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <!-- 기본 파비콘 -->
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+    <!-- 구형 브라우저 호환용 ICO -->
+    <link rel="shortcut icon" href="/images/favicon.ico">
     <link rel="stylesheet" href="/css/header.css">
     <link rel="stylesheet" href="/css/footer.css">
     <link rel="stylesheet" href="/css/members.css">
@@ -46,6 +52,7 @@
     window.onload = async function () {
         const token = localStorage.getItem('jwt-token');
         if (!token) {
+            document.getElementById('load-more').style.display = 'none';
             document.getElementById('message').innerText = '로컬 스토리지에 토큰이 없습니다. 먼저 로그인을 해주세요.';
             return;
         }
@@ -57,8 +64,8 @@
             });
             if(!res1.ok) throw new Error('회원 정보를 불러오지 못했습니다');
             setupLogout();
-
-            const member = await res1.json();
+            const responseBody = await res1.json();
+            const member = responseBody.data;
             document.getElementById('nickname').innerText = member.nickname;
             document.getElementById('cash').innerText = member.cash;
             document.getElementById('total-score').innerText = member.totalScore;
@@ -69,7 +76,8 @@
                     'Authorization': 'Bearer ' + token
                 }
             });
-            totalCount = await countRes.json();
+            const countResBody = await countRes.json();
+            totalCount = countResBody.data;
 
             await loadMoreGameParticipation();
         }catch(err) {
@@ -85,9 +93,18 @@
                 headers: {
                     'Authorization': 'Bearer ' + token
                     }
-                });
-            if(!res2.ok) throw new Error('게임 기록을 불러오지 못했습니다');
-            const gameParticipation = await res2.json();
+            });
+            if (res2.status === 404 && offset === 0) {
+                const list = document.getElementById('gameDTO-list');
+                list.innerHTML = '<p>참여한 게임이 없습니다.</p>';
+                document.getElementById('load-more').style.display = 'none';
+                return;
+            }
+            const res2Body = await res2.json();
+            if(!res2.ok) {
+                throw new Error(res2Body.message || '게임 기록을 불러오지 못했습니다');
+            }
+            const gameParticipation = res2Body.data;
             const list = document.getElementById('gameDTO-list');
             if(gameParticipation.length === 0 && offset === 0 ) {
                 list.innerHTML = '<li>참여한 게임이 없습니다.</li>'
@@ -98,15 +115,20 @@
                    div.className = 'game-card';
                    const date = new Date(gameDTO.enteredAt);
                    const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                   const returnRate = Math.round(((gameDTO.returnRate - 1) * 10000)) / 100;
+                   let rateClass = 'neutral';
+                   if (returnRate > 0) rateClass = 'positive';
+                   else if (returnRate < 0) rateClass = 'negative';
+                   const rateDisplay = `<p><strong>수익률:</strong> <span class="${rateClass}">${returnRate > 0 ? '+' : ''}${returnRate}%</span></p>`;
                    div.innerHTML =
                    `<div class="card-header">
                         <span class="game-rank"> ${gameDTO.gameRank}위</span>
                         <span class="game-date"> ${formatted}</span>
                     </div>
                     <div class="card-body">
-                        <p><strong>수익률:</strong> ${gameDTO.returnRate}%</p>
-                        <p><strong>점수:</strong> ${gameDTO.earnedScore} → ${gameDTO.postScore}</p>
-                        <p><strong>자산:</strong> ${gameDTO.earnedCash} → ${gameDTO.postCash}</p>
+                        ${rateDisplay}
+                        <p><strong>점수:</strong> ${gameDTO.postScore-gameDTO.earnedScore} → ${gameDTO.postScore}</p>
+                        <p><strong>자산:</strong> ${gameDTO.postCash-gameDTO.earnedCash} → ${gameDTO.postCash}</p>
                     </div>`;
                     list.appendChild(div);
                 });
@@ -116,7 +138,8 @@
                 }
             }
         }catch (err) {
-
+            console.error("❌ 게임 기록 로딩 실패:", err);
+            document.getElementById('load-more').style.display = 'none';
         }
     }
 </script>

@@ -3,37 +3,42 @@ package io.cavia.trader.module.auth.service;
 import io.cavia.trader.common.email.EmailService;
 import io.cavia.trader.common.exception.ApiException;
 import io.cavia.trader.common.exception.ErrorCode;
-import io.cavia.trader.module.auth.dto.SignupDto;
+import io.cavia.trader.module.auth.aop.RequiresRecaptcha;
+import io.cavia.trader.module.auth.dto.SignupRequestDto;
 import io.cavia.trader.module.auth.entity.EmailVerification;
 import io.cavia.trader.module.auth.repository.EmailVerificationRepository;
 import io.cavia.trader.module.jwt.JwtUtil;
 import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthServiceImpl implements AuthService {
 
     private final EmailService emailService;
     private final EmailVerificationRepository emailVerificationRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final TemplateEngine templateEngine;
     private final MemberService memberService;
-    @Value("${score.rank_max_score}")
-    private long DEFAULT_SCORE;
 
-    @Value("${member.cash.default}")
-    private Long memberCashDefault;
-
+    @RequiresRecaptcha
     @Override
     public void sendVerificationEmail(String email) {
         String authKey = String.valueOf((int) (Math.random() * 900000 + 100000));
@@ -43,17 +48,20 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void verifyPasswordResetVerificationRequest(String email, String authKey) {
+    @Transactional(readOnly = true)
+    public void verifyCodeForPasswordReset(String email, String authKey) {
         verifyAuthKey(email, authKey);
         memberService.getMemberByEmail(email);
     }
 
     @Override
-    public void verifySignupVerificationRequest(String email, String authKey) {
+    @Transactional(readOnly = true)
+    public void verifyCodeForSignup(String email, String authKey) {
         verifyAuthKey(email, authKey);
         memberService.validateDuplicateEmail(email);
     }
 
+    @Transactional(readOnly = true)
     private void verifyAuthKey(String email, String authKey) {
         EmailVerification emailVerification = emailVerificationRepository.findByEmail(email)
                 .orElseThrow(() -> new ApiException(ErrorCode.EMAIL_VERIFICATION_NOT_FOUND));
@@ -66,36 +74,28 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void validateDuplicateNickname(String nickname) {
         memberService.validateDuplicateNickname(nickname);
     }
 
     @Override
-    public Member join(SignupDto signupDto) {
-        Member member = Member.builder()
-                .email(signupDto.getEmail())
-                .nickname(signupDto.getNickname())
-                .password(passwordEncoder.encode(signupDto.getPassword()))
-                .totalScore((int) DEFAULT_SCORE/2)
-                .cash(memberCashDefault)
-                .build();
+    public Member register(SignupRequestDto requestDto) {
+        verifyAuthKey(requestDto.getEmail(), requestDto.getAuthKey());
+        memberService.validateDuplicateEmail(requestDto.getEmail());
+        memberService.validateDuplicateNickname(requestDto.getNickname());
 
-        memberService.validateDuplicateNickname(signupDto.getNickname());
-        memberService.validateDuplicateEmail(signupDto.getEmail());
-        verifyAuthKey(signupDto.getEmail(), signupDto.getAuthKey());
-        memberService.createMember(member);
-        System.out.println("회원가입 완료 member = " + member);
+        Member member = memberService.createMember(
+                requestDto.getEmail(),
+                requestDto.getPassword(),
+                requestDto.getNickname()
+        );
+        log.debug("회원가입 완료 : member = {}", member);
         return member;
     }
 
-    /**
-     * 로그인 비즈니스 로직
-     *
-     * @param email    로그인 시도 이메일
-     * @param password 로그인 시도 비밀번호
-     * @return 생성된 JWT
-     */
     @Override
+    @Transactional(readOnly = true)
     public String login(String email, String password) {
         try {
             Member member = memberService.getMemberByEmail(email);
@@ -103,6 +103,28 @@ public class AuthServiceImpl implements AuthService {
             return jwtUtil.createToken(member.getId(), member.getRole());
         } catch (ApiException e) {
             throw new ApiException(ErrorCode.LOGIN_FAILED);
+        }
+    }
+
+    @Override
+    public void resetPassword(String email, String authKey, String rawPassword) {
+        verifyAuthKey(email, authKey);
+        Member member = memberService.getMemberByEmail(email);
+        memberService.changePassword(member.getId(), rawPassword);
+    }
+
+    @Override
+    public String getTermAsRawText(String type) {
+        String path = "texts/terms/" + type + ".md";
+        Resource resource = new ClassPathResource(path);
+        if (!resource.exists()) {
+            throw new ApiException(ErrorCode.TERMS_NOT_FOUND);
+        }
+        try {
+            Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
+            return FileCopyUtils.copyToString(reader);
+        } catch (IOException e) {
+            throw new ApiException(ErrorCode.TERMS_OUTPUT_FAILED);
         }
     }
 
@@ -119,13 +141,10 @@ public class AuthServiceImpl implements AuthService {
         // 템플릿을 사용하여 HTML 본문 생성
         String htmlBody = templateEngine.process("email/auth-email", context);
 
-        emailService.sendEmail(to, "[TRADER.IO] 이메일 인증", htmlBody);
-    }
-
-    @Override
-    public void resetPassword(String email, String authKey, String rawPassword) {
-        verifyAuthKey(email, authKey);
-        Member member = memberService.getMemberByEmail(email);
-        memberService.changePassword(member.getId(), rawPassword);
+        try {
+            emailService.sendEmail(to, "[TRADER.IO] 이메일 인증", htmlBody);
+        } catch (RuntimeException e) {
+            throw new ApiException(ErrorCode.EMAIL_SEND_FAILED);
+        }
     }
 }

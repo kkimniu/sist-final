@@ -18,6 +18,7 @@ public enum ErrorCode {
     INVALID_AUTH_KEY(HttpStatus.BAD_REQUEST, "인증키가 일치하지 않습니다"),
 
     INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "요청 파라미터가 유효하지 않습니다"),
+    INVALID_RECAPTCHA_TOKEN(HttpStatus.BAD_REQUEST, "reCAPTCHA 인증이 유효하지 않습니다"),
 
     // ========== 401 UNAUTHORIZED ==========
     /**
@@ -35,6 +36,8 @@ public enum ErrorCode {
     GAME_HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "게임 참여 이력을 찾을 수 없습니다"),
     USER_RANKING_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자 랭킹 정보를 찾을 수 없습니다"),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문 정보를 찾을 수 없습니다"),
+    TERMS_NOT_FOUND(HttpStatus.NOT_FOUND, "약관 파일을 찾을 수 없습니다"),
+
 
 
     // ========== 409 CONFLICT ==========
@@ -56,7 +59,8 @@ public enum ErrorCode {
      * DB UPDATE/DELETE 실패 등 예측하지 못한 서버 에러
      */
     DATABASE_OPERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 작업에 실패했습니다"),
-    EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 발송에 실패했습니다");
+    EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 발송에 실패했습니다"),
+    TERMS_OUTPUT_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "약관 파일 불러오기에 실패했습니다");
 
 
     private final HttpStatus httpStatus;
