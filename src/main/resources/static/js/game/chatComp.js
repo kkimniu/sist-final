@@ -7,12 +7,13 @@ const nickname = document.getElementById("nickname");
 const cash = document.getElementById("cash");
 const stockPrice = document.getElementById("stockPrice");
 const holdingStocks = document.getElementById("stocksHolding");
-const userJoinedCount = document.getElementById("userJoinedCount");
-const remainingTime = document.getElementById("remainingTime");
+const chatInputContainer = document.getElementById("chatInputContainer");
+
+let userInput = false;
 let chatSocket;
+let chatAutoScroll = true;
 
 chatSend.addEventListener("click", function (event) {
-    console.log("채팅 보내기 클릭: " + chatInput.value);
     chatSocket.send(
         JSON.stringify(
             {
@@ -21,6 +22,7 @@ chatSend.addEventListener("click", function (event) {
                 "message": chatInput.value,
             })
     )
+    chatInput.value = "";
 });
 
 function chatSocketHandler() {
@@ -37,7 +39,11 @@ function chatSocketHandler() {
 
     chatSocket.onmessage = function (event) {
         let msgJson = JSON.parse(event.data);
-        chatLog.innerText = chatLog.innerText + "\n" + msgJson.memberNickname + ": " + msgJson.msg;
+        chatLog.innerText = chatLog.innerText + "\n" + msgJson.memberNickname + ": " + msgJson.msg + "\n";
+        if (chatAutoScroll) {
+            chatLayout.scrollTop = chatLayout.scrollHeight;
+        }
+        chatInputContainer.style.bottom = "10px";
     }
     chatSocket.onclose = function (event) {
         console.log("채팅 연결 종료!");
@@ -46,3 +52,38 @@ function chatSocketHandler() {
         alert("채팅 연결 오류!");
     };
 }
+
+chatLayout.addEventListener("mousedown", function (event) {
+    userInput = true;
+});
+chatLayout.addEventListener("mouseup", function (event) {
+    if (chatLayout.scrollTop + chatLayout.clientHeight >= chatLayout.scrollHeight - 10) {
+        chatAutoScroll = true;
+    } else {
+        chatAutoScroll = false;
+    }
+    userInput = false;
+});
+
+chatLayout.addEventListener("wheel", function (event) {
+    userInput = true;
+    clearTimeout(window.userInputTimer);
+    window.userInputTimer = setTimeout(() => {
+        if (chatLayout.scrollTop + chatLayout.clientHeight >= chatLayout.scrollHeight - 10) {
+            chatAutoScroll = true;
+        } else {
+            chatAutoScroll = false;
+        }
+        userInput = false;
+    }, 300); // 0.3초 안에 추가 입력 없으면 false
+});
+
+document.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+       if (document.activeElement === chatInput) {
+           chatSend.click();
+       } else {
+           chatInput.focus();
+       }
+    }
+});
