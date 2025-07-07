@@ -517,3 +517,18 @@ label[for="new-password-input"] {
   color: #3366cc;
   text-decoration: underline;
 }
+
+.positive {
+    color: #d93025; /* 붉은색 */
+    font-weight: bold;
+}
+
+.negative {
+    color: #1a73e8; /* 파란색 */
+    font-weight: bold;
+}
+
+.neutral {
+    color: #5f6368; /* 회색 */
+    font-weight: bold;
+}
