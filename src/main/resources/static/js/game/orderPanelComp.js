@@ -7,6 +7,8 @@ const panelLayout = document.getElementById("panelLayout");
 const promisePanel = document.getElementById("promisePanel");
 const tradeLogPanel = document.getElementById("tradeLogPanel");
 
+const regex = /^(\s*|-?\d+(\.\d+)?\s*)$/;
+
 
 function showSellPanel(){
 
@@ -54,12 +56,28 @@ function showTradeLogPanel() {
 }
 
 function callBackRequestSellOrder() {
+    if(!regex.test(document.getElementById("sellOrderPrice").value)){
+        showModal("가격에 숫자가 아닌 값이 입력되었습니다.");
+        document.getElementById("sellOrderPrice").value = "";
+        return;
+    }
+    if(!regex.test(document.getElementById("sellOrderQuantity").value)){
+        showModal("수량에 숫자가 아닌 값이 입력되었습니다.");
+        document.getElementById("sellOrderQuantity").value = "";
+        return;
+    }
+
     requestSellOrder()
         .then(data => {
             console.log(data);
         });
 }
 function callBackRequestMarketSellOrder() {
+    if(!regex.test(document.getElementById("sellOrderQuantity").value)){
+        showModal("수량에 숫자가 아닌 값이 입력되었습니다.");
+        document.getElementById("sellOrderQuantity").value = "";
+        return;
+    }
     requestMarketSellOrder()
         .then(data => {
             console.log(data);
@@ -67,6 +85,18 @@ function callBackRequestMarketSellOrder() {
 }
 
 function callBackRequestBuyOrder() {
+
+    if(!regex.test(document.getElementById("buyOrderPrice").value)){
+        showModal("가격에 숫자가 아닌 값이 입력되었습니다.");
+        document.getElementById("buyOrderPrice").value = "";
+        return;
+    }
+    if(!regex.test(document.getElementById("buyOrderQuantity").value)){
+        showModal("수량에 숫자가 아닌 값이 입력되었습니다.");
+        document.getElementById("buyOrderQuantity").value = "";
+        return;
+    }
+
     requestBuyOrder()
         .then(data => {
             console.log(data);
@@ -74,6 +104,11 @@ function callBackRequestBuyOrder() {
 }
 
 function callBackRequestMarketBuyOrder() {
+    if(!regex.test(document.getElementById("buyOrderQuantity").value)){
+        showModal("수량에 숫자가 아닌 값이 입력되었습니다.");
+        document.getElementById("buyOrderQuantity").value = "";
+        return;
+    }
     requestMarketBuyOrder()
         .then(data => {
             console.log(data);

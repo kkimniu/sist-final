@@ -14,15 +14,25 @@ let chatSocket;
 let chatAutoScroll = true;
 
 chatSend.addEventListener("click", function (event) {
-    chatSocket.send(
-        JSON.stringify(
-            {
-                "type": "chat",
-                "Authorization": localStorage.getItem("jwt-token"),
-                "message": chatInput.value,
-            })
-    )
-    chatInput.value = "";
+    if (chatInput.value === "") {
+        showModal("공백은 입력할 수 없습니다.");
+        return;
+    }
+    if (chatInput.value.length > 100) {
+        showModal("100자 이상의 채팅은 전송할 수 없습니다.");
+        chatInput.value = "";
+        return;
+    }
+        chatSocket.send(
+            JSON.stringify(
+                {
+                    "type": "chat",
+                    "Authorization": localStorage.getItem("jwt-token"),
+                    "message": chatInput.value,
+                })
+        )
+        chatInput.value = "";
+
 });
 
 function chatSocketHandler() {
@@ -34,7 +44,6 @@ function chatSocketHandler() {
                 "type": "validate",
                 "Authorization": localStorage.getItem("jwt-token")
             }));
-        console.log("채팅 연결 성공!");
     };
 
     chatSocket.onmessage = function (event) {

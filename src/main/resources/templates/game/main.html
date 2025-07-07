@@ -4,15 +4,24 @@
     <meta charset="UTF-8">
     <title>게임 메인 화면</title>
 </head>
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+<!-- 구형 브라우저 호환용 ICO -->
+<link rel="shortcut icon" href="/images/favicon.ico">
+<link rel="stylesheet" href="/css/header.css">
+<link rel="stylesheet" href="/css/footer.css">
 <link rel="stylesheet" href="/css/game.css">
 <body>
+<div th:replace="~{fragments/header :: header}"></div>
 <div id="orderFeedback" class="info-guide">📢: 거래가 완료 되었습니다.</div>
 <div id="gameProgressDisplay">
     <div id=gameInfoLayout class="component-box">
         <div id="nicknameLayout"><label id=nickname></label><br><label id="totalScore"></label></div>
         <label class="info-guide">보유 현금: </label><label id="cash" class="info"></label><br>
         <label class="info-guide">주가: </label><label id="stockPrice" class="info"></label><br>
-        <label class="info-guide">보유 주식: </label><label id="stocksHolding" class="info"></label><label id="returnRate" class="info"></label><br>
+        <label class="info-guide">보유 주식: </label><label id="stocksHolding" class="info"></label><label id="returnRate"
+                                                                                                       class="info"></label><br>
         <label class="info-guide">게임참여 인원: </label><label id="numberOfParticipation" class="info"></label><br>
         <label class="info-guide">남은 세션 시간: </label><label id="timeLeft" class="info"></label>
     </div>
@@ -188,25 +197,25 @@
                         </div>
                     </div>
                     <div id="promisePanel">
-                            <table id="promiseTable">
-                                <tr>
-                                    <th>주문번호</th>
-                                    <th>가격</th>
-                                    <th>수량</th>
-                                    <th>요청시간</th>
-                                    <th></th>
-                                </tr>
-                            </table>
+                        <table id="promiseTable">
+                            <tr>
+                                <th>주문번호</th>
+                                <th>가격</th>
+                                <th>수량</th>
+                                <th>요청시간</th>
+                                <th></th>
+                            </tr>
+                        </table>
                     </div>
                     <div id="tradeLogPanel">
-                            <table id="tradeLogTable">
-                                <tr>
-                                    <th>주문번호</th>
-                                    <th>가격</th>
-                                    <th>수량</th>
-                                    <th>거래시간</th>
-                                </tr>
-                            </table>
+                        <table id="tradeLogTable">
+                            <tr>
+                                <th>주문번호</th>
+                                <th>가격</th>
+                                <th>수량</th>
+                                <th>거래시간</th>
+                            </tr>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -223,11 +232,13 @@
     </div>
 </div>
 <div id="gameEndDisplay" style="display: none">
-    <H1>게임 결과</H1>
-    <label id="gameEndDisplayGameRank"></label>
-    <label id="gameEndDisplayReturnRate"></label>
-    <label id="gameEndDisplayEarnedScore"></label>
-    <label id="gameEndDisplayEarnedCash"></label>
+    <div class="component-box">
+        <H1 class="info">게임 결과</H1>
+        <label class="info">순위:</label><label id="gameEndDisplayGameRank" class="info"></label><br>
+        <label class="info">수익률:</label><label id="gameEndDisplayReturnRate" class="info"></label><br>
+        <label class="info">획득점수:</label><label id="gameEndDisplayEarnedScore" class="info"></label><br>
+        <label class="info">획득자산:</label><label id="gameEndDisplayEarnedCash" class="info"></label><br>
+    </div>
 </div>
 <div id="loadingDisplay" style="display: none">
     <H1>결과 화면 로딩중...</H1>
@@ -239,5 +250,6 @@
 <script src="/js/game/orderPanelComp.js"></script>
 <script src="/js/game/gameEndDisplayComp.js"></script>
 <script src="/js/game/modalComp.js"></script>
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

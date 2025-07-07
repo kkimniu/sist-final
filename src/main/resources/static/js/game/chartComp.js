@@ -841,7 +841,7 @@ function chartSocketHandler() {
             const feedback = document.getElementById("orderFeedback");
             feedback.style.display = "block";
             setTimeout(() => {
-                feedback.style.display = "none";
+                    feedback.style.display = "none";
             }, 3000);
 
             // 플레이어 스테이터스가 업데이트 됐을 때의 데이터를 처리해야 함
