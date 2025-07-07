@@ -115,13 +115,18 @@
                    div.className = 'game-card';
                    const date = new Date(gameDTO.enteredAt);
                    const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                   const returnRate = Math.round(((gameDTO.returnRate - 1) * 10000)) / 100;
+                   let rateClass = 'neutral';
+                   if (returnRate > 0) rateClass = 'positive';
+                   else if (returnRate < 0) rateClass = 'negative';
+                   const rateDisplay = `<p><strong>수익률:</strong> <span class="${rateClass}">${returnRate > 0 ? '+' : ''}${returnRate}%</span></p>`;
                    div.innerHTML =
                    `<div class="card-header">
                         <span class="game-rank"> ${gameDTO.gameRank}위</span>
                         <span class="game-date"> ${formatted}</span>
                     </div>
                     <div class="card-body">
-                        <p><strong>수익률:</strong> ${(gameDTO.returnRate * 100).toFixed(2)}%</p>
+                        ${rateDisplay}
                         <p><strong>점수:</strong> ${gameDTO.postScore-gameDTO.earnedScore} → ${gameDTO.postScore}</p>
                         <p><strong>자산:</strong> ${gameDTO.postCash-gameDTO.earnedCash} → ${gameDTO.postCash}</p>
                     </div>`;
