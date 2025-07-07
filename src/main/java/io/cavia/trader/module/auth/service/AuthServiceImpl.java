@@ -3,7 +3,7 @@ package io.cavia.trader.module.auth.service;
 import io.cavia.trader.common.email.EmailService;
 import io.cavia.trader.common.exception.ApiException;
 import io.cavia.trader.common.exception.ErrorCode;
-import io.cavia.trader.module.auth.dto.SignupDto;
+import io.cavia.trader.module.auth.aop.RequiresRecaptcha;
 import io.cavia.trader.module.auth.dto.SignupRequestDto;
 import io.cavia.trader.module.auth.entity.EmailVerification;
 import io.cavia.trader.module.auth.repository.EmailVerificationRepository;
@@ -12,10 +12,8 @@ import io.cavia.trader.module.member.entity.Member;
 import io.cavia.trader.module.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
@@ -36,16 +34,11 @@ public class AuthServiceImpl implements AuthService {
 
     private final EmailService emailService;
     private final EmailVerificationRepository emailVerificationRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final TemplateEngine templateEngine;
     private final MemberService memberService;
-    @Value("${score.rank_max_score}")
-    private long DEFAULT_SCORE;
 
-    @Value("${member.cash.default}")
-    private Long memberCashDefault;
-
+    @RequiresRecaptcha
     @Override
     public void sendVerificationEmail(String email) {
         String authKey = String.valueOf((int) (Math.random() * 900000 + 100000));
@@ -87,24 +80,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Member join(SignupDto signupDto) {
-        Member member = Member.builder()
-                .email(signupDto.getEmail())
-                .nickname(signupDto.getNickname())
-                .password(passwordEncoder.encode(signupDto.getPassword()))
-                .totalScore((int) DEFAULT_SCORE / 2)
-                .cash(memberCashDefault)
-                .build();
-
-        memberService.validateDuplicateNickname(signupDto.getNickname());
-        memberService.validateDuplicateEmail(signupDto.getEmail());
-        verifyAuthKey(signupDto.getEmail(), signupDto.getAuthKey());
-        memberService.createMember(member);
-        System.out.println("회원가입 완료 member = " + member);
-        return member;
-    }
-
-    @Override
     public Member register(SignupRequestDto requestDto) {
         verifyAuthKey(requestDto.getEmail(), requestDto.getAuthKey());
         memberService.validateDuplicateEmail(requestDto.getEmail());
@@ -143,7 +118,7 @@ public class AuthServiceImpl implements AuthService {
         String path = "texts/terms/" + type + ".md";
         Resource resource = new ClassPathResource(path);
         if (!resource.exists()) {
-            throw new ApiException(ErrorCode.USER_RANKING_NOT_FOUND);
+            throw new ApiException(ErrorCode.TERMS_NOT_FOUND);
         }
         try {
             Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
@@ -166,6 +141,10 @@ public class AuthServiceImpl implements AuthService {
         // 템플릿을 사용하여 HTML 본문 생성
         String htmlBody = templateEngine.process("email/auth-email", context);
 
-        emailService.sendEmail(to, "[TRADER.IO] 이메일 인증", htmlBody);
+        try {
+            emailService.sendEmail(to, "[TRADER.IO] 이메일 인증", htmlBody);
+        } catch (RuntimeException e) {
+            throw new ApiException(ErrorCode.EMAIL_SEND_FAILED);
+        }
     }
 }

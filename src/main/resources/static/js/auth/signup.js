@@ -7,6 +7,7 @@ const signupData = {
     nickname: '',
     password: ''
 };
+let recaptchaToken;
 
 window.onload = function() {
     // 약관 내용을 불러오는 함수 호출
@@ -61,6 +62,19 @@ function showMessage(elementId, message, isError = true) {
     }
 }
 
+// reCAPTCHA 성공 시 실행될 콜백 함수
+function onRecaptchaSuccess(token) {
+    console.log("reCAPTCHA 성공, 토큰:", token);
+    recaptchaToken = token;
+    showMessage('email-error', ''); // 성공했으니 에러 메시지는 지웁니다.
+}
+
+// reCAPTCHA 토큰 만료 시 실행될 콜백 함수
+function onRecaptchaExpired() {
+    console.log("reCAPTCHA 토큰 만료");
+    recaptchaToken = null; // 토큰을 비웁니다.
+}
+
 // 1. 약관 동의
 document.getElementById('btn-terms-next').addEventListener('click', () => {
     signupData.termsOfServiceAgreed = document.getElementById('termsOfServiceAgreed').checked;
@@ -71,26 +85,37 @@ document.getElementById('btn-terms-next').addEventListener('click', () => {
     }
     showPage('page-email');
 });
-
-// 2. 이메일 발송
+// 2. 이메일 발송 버튼 클릭 이벤트 핸들러 수정
 document.getElementById('btn-email-next').addEventListener('click', () => {
     signupData.email = document.getElementById('email').value;
     if (!signupData.email) {
         showMessage('email-error', '이메일을 입력해주세요.');
         return;
     }
+
+    // 이제 grecaptcha.getResponse() 대신 전역 변수를 확인합니다.
+    if (!recaptchaToken) {
+        showMessage('email-error', '"로봇이 아닙니다"를 체크해주세요.');
+        return;
+    }
+
     showPage('page-verify');
     document.getElementById('verify-email-display').innerText = signupData.email;
     showMessage('verify-error', '인증 메일을 발송 중입니다. 잠시만 기다려주세요...', false);
     sendCodeInBackground();
 });
 
+// 인증 코드 발송 함수 수정
 async function sendCodeInBackground() {
     try {
         const res = await fetch('/api/auth/verification/send-code', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: signupData.email })
+            headers: { 'Content-Type': 'application/json',
+             'X-Recaptcha-Token': recaptchaToken
+             },
+            body: JSON.stringify({
+                email: signupData.email
+            })
         });
         if (!res.ok) {
             const errorResponse = await res.json();
@@ -100,6 +125,10 @@ async function sendCodeInBackground() {
         document.getElementById('authKey').focus();
     } catch (error) {
         showMessage('verify-error', error.message, true);
+    } finally{
+        // 서버 통신 후 reCAPTCHA를 리셋하고 토큰을 비웁니다.
+        grecaptcha.reset();
+        recaptchaToken = null;
     }
 }
 

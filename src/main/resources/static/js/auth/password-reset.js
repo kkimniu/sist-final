@@ -21,7 +21,23 @@ const step3Message = document.getElementById('step3-message');
 let userEmail = '';
 let userAuthKey = '';
 
-// 1단계: 인증메일 발송 버튼 클릭 이벤트
+// --- 추가: reCAPTCHA 토큰을 저장할 전역 변수 ---
+let recaptchaToken;
+
+// --- 추가: reCAPTCHA 성공 시 실행될 콜백 함수 ---
+function onRecaptchaSuccess(token) {
+    console.log("reCAPTCHA 성공, 토큰 저장");
+    recaptchaToken = token;
+    step1Message.textContent = ''; // 성공 시 에러 메시지 제거
+}
+
+// --- 추가: reCAPTCHA 토큰 만료 시 실행될 콜백 함수 ---
+function onRecaptchaExpired() {
+    console.log("reCAPTCHA 토큰 만료");
+    recaptchaToken = null;
+}
+
+// --- 1단계: 인증메일 발송 버튼 클릭 이벤트 (수정) ---
 formStep1.addEventListener('submit', (e) => {
     e.preventDefault();
     step1Message.textContent = '';
@@ -29,6 +45,12 @@ formStep1.addEventListener('submit', (e) => {
 
     if (!userEmail) {
         step1Message.textContent = '이메일을 입력해주세요.';
+        return;
+    }
+
+    // --- 추가: reCAPTCHA 토큰이 있는지 확인 ---
+    if (!recaptchaToken) {
+        step1Message.textContent = '"로봇이 아닙니다"를 체크해주세요.';
         return;
     }
 
@@ -40,33 +62,31 @@ formStep1.addEventListener('submit', (e) => {
     // --- 2. API 요청은 백그라운드에서 조용히 실행 ---
     fetch('/api/auth/verification/send-code', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Recaptcha-Token': recaptchaToken // --- 수정: 헤더에 토큰 추가 ---
+        },
         body: JSON.stringify({ email: userEmail })
     })
     .then(response => {
-        // 응답이 성공(2xx)이 아니면 에러를 발생시켜 .catch()로 넘깁니다.
         if (!response.ok) {
-            // 서버가 보낸 에러 메시지를 얻기 위해 response.json()을 시도합니다.
             return response.json().then(body => {
-                // 실제 에러 객체를 만들어서 구체적인 에러 메시지를 전달합니다.
                 throw new Error(body.message || '알 수 없는 오류로 이메일 발송에 실패했습니다.');
             });
         }
-        // 성공 시에는 아무것도 할 필요가 없습니다. 사용자는 이미 다음 단계에 있습니다.
         console.log('이메일 발송 요청이 서버에 성공적으로 접수되었습니다.');
     })
     .catch(error => {
-        // 여기서 실패 처리
-        // 이 코드는 10초 후에 실행될 수 있습니다.
         console.error('Error:', error);
-
-        // 사용자에게 실패를 알립니다.
         alert(`오류: ${error.message}\n이메일 주소를 확인하고 다시 시도해주세요.`);
-
-        // 사용자를 다시 1단계로 돌려보냅니다.
         step2Div.style.display = 'none';
         step1Div.style.display = 'block';
         step1Message.textContent = `오류: ${error.message}`;
+    })
+    .finally(() => {
+        // --- 추가: 성공/실패 여부와 관계없이 reCAPTCHA를 리셋 ---
+        grecaptcha.reset();
+        recaptchaToken = null;
     });
 });
 

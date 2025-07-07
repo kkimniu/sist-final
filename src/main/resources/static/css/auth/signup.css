@@ -1,10 +1,11 @@
 /* 약관 내용이 표시되는 박스*/
 .terms-display-box {
-    height: 180px; /* 기존 textarea와 비슷한 높이 */
+    height: 170px; /* 기존 textarea와 비슷한 높이 */
     overflow-y: auto; /* 내용이 길어지면 스크롤바 생성 */
     border: 1px solid #ccc;
     padding: 5px;
     background-color: #f9f9f9;
+    width: 100%
 }
 /* 약관 내용이 표시되는 박스 내부의 태그들에 대한 스타일 */
 
@@ -42,7 +43,13 @@
 
 /*이용약관 동의와 개인정보 처리방침*/
 .terms-group {
-  margin-bottom: 30px;
+  margin-bottom: 10px;
+  width: 100%
+}
+
+.terms-group h4{
+  margin-top: 0.6em;
+  margin-bottom: 0.3em;
 }
 
 /*이용약관 동의 체크박스*/
@@ -98,6 +105,13 @@
   color: white;
 }
 
+#page-terms {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  width: 50%;
+}
+
 /*이메일 인증 이메일 입력쪽*/
 #page-email {
   display: flex;
@@ -107,18 +121,12 @@
 }
 /*오류났을때 보여주는 메세지*/
 .error-message {
-  font-size: 13px;
+  height: 22px;
+  font-size: 15px;
   margin-top: 6px;
   display: block;
 }
 
-/*page-email*/
-#page-email {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 50%;
-}
 /*input type text*/
 #email {
   width: 100%;
@@ -198,4 +206,17 @@
   flex-direction: column;
   align-items: center;
   width: 50%;
+}
+
+/* reCAPTCHA 위젯을 감싸서 위아래 10px 간격 추가 */
+.recaptcha-container {
+    margin: 10px 0;
+}
+
+/* reCAPTCHA 위젯을 가운데 정렬하는 방법 */
+.recaptcha-container .g-recaptcha {
+    /* reCAPTCHA를 감싸는 div가 자동으로 생성되므로 */
+    /* 그 div를 가운데 정렬하기 위해 아래 스타일 적용 */
+    display: flex;
+    justify-content: center;
 }
