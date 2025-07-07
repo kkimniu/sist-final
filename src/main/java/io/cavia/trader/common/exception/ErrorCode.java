@@ -31,11 +31,21 @@ public enum ErrorCode {
     EMAIL_VERIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이메일의 인증 정보를 찾을 수 없습니다"),
     GAME_HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "게임 참여 이력을 찾을 수 없습니다"),
     USER_RANKING_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자 랭킹 정보를 찾을 수 없습니다"),
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문 정보를 찾을 수 없습니다"),
 
 
     // ========== 409 CONFLICT ==========
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다"),
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다"),
+
+
+    // ========== 422 UNPROCESSABLE ENTITY ==========
+    NOT_ENOUGH_BALANCE(HttpStatus.UNPROCESSABLE_ENTITY, "잔고가 부족합니다"),
+    NOT_ENOUGH_SHARES_HELD(HttpStatus.UNPROCESSABLE_ENTITY, "주식 보유량이 부족합니다"),
+
+
+    // ========== 429 TOO MANY REQUESTS ==========
+    TOO_MANY_ORDERS(HttpStatus.TOO_MANY_REQUESTS, "주문 건수가 초과되었습니다. 미체결주문을 취소해주세요."),
 
 
     // ========== 500 INTERNAL SERVER ERROR ==========
