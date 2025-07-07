@@ -28,14 +28,9 @@
 
     // 호가창 크기 지정
     const orderBookLayout = document.getElementById("orderBookLayout");
-    const orderBook = document.getElementById("orderBook");
+    const orderBook = document.getElementById("orderBookTable");
 
     orderBookLayout.querySelector("table").style.tableLayout = "fixed";
-
-    orderBookLayout.width = window.innerWidth * 0.3;
-    orderBookLayout.style.width = window.innerWidth * 0.3 + "px";
-    orderBookLayout.height = window.innerHeight * 0.5;
-    orderBookLayout.style.height = window.innerHeight * 0.5 + "px";
 
     orderBook.style.width = 100 + "%";
     orderBook.style.height = 100 + "%";
