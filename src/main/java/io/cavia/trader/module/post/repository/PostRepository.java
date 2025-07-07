@@ -1,8 +1,10 @@
 package io.cavia.trader.module.post.repository;
 
+import io.cavia.trader.module.post.dto.PostResponseDto;
 import io.cavia.trader.module.post.entity.Post;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PostRepository {
     /**
@@ -13,6 +15,8 @@ public interface PostRepository {
      * @return 게시글 목록
      */
     List<Post> findPosts(int limit, long offset);
+
+    Optional<PostResponseDto> findPostResponseDto(Long id);
 
     /**
      * 게시글 저장

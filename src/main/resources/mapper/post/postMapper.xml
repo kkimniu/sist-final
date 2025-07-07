@@ -5,18 +5,36 @@
 
 <mapper namespace="io.cavia.trader.module.post.repository.PostMapper">
 
-    <select id="findPosts" resultType="io.cavia.trader.module.post.entity.Post">
+    <select id="findPosts" resultType="io.cavia.trader.module.post.dto.PostResponseDto">
         SELECT
-        id,
-        content,
-        member_id,
-        created_at,
-        updated_at
+        p.id,
+        p.content,
+        p.member_id,
+        p.created_at,
+        p.updated_at,
+        m.nickname
         FROM
-        posts
+        posts p
+        INNER JOIN
+        members m ON p.member_id = m.id
         ORDER BY
-        created_at DESC
+        p.created_at DESC
         LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="findPostResponseDtoById" resultType="io.cavia.trader.module.post.dto.PostResponseDto">
+        SELECT
+        p.id,
+        p.content,
+        p.member_id,
+        p.created_at,
+        p.updated_at,
+        m.nickname
+        FROM
+        posts p
+        INNER JOIN
+        members m ON p.member_id = m.id
+        WHERE p.id = #{id}
     </select>
 
     <insert id="save" parameterType="io.cavia.trader.module.post.entity.Post" useGeneratedKeys="true" keyProperty="id">

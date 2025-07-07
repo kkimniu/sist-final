@@ -3,6 +3,8 @@ package io.cavia.trader.module.post.controller; // 본인 프로젝트에 맞는
 import io.cavia.trader.common.response.ApiResponse;
 import io.cavia.trader.common.response.ApiResponses;
 import io.cavia.trader.module.auth.security.UserDetailsImpl;
+import io.cavia.trader.module.post.dto.PostCreateRequestDto;
+import io.cavia.trader.module.post.dto.PostResponseDto;
 import io.cavia.trader.module.post.entity.Post;
 import io.cavia.trader.module.post.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -37,10 +39,9 @@ public class PostRestController {
      * POST /api/posts
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<?>> createPost(@RequestBody Post post,
+    public ResponseEntity<ApiResponse<?>> createPost(@RequestBody PostCreateRequestDto requestDto,
                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        post.setMemberId(userDetails.getMember().getId());
-        Post createdPost = postService.createPost(post);
+        PostResponseDto createdPost = postService.createPost(requestDto, userDetails.getMember().getId());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")

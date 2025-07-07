@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 게시글 데이터를 담는 클래스
+ * 게시글 데이터를 담는 도메인 객체
  *
  * @author KimBeomhee
  */
@@ -20,7 +20,8 @@ public class Post {
 
     private Long memberId; // 작성자 ID (FK)
 
-    private LocalDateTime createdAt; // 작성일
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now(); // 작성일
 
     private LocalDateTime updatedAt; // 수정일
 }

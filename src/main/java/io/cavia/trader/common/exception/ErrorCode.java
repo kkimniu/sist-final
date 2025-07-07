@@ -37,6 +37,7 @@ public enum ErrorCode {
     USER_RANKING_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자 랭킹 정보를 찾을 수 없습니다"),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문 정보를 찾을 수 없습니다"),
     TERMS_NOT_FOUND(HttpStatus.NOT_FOUND, "약관 파일을 찾을 수 없습니다"),
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다"),
 
 
 
