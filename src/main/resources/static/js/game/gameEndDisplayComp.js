@@ -7,9 +7,7 @@ function showGameEndDisplay() {
             console.log(returnRate);
             if (returnRate === 0) {
                 document.getElementById("gameEndDisplayReturnRate").style.color = "black";
-                console.log(0+"!");
             } else {
-                console.log(1);
                returnRate = Math.round(((data.returnRate - 1) * 10000)) / 100;
                 if (returnRate > 0) {
                     console.log(1-1);

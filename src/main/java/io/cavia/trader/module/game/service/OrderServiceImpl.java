@@ -1,5 +1,7 @@
 package io.cavia.trader.module.game.service;
 
+import io.cavia.trader.common.exception.ApiException;
+import io.cavia.trader.common.exception.ErrorCode;
 import io.cavia.trader.module.game.dto.GameDto;
 import io.cavia.trader.module.game.dto.OrderDto;
 import io.cavia.trader.module.game.dto.OrderTableDto;
@@ -22,7 +24,7 @@ public class OrderServiceImpl implements OrderService {
             PlayerStatusDto playerStatusDto = gameDto.getPlayerStatusDtos().get(targetId);
             Queue<OrderTableDto> orders = playerStatusDto.getOrderDto().getOrderTableDtos();
             if(orders.size() >= 10) {
-                throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "주문 건수가 초과되었습니다. 미체결주문을 취소해주세요.");
+                throw new ApiException(ErrorCode.TOO_MANY_ORDERS);
             }
 
             int totalQuantity = orderTableDto.getQuantity();
@@ -35,7 +37,7 @@ public class OrderServiceImpl implements OrderService {
 
             if (gameDto.getPlayerStatusDtos().get(targetId).getStocksHolding() <
                     orderTableDto.getQuantity()) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "주식보유량이 부족합니다.");
+                throw new ApiException(ErrorCode.NOT_ENOUGH_SHARES_HELD);
             } else {
                 orderTableDto.setId(String.format("%06d", playerStatusDto.getIdCreator().getAndIncrement() % 1000000));
                 orderTableDto.setCreatedAt(LocalDateTime.now());
@@ -50,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
             PlayerStatusDto playerStatusDto = gameDto.getPlayerStatusDtos().get(targetId);
             Queue<OrderTableDto> orders = playerStatusDto.getOrderDto().getOrderTableDtos();
             if(orders.size() >= 10) {
-                throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "주문 건수가 초과되었습니다. 미체결주문을 취소해주세요.");
+                throw new ApiException(ErrorCode.TOO_MANY_ORDERS);
             }
             int totalQuantity = orderTableDto.getQuantity();
             for (OrderTableDto dto : orders) {
@@ -61,7 +63,7 @@ public class OrderServiceImpl implements OrderService {
             orderTableDto.setQuantity(totalQuantity);
 
             if (gameDto.getPlayerStatusDtos().get(targetId).getEarnedCash() < (long) orderTableDto.getQuantity() * orderTableDto.getPrice()) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "잔고가 부족합니다.");
+                throw new ApiException(ErrorCode.NOT_ENOUGH_BALANCE);
             } else {
                 orderTableDto.setId(String.format("%06d", playerStatusDto.getIdCreator().getAndIncrement() % 1000000));
                 orderTableDto.setCreatedAt(LocalDateTime.now());
@@ -83,9 +85,8 @@ public class OrderServiceImpl implements OrderService {
                     playerStatusDto.setUpdated(true);
                 }
             });
-            if (isFinded.get()) {
-            } else {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "주문이 존재하지 않습니다.");
+            if (!isFinded.get()) {
+                throw new ApiException(ErrorCode.ORDER_NOT_FOUND);
             }
     }
 
@@ -94,7 +95,7 @@ public class OrderServiceImpl implements OrderService {
             PlayerStatusDto playerStatusDto = gameDto.getPlayerStatusDtos().get(targetId);
             if (playerStatusDto.getStocksHolding() <
                     marketOrderDto.getQuantity() + playerStatusDto.getOrderDto().getQuantityOfMarketSell()) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "주식보유량이 부족합니다.");
+                throw new ApiException(ErrorCode.NOT_ENOUGH_SHARES_HELD);
             } else {
                 playerStatusDto.getOrderDto().setQuantityOfMarketSell(
                         playerStatusDto.getOrderDto().getQuantityOfMarketSell() +
@@ -111,7 +112,7 @@ public class OrderServiceImpl implements OrderService {
             if (playerStatusDto.getEarnedCash() < (long) (marketOrderDto.getQuantity()
                     + playerStatusDto.getOrderDto().getQuantityOfMarketBuy())
                     * gameDto.getCurrentPrice()) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "잔고가 부족합니다.");
+                throw new ApiException(ErrorCode.NOT_ENOUGH_BALANCE);
             } else {
                 playerStatusDto.getOrderDto().setQuantityOfMarketBuy(
                         playerStatusDto.getOrderDto().getQuantityOfMarketBuy() +
