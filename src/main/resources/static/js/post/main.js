@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const newPost = result.data;
                 const newPostElement = createPostElement(newPost);
                 postContainer.prepend(newPostElement);
+                offset++;
                 postContent.value = '';
             } else {
                 alert('글 작성에 실패했습니다.');
