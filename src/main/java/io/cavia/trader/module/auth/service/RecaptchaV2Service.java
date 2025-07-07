@@ -27,7 +27,7 @@ public class RecaptchaV2Service implements RecaptchaService {
     public boolean verifyRecaptcha(String recaptchaToken) {
         // TODO: 다른 팀원들 개발용으로 검증 없이 통과하도록 만듦. 릴리즈 버전에서 삭제예정
         if ("hahaha".equals(secretKey)) {
-            log.warn("recaptcha.secret-key 프로퍼티 입력 안해서 리캡챠 토큰 검증 없이 통과");
+            log.warn("recaptcha.secret-key 프로퍼티 입력 안해서 리캡챠 토큰 검증 없이 통과, 개발테스트용");
             return true;
         }
         if (recaptchaToken == null || recaptchaToken.isEmpty()) {
@@ -46,7 +46,7 @@ public class RecaptchaV2Service implements RecaptchaService {
                     .map(responseDto -> responseDto.isSuccess())
                     .block());
         } catch (Exception e) {
-            throw new RuntimeException("리캡챠 인증 실패", e);
+            throw new RuntimeException("리캡챠 인증 중 오류 발생", e);
         }
     }
 }

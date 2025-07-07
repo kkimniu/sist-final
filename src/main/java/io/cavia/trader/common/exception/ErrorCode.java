@@ -18,6 +18,7 @@ public enum ErrorCode {
     INVALID_AUTH_KEY(HttpStatus.BAD_REQUEST, "인증키가 일치하지 않습니다"),
 
     INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "요청 파라미터가 유효하지 않습니다"),
+    INVALID_RECAPTCHA_TOKEN(HttpStatus.BAD_REQUEST, "reCAPTCHA 인증이 유효하지 않습니다"),
 
     // ========== 401 UNAUTHORIZED ==========
     /**

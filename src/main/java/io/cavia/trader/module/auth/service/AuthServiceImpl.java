@@ -3,6 +3,7 @@ package io.cavia.trader.module.auth.service;
 import io.cavia.trader.common.email.EmailService;
 import io.cavia.trader.common.exception.ApiException;
 import io.cavia.trader.common.exception.ErrorCode;
+import io.cavia.trader.module.auth.aop.RequiresRecaptcha;
 import io.cavia.trader.module.auth.dto.SignupRequestDto;
 import io.cavia.trader.module.auth.entity.EmailVerification;
 import io.cavia.trader.module.auth.repository.EmailVerificationRepository;
@@ -37,6 +38,7 @@ public class AuthServiceImpl implements AuthService {
     private final TemplateEngine templateEngine;
     private final MemberService memberService;
 
+    @RequiresRecaptcha
     @Override
     public void sendVerificationEmail(String email) {
         String authKey = String.valueOf((int) (Math.random() * 900000 + 100000));

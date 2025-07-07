@@ -110,10 +110,11 @@ async function sendCodeInBackground() {
     try {
         const res = await fetch('/api/auth/verification/send-code', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json',
+             'X-Recaptcha-Token': recaptchaToken
+             },
             body: JSON.stringify({
-                email: signupData.email,
-                recaptchaResponse: recaptchaToken // 콜백으로 받은 토큰을 사용합니다.
+                email: signupData.email
             })
         });
         if (!res.ok) {
