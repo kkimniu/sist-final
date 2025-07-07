@@ -29,13 +29,17 @@ async function requestSellOrder() {
     });
     if (responseOrder.status === 200) {
         return responseOrder;
-    }else if (responseOrder.status === 403) {
-        const errorData = await responseOrder.text();
-        throw new Error("조회 권한이 없는 유저 입니다!" + errorData);
+    } else if (responseOrder.status === 400) {
+        showModal("입력 값을 확인해주세요.");
+    } else if (responseOrder.status === 404) {
+        alert("게임에 참여하지 않은 유저 입니다, 메인 페이지로 이동합니다.");
+        location.href = "/";
     } else if (responseOrder.status === 422) {
         showModal("주식보유수량이 부족합니다.");
+    } else if (responseOrder.status === 429) {
+        showModal("더 이상 주문 할 수 없습니다. \n미체결 거래를 취소해주세요.");
     } else {
-        showModal("주식보유수량이 부족합니다.");
+        alert("주문 실패");
     }
 }
 
@@ -53,15 +57,17 @@ async function requestBuyOrder() {
     });
     if (responseOrder.status === 200) {
         return responseOrder;
-    }else if (responseOrder.status === 403) {
-        const errorData = await responseOrder.text();
-        throw new Error("조회 권한이 없는 유저 입니다!" + errorData);
+    } else if (responseOrder.status === 400) {
+        showModal("입력 값을 확인해주세요.");
+    } else if (responseOrder.status === 403) {
+        alert("게임에 참여하지 않은 유저 입니다, 메인 페이지로 이동합니다.");
+        location.href = "/";
     } else if (responseOrder.status === 422) {
-        showModal("잔금이 부족합니다.");
+        showModal("자산이 부족합니다.");
     } else if (responseOrder.status === 429) {
-        showModal("더 이상 주문을 할 수 없습니다. 미체결 거래를 취소해주세요.");
+        showModal("더 이상 주문 할 수 없습니다. \n미체결 거래를 취소해주세요.");
     } else {
-        showModal("잔금이 부족합니다.");
+        alert("주문 실패");
     }
 }
 
@@ -78,13 +84,15 @@ async function requestCancelOrder(orderId) {
     });
     if (responseOrder.status === 200) {
         return responseOrder;
-    }else if (responseOrder.status === 403) {
-        const errorData = await responseOrder.text();
-        throw new Error("조회 권한이 없는 유저 입니다!" + errorData);
-    } else if (responseOrder.status === 422) {
-        showModal("잘못된 주문번호가 입력되었습니다.");
+    } else if (responseOrder.status === 400) {
+        showModal("입력 값을 확인해주세요.");
+    } else if (responseOrder.status === 403) {
+        alert("게임에 참여하지 않은 유저 입니다, 메인 페이지로 이동합니다.");
+        location.href = "/";
+    } else if (responseOrder.status === 404) {
+        showModal("해당 주문을 찾을 수 없습니다");
     } else {
-        showModal("잘못된 주문번호가 입력되었습니다.")
+        showModal("주문 실패")
     }
 }
 
@@ -101,15 +109,15 @@ async function requestMarketSellOrder() {
     });
     if (responseOrder.status === 200) {
         return responseOrder;
-    }else if (responseOrder.status === 403) {
-        const errorData = await responseOrder.text();
-        throw new Error("조회 권한이 없는 유저 입니다!" + errorData);
+    } else if (responseOrder.status === 400) {
+        showModal("입력 값을 확인해주세요.");
+    } else if (responseOrder.status === 403) {
+        alert("게임에 참여하지 않은 유저 입니다, 메인 페이지로 이동합니다.");
+        location.href = "/";
     } else if (responseOrder.status === 422) {
         showModal("주식보유수량이 부족합니다.");
-    } else if (responseOrder.status === 429) {
-        showModal("더 이상 주문을 할 수 없습니다. 미체결 거래를 취소해주세요.");
     } else {
-        showModal("주식보유수량이 부족합니다.");
+        showModal("주문 실패");
     }
 }
 
@@ -126,13 +134,15 @@ async function requestMarketBuyOrder() {
     });
     if (responseOrder.status === 200) {
         return responseOrder;
-    }else if (responseOrder.status === 403) {
-        const errorData = await responseOrder.text();
-        throw new Error("조회 권한이 없는 유저 입니다!" + errorData);
-    } else if (responseOrder.status === 422){
+    } else if (responseOrder.status === 400) {
+        showModal("입력 값을 확인해주세요.");
+    } else if (responseOrder.status === 403) {
+        alert("게임에 참여하지 않은 유저 입니다, 메인 페이지로 이동합니다.");
+        location.href = "/";
+    } else if (responseOrder.status === 422) {
         showModal("잔금이 부족합니다.");
     } else {
-        showModal("잔금이 부족합니다.");
+        showModal("주문 실패");
     }
 }
 
@@ -146,11 +156,9 @@ async function requestEndedGameInfo() {
     });
     if (responseOrder.status === 200) {
         return responseOrder.json();
-    } else if (responseOrder.status === 403) {
-        const errorData = await responseOrder.text();
-        throw new Error("조회 권한이 없는 유저 입니다!" + errorData);
-    }else {
-        const errorData = await responseOrder.text();
-        throw new Error("게임 히스토리 조회 실패!" + errorData);
+    } else if (responseOrder.status === 404) {
+        alert("당신의 게임 참가 이력을 찾지 못했습니다.");
+    } else {
+        alert("게임 결과 조회 실패");
     }
 }

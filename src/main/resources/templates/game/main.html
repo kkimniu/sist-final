@@ -4,195 +4,9 @@
     <meta charset="UTF-8">
     <title>게임 메인 화면</title>
 </head>
-<style>
-    #graphContainer {
-        overflow-x: auto;
-    }
-
-    #priceChartContainer {
-        position: relative;
-        right: 30px;
-    }
-
-    #tradeVolumeChartContainer {
-        position: relative;
-        margin-top: 10px;
-        right: 30px;
-    }
-
-    #graphType {
-        display: flex;
-        align-items: center;
-        align-content: center;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: center;
-        width: 100%;
-    }
-
-    #priceChartWriter {
-        position: absolute;
-        left: 0;
-        top: 0;
-        margin-right: 30px;
-    }
-
-    #priceChartLayout {
-        position: absolute;
-        left: 0;
-        top: 0;
-        margin-right: 30px;
-    }
-
-    #tradeVolumeChartWriter {
-        position: absolute;
-        left: 0;
-        top: 0;
-    }
-
-    #tradeVolumeChartLayout {
-        position: absolute;
-        left: 0;
-        top: 0;
-    }
-
-    #orderContainer {
-        display: flex;
-    }
-
-    #orderBookLayout {
-        width: 40%;
-        height: 100%;
-        float: left;
-    }
-
-    #orderPanelLayout {
-        width: 50%;
-        height: 50%;
-        border-left: 1px solid black;
-        border-right: 1px solid black;
-        float: right;
-    }
-
-    #chatLayout {
-        clear: right;
-        display: flex;
-        align-items: center;
-        align-content: center;
-        flex-direction: column;
-        flex-wrap: nowrap;
-        justify-content: center;
-        width: 50%;
-        height: 50%;
-        border-left: 1px solid black;
-        border-right: 1px solid black;
-        border-bottom: 1px solid black;
-    }
-
-    #orderBook {
-        width: 100%;
-        height: 100%;
-
-        td {
-            text-align: center;
-            vertical-align: middle;
-        }
-    }
-
-    #tabLayout {
-        display: flex;
-        align-items: center;
-        align-content: center;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: center;
-        width: 100%;
-        height: 20%;
-        border-bottom: 1px solid black;
-        border-top: 1px solid black;
-    }
-
-    #PanelLayout {
-        display: flex;
-        align-items: center;
-        align-content: center;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: center;
-        width: 100%;
-        height: 80%;
-        border-bottom: 1px solid black;
-        border-top: 1px solid black;
-    }
-
-    #sellPanel {
-        display: block;
-        width: 100%;
-        height: 100%;
-        border-right: 1px solid black;
-    }
-
-    #buyPanel {
-        display: none;
-        width: 100%;
-        height: 100%;
-        border-right: 1px solid black;
-    }
-
-    #promisePanel {
-        display: none;
-        width: 100%;
-        height: 100%;
-        border-right: 1px solid black;
-    }
-
-    #tradeLogPanel {
-        display: none;
-        width: 100%;
-        height: 100%;
-        border-right: 1px solid black;
-    }
-
-    #chatLog {
-        height: 100px;
-        overflow-y: scroll;
-        width: 300px;
-    }
-
-    .modal {
-        display: none;
-        position: fixed;
-        top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: white;
-        border: 1px solid #ccc;
-        z-index: 1000;
-        width: 300px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        border-radius: 8px;
-    }
-
-    .modal-header {
-        padding: 10px;
-        background-color: #007bff;
-        color: white;
-        cursor: move;
-        font-weight: bold;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
-    }
-
-    .modal-content {
-        padding: 20px;
-    }
-
-    .close {
-        float: right;
-        font-size: 20px;
-        cursor: pointer;
-    }
-</style>
+<link rel="stylesheet" href="/css/game.css">
 <body>
+
 <div id="gameProgressDisplay">
     <div id=gameInfoLayout>
         <label id=nickname></label><br>
@@ -202,134 +16,139 @@
         <label>게임참여 인원: </label><label id="numberOfParticipation"></label><br>
         <label>남은 세션 시간: </label><label id=timeLeft></label>
     </div>
-
-    <div id = "graphType">
-        <div id = "graph30Sec" onclick = "show30SecChart();">30초</div>
-        <div id = "graph1Min" onclick = "show1MinChart();">1분</div>
-        <div id = "graph3Min" onclick = "show3MinChart();">3분</div>
-        <div id = "graph5Min" onclick = "show5MinChart();">5분</div>
+    <div id="graphType">
+        <div id="graph30Sec" onclick="show30SecChart();">30초</div>
+        <div id="graph1Min" onclick="show1MinChart();">1분</div>
+        <div id="graph3Min" onclick="show3MinChart();">3분</div>
+        <div id="graph5Min" onclick="show5MinChart();">5분</div>
     </div>
-    <div id="graphContainer">
-        <div id="priceChartContainer">
-            <canvas id="priceChartLayout"></canvas>
-            <canvas id="priceChartWriter"></canvas>
+    <div class="layoutWrapper">
+        <div class="mainArea">
+        <div id="graphDisplay" class="chart">
+            <div id="graphContainer">
+                <div id="priceChartContainer">
+                    <canvas id="priceChartLayout"></canvas>
+                    <canvas id="priceChartWriter"></canvas>
+                </div>
+                <div id="tradeVolumeChartContainer">
+                    <canvas id="tradeVolumeChartLayout"></canvas>
+                    <canvas id="tradeVolumeChartWriter"></canvas>
+                    <div id="timeScale1"></div>
+                    <div id="timeScale2"></div>
+                    <div id="timeScale3"></div>
+                </div>
+            </div>
+            <div id="graphScale">
+            </div>
         </div>
-        <div id="tradeVolumeChartContainer">
-            <canvas id="tradeVolumeChartLayout"></canvas>
-            <canvas id="tradeVolumeChartWriter"></canvas>
-            <div id="timeScale1"></div>
-            <div id="timeScale2"></div>
-            <div id="timeScale3"></div>
+        <div id="orderContainer" class="orderBook">
+            <div id="orderBookLayout">
+                <table id="orderBook">
+                    <tr>
+                        <td id="buy10"></td>
+                        <td id="buyPrice10"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td id="buy9"></td>
+                        <td id="buyPrice9"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td id="buy8"></td>
+                        <td id="buyPrice8"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td id="buy7"></td>
+                        <td id="buyPrice7"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td id="buy6"></td>
+                        <td id="buyPrice6"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td id="buy5"></td>
+                        <td id="buyPrice5"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td id="buy4"></td>
+                        <td id="buyPrice4"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td id="buy3"></td>
+                        <td id="buyPrice3"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td id="buy2"></td>
+                        <td id="buyPrice2"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td id="buy1"></td>
+                        <td id="buyPrice1"></td>
+                        <td id="buyAll"></td>
+                    </tr>
+                    <tr>
+                        <td id="sellAll"></td>
+                        <td id="sell1"></td>
+                        <td id="sellPrice1"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td id="sell2"></td>
+                        <td id="sellPrice2"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td id="sell3"></td>
+                        <td id="sellPrice3"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td id="sell4"></td>
+                        <td id="sellPrice4"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td id="sell5"></td>
+                        <td id="sellPrice5"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td id="sell6"></td>
+                        <td id="sellPrice6"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td id="sell7"></td>
+                        <td id="sellPrice7"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td id="sell8"></td>
+                        <td id="sellPrice8"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td id="sell9"></td>
+                        <td id="sellPrice9"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td id="sell10"></td>
+                        <td id="sellPrice10"></td>
+                    </tr>
+                </table>
+            </div>
         </div>
-    </div>
-
-    <div id="orderContainer">
-        <div id="orderBookLayout">
-            <table id="orderBook">
-                <tr>
-                    <td id="buy10"></td>
-                    <td id="buyPrice10"></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td id="buy9"></td>
-                    <td id="buyPrice9"></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td id="buy8"></td>
-                    <td id="buyPrice8"></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td id="buy7"></td>
-                    <td id="buyPrice7"></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td id="buy6"></td>
-                    <td id="buyPrice6"></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td id="buy5"></td>
-                    <td id="buyPrice5"></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td id="buy4"></td>
-                    <td id="buyPrice4"></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td id="buy3"></td>
-                    <td id="buyPrice3"></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td id="buy2"></td>
-                    <td id="buyPrice2"></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td id="buy1"></td>
-                    <td id="buyPrice1"></td>
-                    <td id="buyAll"></td>
-                </tr>
-                <tr>
-                    <td id="sellAll"></td>
-                    <td id="sell1"></td>
-                    <td id="sellPrice1"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td id="sell2"></td>
-                    <td id="sellPrice2"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td id="sell3"></td>
-                    <td id="sellPrice3"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td id="sell4"></td>
-                    <td id="sellPrice4"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td id="sell5"></td>
-                    <td id="sellPrice5"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td id="sell6"></td>
-                    <td id="sellPrice6"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td id="sell7"></td>
-                    <td id="sellPrice7"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td id="sell8"></td>
-                    <td id="sellPrice8"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td id="sell9"></td>
-                    <td id="sellPrice9"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td id="sell10"></td>
-                    <td id="sellPrice10"></td>
-                </tr>
-            </table>
         </div>
-
-        <div id="orderPanelLayout">
+        <div id="orderPanelLayout" class="orderPanel">
             <div id="tabLayout">
                 <div id="sellTab" onclick="showSellPanel();">매도</div>
                 <div id="buyTab" onclick="showBuyPanel();">매수</div>
@@ -341,13 +160,15 @@
                     <input type="text" id="sellOrderPrice" placeholder="매도 가격"/>
                     <input type="text" id="sellOrderQuantity" placeholder="매도 수량"/>
                     <input type="button" id="sellOrderButton" value="매도" onclick="callBackRequestSellOrder();"/>
-                    <input type="button" id="marketSellOrderButton" value="시장가 매도" onclick="callBackRequestMarketSellOrder();"/>
+                    <input type="button" id="marketSellOrderButton" value="시장가 매도"
+                           onclick="callBackRequestMarketSellOrder();"/>
                 </div>
                 <div id="buyPanel">
                     <input type="text" id="buyOrderPrice" placeholder="매수 가격"/>
                     <input type="text" id="buyOrderQuantity" placeholder="매수 수량"/>
                     <input type="button" id="buyOrderButton" value="매수" onclick="callBackRequestBuyOrder();"/>
-                    <input type="button" id="marketBuyOrderButton" value="시장가 매수" onclick="callBackRequestMarketBuyOrder();"/>
+                    <input type="button" id="marketBuyOrderButton" value="시장가 매수"
+                           onclick="callBackRequestMarketBuyOrder();"/>
                 </div>
                 <div id="promisePanel">
                     <table id="promiseTable">
@@ -373,31 +194,34 @@
             </div>
         </div>
 
-        <div id="chatLayout">
+        <div id="chatLayout" class="chat">
             <div id="chatLog">
-
             </div>
             <label for="chatInput"></label><input type="text" id="chatInput" placeholder="메세지 입력"/>
             <input type="submit" id="chatSend" value="보내기"/>
         </div>
+
     </div>
 
-    <div id = "orderInfoModal" class="modal" style="display: none">
-        <div id="modalHeader" class="modal-header">
-            <span class="close" onclick="closeModal();">&times;</span>
-        </div>
-        <h2>주문 정보 알림 모달창</h2>
-        <div class="modal-content">
-            <label id = "orderInfoModalText"></label>
-        </div>
-    </div>
 
 </div>
+
+<div id="orderInfoModal" class="modal" style="display: none">
+    <div id="modalHeader" class="modal-header">
+        <span class="close" onclick="closeModal();">&times;</span>
+    </div>
+    <h2>주문 정보 알림 모달창</h2>
+    <div class="modal-content">
+        <label id="orderInfoModalText"></label>
+    </div>
+</div>
+
+
 <div id="gameEndDisplay" style="display: none">
     <H1>게임 결과</H1>
     <label id="gameEndDisplayGameRank"></label>
     <label id="gameEndDisplayReturnRate"></label>
-    <label id="gameEndDisplayEarnedScore" ></label>
+    <label id="gameEndDisplayEarnedScore"></label>
     <label id="gameEndDisplayEarnedCash"></label>
 </div>
 <div id="loadingDisplay" style="display: none">

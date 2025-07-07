@@ -58,7 +58,7 @@ public class GameRestController {
                 return ResponseEntity.status(200).body("주문 완료");
             }
         }
-        throw new ApiException(ErrorCode.MEMBER_NOT_FOUND);
+        throw new ApiException(ErrorCode.USER_NOT_IN_SESSION);
     }
 
     @PatchMapping("/sell")
@@ -73,7 +73,7 @@ public class GameRestController {
                 return ResponseEntity.status(200).body("주문 완료");
             }
         }
-        throw new ApiException(ErrorCode.MEMBER_NOT_FOUND);
+        throw new ApiException(ErrorCode.USER_NOT_IN_SESSION);
     }
 
     @PatchMapping("/cancel")
@@ -84,7 +84,7 @@ public class GameRestController {
                     return ResponseEntity.status(200).body("주문 취소 완료");
                 }
             }
-            throw new ApiException(ErrorCode.MEMBER_NOT_FOUND);
+            throw new ApiException(ErrorCode.USER_NOT_IN_SESSION);
     }
 
     @PatchMapping("/market-buy")
@@ -96,7 +96,7 @@ public class GameRestController {
                     return ResponseEntity.status(200).body("주문 완료");
                 }
             }
-            throw new ApiException(ErrorCode.MEMBER_NOT_FOUND);
+            throw new ApiException(ErrorCode.USER_NOT_IN_SESSION);
     }
 
     @PatchMapping("/market-sell")
@@ -108,7 +108,7 @@ public class GameRestController {
                     return ResponseEntity.status(200).body("주문 완료");
                 }
             }
-            throw new ApiException(ErrorCode.MEMBER_NOT_FOUND);
+            throw new ApiException(ErrorCode.USER_NOT_IN_SESSION);
     }
 
     @GetMapping("/last-game-participation")

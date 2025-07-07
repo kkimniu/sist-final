@@ -2,7 +2,7 @@ let chartSocket;
 
 let holdingValue;
 
-const graphContainer = document.getElementById("graphContainer");
+const graphScale = document.getElementById("graphScale");
 
 const priceChartContainer = document.getElementById("priceChartContainer");
 
@@ -22,6 +22,8 @@ const tradeVolumeChartLayoutCtx = tradeVolumeChartLayout.getContext("2d");
 
 
 const graphLayout = document.getElementById("graphContainer");
+
+const graphDisplay = document.getElementById("graphDisplay");
 
 let autoScroll = true;
 let onCode = false;
@@ -46,38 +48,54 @@ graphLayout.addEventListener("scroll", function (event) {
 
 // 컴포넌트 크기 설정(html 크기 속성이랑 css 크기 속성이 다르게 먹어서 둘다 설정)
 
-graphLayoutwidth = window.innerWidth * 0.65;
-graphLayout.height = mainHeight * 1.3;
+
+graphLayoutwidth = mainWidth;
+graphLayout.width = graphLayoutwidth;
+graphLayout.height = mainHeight + 10;
+
+
+graphDisplay.width = graphLayout.width;
+graphDisplay.height = graphLayout.height + 10;
+
+graphDisplay.style.width = graphLayout.width + "px";
+graphDisplay.style.height = graphLayout.height +  10 + "px";
+
+graphScale.height = graphLayout.height;
+graphScale.width = 30;
+
+graphScale.style.width = 30 + "px";
+graphScale.style.height = graphLayout.style.height + "px";
+
 
 priceChartLayout.width = mainWidth;
 priceChartLayout.height = priceChartHeight;
 priceChartWriter.width = mainWidth;
 priceChartWriter.height = priceChartHeight;
-priceChartContainer.width = mainWidth * 1.1;
+priceChartContainer.width = mainWidth;
 priceChartContainer.height = priceChartHeight;
 
 tradeVolumeChartLayout.width = mainWidth;
 tradeVolumeChartLayout.height = tradeVolumeChartHeight;
 tradeVolumeChartWriter.width = mainWidth;
 tradeVolumeChartWriter.height = tradeVolumeChartHeight;
-tradeVolumeChartContainer.width = mainWidth * 1.1;
+tradeVolumeChartContainer.width = mainWidth;
 tradeVolumeChartContainer.height = tradeVolumeChartHeight;
 
 graphLayout.style.width = window.innerWidth * 0.65 + "px";
-graphLayout.style.height = mainHeight * 1.3 + "px";
+graphLayout.style.height = mainHeight + 10 + "px";
 
 priceChartLayout.style.width = mainWidth + "px";
 priceChartLayout.style.height = priceChartHeight + "px";
 priceChartWriter.style.width = mainWidth + "px";
 priceChartWriter.style.height = priceChartHeight + "px";
 priceChartContainer.style.height = priceChartHeight + "px";
-priceChartContainer.style.width = mainWidth * 1.1 + "px";
+priceChartContainer.style.width = mainWidth + "px";
 
 tradeVolumeChartLayout.style.width = mainWidth + "px";
 tradeVolumeChartLayout.style.height = tradeVolumeChartHeight + "px";
 tradeVolumeChartWriter.style.width = mainWidth + "px";
 tradeVolumeChartWriter.style.height = tradeVolumeChartHeight + "px";
-tradeVolumeChartContainer.style.width = mainWidth * 1.1 + "px";
+tradeVolumeChartContainer.style.width = mainWidth + "px";
 tradeVolumeChartContainer.style.height = tradeVolumeChartHeight + "px";
 
 
@@ -1018,25 +1036,27 @@ function volumeScaleDrow(maxVolume, refY) {
     child.id = "volumeChild1";
     child.style.position = "absolute";
     child.style.right = "0px";
-    child.style.width = "50px";
-    child.style.height = "10px";
+    child.style.width = "30px";
+    child.style.height = "7px";
     child.style.display = "flex";
     child.style.justifyContent = "center";
     child.style.alignItems = "center";
-    child.style.top = tradeVolumeChartHeight * 0.6 + "px";
+    child.style.fontSize = 10 + "px";
+    child.style.bottom = tradeVolumeChartHeight * 0.4 + "px";
     child.innerText = Math.round(newVolumeScale / 2);
-    tradeVolumeChartContainer.appendChild(child);
+    graphScale.appendChild(child);
 
     const child2 = document.createElement("div");
     child2.id = "volumeChild2";
     child2.style.position = "absolute";
     child2.style.right = "0px";
-    child2.style.width = "50px";
-    child2.style.height = "10px";
+    child2.style.width = "30px";
+    child2.style.height = "7px";
     child2.style.display = "flex";
     child2.style.justifyContent = "center";
     child2.style.alignItems = "center";
-    child2.style.top = tradeVolumeChartHeight * 0.2 + "px";
+    child2.style.fontSize = 10 + "px";
+    child2.style.bottom = tradeVolumeChartHeight * 0.8 + "px";
     child2.innerText = newVolumeScale;
-    tradeVolumeChartContainer.appendChild(child2);
+    graphScale.appendChild(child2);
 }

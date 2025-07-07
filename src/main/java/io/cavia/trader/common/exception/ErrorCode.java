@@ -26,6 +26,9 @@ public enum ErrorCode {
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "아이디 또는 비밀번호가 일치하지 않습니다"),
 
 
+    // ========== 403 FORBIDDEN ==========
+    USER_NOT_IN_SESSION(HttpStatus.FORBIDDEN, "세션에서 해당 유저를 찾을 수 없습니다."),
+
     // ========== 404 NOT FOUND ==========
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다"),
     EMAIL_VERIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이메일의 인증 정보를 찾을 수 없습니다"),
