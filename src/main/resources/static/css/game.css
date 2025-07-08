@@ -48,9 +48,11 @@
     font-size: 20px;
 }
 #nicknameLayout {
+    font-family: 'Pretendard', sans-serif;
     font-size: 25px;
     font-weight: bold;
     float: right;
+    align-items: center;
 }
 .layoutWrapper {
     width: 100%;

@@ -257,7 +257,16 @@ function onloadBody() {
     certificationToken()
         .then(data => {
             nickname.innerText = data.nickname;
-            document.getElementById("totalScore").innerText = data.totalScore;
+            let tierImg;
+            if (data.totalScore >= 0 && data.totalScore < 1500) {
+                tierImg = '<img src="/images/tier/bronze.png" width="70" height="70" alt="브론즈 휘장"/>';
+            } else if(data.totalScore >= 1500 && data.totalScore < 3500) {
+                tierImg = '<img src="/images/tier/silver.png" width="70" height="70" alt="실버 휘장"/>';
+            }else if(data.totalScore >= 3500 && data.totalScore < 5000) {
+                tierImg = '<img src="/images/tier/gold.png" width="70" height="70" alt="골드 휘장"/>';
+            }
+
+            document.getElementById("totalScore").innerHTML = tierImg;
             cash.innerText = data.cash;
         });
 
