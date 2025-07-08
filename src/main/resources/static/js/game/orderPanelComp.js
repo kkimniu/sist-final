@@ -123,3 +123,36 @@ tabs.forEach(tab => {
     });
 });
 
+const buyPrice = document.getElementById("buyOrderPrice");
+const buyQuantity = document.getElementById("buyOrderQuantity");
+const sellQuantity = document.getElementById("sellOrderQuantity");
+const sellPrice = document.getElementById("sellOrderPrice");
+
+buyPrice.addEventListener("keypress", function (e) {
+    const char = String.fromCharCode(e.which);
+    if (!/[0-9]/.test(char)) {
+        e.preventDefault();
+    }
+});
+
+buyQuantity.addEventListener("keypress", function (e) {
+    const char = String.fromCharCode(e.which);
+    if (!/[0-9]/.test(char)) {
+        e.preventDefault();
+    }
+});
+
+sellPrice.addEventListener("keypress", function (e) {
+    const char = String.fromCharCode(e.which);
+    if (!/[0-9]/.test(char)) {
+        e.preventDefault();
+    }
+});
+
+sellQuantity.addEventListener("keypress", function (e) {
+    const char = String.fromCharCode(e.which);
+    if (!/[0-9]/.test(char)) {
+        e.preventDefault();
+    }
+});
+
