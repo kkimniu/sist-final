@@ -4,225 +4,241 @@
     <meta charset="UTF-8">
     <title>게임 메인 화면</title>
 </head>
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+<!-- 구형 브라우저 호환용 ICO -->
+<link rel="shortcut icon" href="/images/favicon.ico">
+<link rel="stylesheet" href="/css/header.css">
+<link rel="stylesheet" href="/css/footer.css">
 <link rel="stylesheet" href="/css/game.css">
 <body>
-
+<div th:replace="~{fragments/header :: header}"></div>
+<div id="orderFeedback" class="info-guide">📢: 거래가 완료 되었습니다.</div>
 <div id="gameProgressDisplay">
-    <div id=gameInfoLayout>
-        <label id=nickname></label><br>
-        <label>보유 현금: </label><label id=cash></label><br>
-        <label>주가: </label><label id=stockPrice></label><br>
-        <label>보유 주식: </label><label id="stocksHolding"></label><label id="returnRate"></label><br>
-        <label>게임참여 인원: </label><label id="numberOfParticipation"></label><br>
-        <label>남은 세션 시간: </label><label id=timeLeft></label>
+    <div id=gameInfoLayout class="component-box">
+        <div id="nicknameLayout"><label id=nickname></label><br><label id="totalScore"></label></div>
+        <label class="info-guide">보유 현금: </label><label id="cash" class="info"></label><br>
+        <label class="info-guide">주가: </label><label id="stockPrice" class="info"></label><br>
+        <label class="info-guide">보유 주식: </label><label id="stocksHolding" class="info"></label><label id="returnRate"
+                                                                                                       class="info"></label><br>
+        <label class="info-guide">게임참여 인원: </label><label id="numberOfParticipation" class="info"></label><br>
+        <label class="info-guide">남은 세션 시간: </label><label id="timeLeft" class="info"></label>
     </div>
-    <div id="graphType">
-        <div id="graph30Sec" onclick="show30SecChart();">30초</div>
-        <div id="graph1Min" onclick="show1MinChart();">1분</div>
-        <div id="graph3Min" onclick="show3MinChart();">3분</div>
-        <div id="graph5Min" onclick="show5MinChart();">5분</div>
+    <div id="graphType" class="tab-container">
+        <div id="graph30Sec" class="tab" onclick="show30SecChart();">30초</div>
+        <div id="graph1Min" class="tab" onclick="show1MinChart();">1분</div>
+        <div id="graph3Min" class="tab" onclick="show3MinChart();">3분</div>
+        <div id="graph5Min" class="tab" onclick="show5MinChart();">5분</div>
     </div>
     <div class="layoutWrapper">
         <div class="mainArea">
-        <div id="graphDisplay" class="chart">
-            <div id="graphContainer">
-                <div id="priceChartContainer">
-                    <canvas id="priceChartLayout"></canvas>
-                    <canvas id="priceChartWriter"></canvas>
+            <div id="graphDisplay" class="chart">
+                <div id="graphContainer">
+                    <div id="priceChartContainer">
+                        <canvas id="priceChartLayout"></canvas>
+                        <canvas id="priceChartWriter"></canvas>
+                    </div>
+                    <div id="tradeVolumeChartContainer">
+                        <canvas id="tradeVolumeChartLayout"></canvas>
+                        <canvas id="tradeVolumeChartWriter"></canvas>
+                    </div>
                 </div>
-                <div id="tradeVolumeChartContainer">
-                    <canvas id="tradeVolumeChartLayout"></canvas>
-                    <canvas id="tradeVolumeChartWriter"></canvas>
-                    <div id="timeScale1"></div>
-                    <div id="timeScale2"></div>
-                    <div id="timeScale3"></div>
+                <div id="graphScale">
                 </div>
             </div>
-            <div id="graphScale">
-            </div>
-        </div>
-        <div id="orderContainer" class="orderBook">
-            <div id="orderBookLayout">
-                <table id="orderBook">
-                    <tr>
-                        <td id="buy10"></td>
-                        <td id="buyPrice10"></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td id="buy9"></td>
-                        <td id="buyPrice9"></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td id="buy8"></td>
-                        <td id="buyPrice8"></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td id="buy7"></td>
-                        <td id="buyPrice7"></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td id="buy6"></td>
-                        <td id="buyPrice6"></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td id="buy5"></td>
-                        <td id="buyPrice5"></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td id="buy4"></td>
-                        <td id="buyPrice4"></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td id="buy3"></td>
-                        <td id="buyPrice3"></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td id="buy2"></td>
-                        <td id="buyPrice2"></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td id="buy1"></td>
-                        <td id="buyPrice1"></td>
-                        <td id="buyAll"></td>
-                    </tr>
-                    <tr>
-                        <td id="sellAll"></td>
-                        <td id="sell1"></td>
-                        <td id="sellPrice1"></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td id="sell2"></td>
-                        <td id="sellPrice2"></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td id="sell3"></td>
-                        <td id="sellPrice3"></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td id="sell4"></td>
-                        <td id="sellPrice4"></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td id="sell5"></td>
-                        <td id="sellPrice5"></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td id="sell6"></td>
-                        <td id="sellPrice6"></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td id="sell7"></td>
-                        <td id="sellPrice7"></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td id="sell8"></td>
-                        <td id="sellPrice8"></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td id="sell9"></td>
-                        <td id="sellPrice9"></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td id="sell10"></td>
-                        <td id="sellPrice10"></td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        </div>
-        <div id="orderPanelLayout" class="orderPanel">
-            <div id="tabLayout">
-                <div id="sellTab" onclick="showSellPanel();">매도</div>
-                <div id="buyTab" onclick="showBuyPanel();">매수</div>
-                <div id="promiseTab" onclick="showPromisePanel();">미체결</div>
-                <div id="tradeLogTab" onclick="showTradeLogPanel();">거래내역</div>
-            </div>
-            <div id="PanelLayout">
-                <div id="sellPanel">
-                    <input type="text" id="sellOrderPrice" placeholder="매도 가격"/>
-                    <input type="text" id="sellOrderQuantity" placeholder="매도 수량"/>
-                    <input type="button" id="sellOrderButton" value="매도" onclick="callBackRequestSellOrder();"/>
-                    <input type="button" id="marketSellOrderButton" value="시장가 매도"
-                           onclick="callBackRequestMarketSellOrder();"/>
-                </div>
-                <div id="buyPanel">
-                    <input type="text" id="buyOrderPrice" placeholder="매수 가격"/>
-                    <input type="text" id="buyOrderQuantity" placeholder="매수 수량"/>
-                    <input type="button" id="buyOrderButton" value="매수" onclick="callBackRequestBuyOrder();"/>
-                    <input type="button" id="marketBuyOrderButton" value="시장가 매수"
-                           onclick="callBackRequestMarketBuyOrder();"/>
-                </div>
-                <div id="promisePanel">
-                    <table id="promiseTable">
+            <div id="orderContainer" class="orderBook">
+                <div id="orderBookLayout">
+                    <table id="orderBookTable">
                         <tr>
-                            <th>주문번호</th>
-                            <th>가격</th>
-                            <th>수량</th>
-                            <th>요청시간</th>
-                            <th></th>
+                            <td id="buy10"></td>
+                            <td id="buyPrice10"></td>
+                            <td></td>
                         </tr>
-                    </table>
-                </div>
-                <div id="tradeLogPanel">
-                    <table id="tradeLogTable">
                         <tr>
-                            <th>주문번호</th>
-                            <th>가격</th>
-                            <th>수량</th>
-                            <th>거래시간</th>
+                            <td id="buy9"></td>
+                            <td id="buyPrice9"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td id="buy8"></td>
+                            <td id="buyPrice8"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td id="buy7"></td>
+                            <td id="buyPrice7"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td id="buy6"></td>
+                            <td id="buyPrice6"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td id="buy5"></td>
+                            <td id="buyPrice5"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td id="buy4"></td>
+                            <td id="buyPrice4"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td id="buy3"></td>
+                            <td id="buyPrice3"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td id="buy2"></td>
+                            <td id="buyPrice2"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td id="buy1"></td>
+                            <td id="buyPrice1"></td>
+                            <td id="buyAll"></td>
+                        </tr>
+                        <tr>
+                            <td id="sellAll"></td>
+                            <td id="sell1"></td>
+                            <td id="sellPrice1"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td id="sell2"></td>
+                            <td id="sellPrice2"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td id="sell3"></td>
+                            <td id="sellPrice3"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td id="sell4"></td>
+                            <td id="sellPrice4"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td id="sell5"></td>
+                            <td id="sellPrice5"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td id="sell6"></td>
+                            <td id="sellPrice6"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td id="sell7"></td>
+                            <td id="sellPrice7"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td id="sell8"></td>
+                            <td id="sellPrice8"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td id="sell9"></td>
+                            <td id="sellPrice9"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td id="sell10"></td>
+                            <td id="sellPrice10"></td>
                         </tr>
                     </table>
                 </div>
             </div>
         </div>
-
-        <div id="chatLayout" class="chat">
-            <div id="chatLog">
+        <div class="inputArea">
+            <div id="chatContainer" class="component-box">
+                <div id="chatLayout" class="chat">
+                    <div id="chatLog"></div>
+                </div>
+                <div id="chatInputContainer">
+                    <label for="chatInput"></label><input type="text" id="chatInput" placeholder="메세지 입력"/>
+                    <input type="button" id="chatSend" class="btn" value="보내기"/>
+                </div>
             </div>
-            <label for="chatInput"></label><input type="text" id="chatInput" placeholder="메세지 입력"/>
-            <input type="submit" id="chatSend" value="보내기"/>
+            <div id="orderPanelLayout" class="orderPanel">
+                <div id="tabLayout" class="tab-container">
+                    <div id="sellTab" class="tab2" onclick="showSellPanel();">매도</div>
+                    <div id="buyTab" class="tabRed" onclick="showBuyPanel();">매수</div>
+                    <div id="promiseTab" class="tab2" onclick="showPromisePanel();">미체결</div>
+                    <div id="tradeLogTab" class="tab2" onclick="showTradeLogPanel();">거래내역</div>
+                </div>
+                <div id="panelLayout" class="component-box">
+                    <div id="sellPanel">
+                        <div class="input-group">
+                            <input type="text" id="sellOrderPrice" placeholder="매도 가격"/>
+                            <input type="text" id="sellOrderQuantity" placeholder="매도 수량"/>
+                        </div>
+                        <div class="button-group">
+                            <input type="button" id="sellOrderButton" class="btn" value="매도"
+                                   onclick="callBackRequestSellOrder();"/>
+                            <input type="button" id="marketSellOrderButton" class="btn" value="시장가 매도"
+                                   onclick="callBackRequestMarketSellOrder();"/>
+                        </div>
+                    </div>
+                    <div id="buyPanel">
+                        <div class="input-group">
+                            <input type="text" id="buyOrderPrice" placeholder="매수 가격"/>
+                            <input type="text" id="buyOrderQuantity" placeholder="매수 수량"/>
+                        </div>
+                        <div class="button-group">
+                            <input type="button" id="buyOrderButton" class="btnRed" value="매수"
+                                   onclick="callBackRequestBuyOrder();"/>
+                            <input type="button" id="marketBuyOrderButton" class="btnRed" value="시장가 매수"
+                                   onclick="callBackRequestMarketBuyOrder();"/>
+                        </div>
+                    </div>
+                    <div id="promisePanel">
+                        <table id="promiseTable">
+                            <tr>
+                                <th>주문번호</th>
+                                <th>가격</th>
+                                <th>수량</th>
+                                <th>요청시간</th>
+                                <th></th>
+                            </tr>
+                        </table>
+                    </div>
+                    <div id="tradeLogPanel">
+                        <table id="tradeLogTable">
+                            <tr>
+                                <th>주문번호</th>
+                                <th>가격</th>
+                                <th>수량</th>
+                                <th>거래시간</th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-
     </div>
-
-
 </div>
-
 <div id="orderInfoModal" class="modal" style="display: none">
     <div id="modalHeader" class="modal-header">
+        거래 도우미
         <span class="close" onclick="closeModal();">&times;</span>
     </div>
-    <h2>주문 정보 알림 모달창</h2>
     <div class="modal-content">
         <label id="orderInfoModalText"></label>
     </div>
 </div>
-
-
 <div id="gameEndDisplay" style="display: none">
-    <H1>게임 결과</H1>
-    <label id="gameEndDisplayGameRank"></label>
-    <label id="gameEndDisplayReturnRate"></label>
-    <label id="gameEndDisplayEarnedScore"></label>
-    <label id="gameEndDisplayEarnedCash"></label>
+    <div class="component-box">
+        <H1 class="info">게임 결과</H1>
+        <label class="info">순위:</label><label id="gameEndDisplayGameRank" class="info"></label><br>
+        <label class="info">수익률:</label><label id="gameEndDisplayReturnRate" class="info"></label><br>
+        <label class="info">획득점수:</label><label id="gameEndDisplayEarnedScore" class="info"></label><br>
+        <label class="info">획득자산:</label><label id="gameEndDisplayEarnedCash" class="info"></label><br>
+    </div>
 </div>
 <div id="loadingDisplay" style="display: none">
     <H1>결과 화면 로딩중...</H1>
@@ -234,5 +250,6 @@
 <script src="/js/game/orderPanelComp.js"></script>
 <script src="/js/game/gameEndDisplayComp.js"></script>
 <script src="/js/game/modalComp.js"></script>
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

@@ -24,13 +24,14 @@ const tradeVolumeChartLayoutCtx = tradeVolumeChartLayout.getContext("2d");
 const graphLayout = document.getElementById("graphContainer");
 
 const graphDisplay = document.getElementById("graphDisplay");
+const totalTradesLog = document.getElementById("totalTradesLog");
 
 let autoScroll = true;
 let onCode = false;
 
 // 화면 크기 비율로 설정할 필요 있음
-let mainWidth = window.innerWidth * 0.6;
-let mainHeight = 400;
+let mainWidth = window.innerWidth * 0.7;
+let mainHeight = 600;
 
 let priceChartHeight = mainHeight * 0.65;
 let tradeVolumeChartHeight = mainHeight * 0.35;
@@ -46,24 +47,80 @@ graphLayout.addEventListener("scroll", function (event) {
     }
 });
 
+window.addEventListener("resize", function (event) {
+    mainWidth = window.innerWidth * 0.7;
+
+    graphLayout.width = mainWidth;
+    graphLayout.height = mainHeight + 40;
+
+    graphLayout.style.width = mainWidth + "px";
+    graphLayout.style.height = mainHeight + 40 + "px";
+
+
+    graphDisplay.width = mainWidth;
+    graphDisplay.height = graphLayout.height + 10;
+
+    graphDisplay.style.width = mainWidth + "px";
+    graphDisplay.style.height = graphLayout.height + 10 + "px";
+
+    graphScale.height = graphLayout.height;
+
+    graphScale.style.width = 40 + "px";
+    graphScale.style.height = graphLayout.style.height + "px";
+
+
+    priceChartLayout.width = mainWidth;
+    priceChartLayout.height = priceChartHeight;
+    priceChartWriter.width = mainWidth;
+    priceChartWriter.height = priceChartHeight;
+    priceChartContainer.width = mainWidth;
+    priceChartContainer.height = priceChartHeight;
+
+    tradeVolumeChartLayout.width = mainWidth;
+    tradeVolumeChartLayout.height = tradeVolumeChartHeight;
+    tradeVolumeChartWriter.width = mainWidth;
+    tradeVolumeChartWriter.height = tradeVolumeChartHeight;
+    tradeVolumeChartContainer.width = mainWidth;
+    tradeVolumeChartContainer.height = tradeVolumeChartHeight;
+
+    priceChartLayout.style.width = mainWidth + "px";
+    priceChartLayout.style.height = priceChartHeight + "px";
+    priceChartWriter.style.width = mainWidth + "px";
+    priceChartWriter.style.height = priceChartHeight + "px";
+    priceChartContainer.style.height = priceChartHeight + "px";
+    priceChartContainer.style.width = mainWidth + "px";
+
+    tradeVolumeChartLayout.style.width = mainWidth + "px";
+    tradeVolumeChartLayout.style.height = tradeVolumeChartHeight + "px";
+    tradeVolumeChartWriter.style.width = mainWidth + "px";
+    tradeVolumeChartWriter.style.height = tradeVolumeChartHeight + "px";
+    tradeVolumeChartContainer.style.width = mainWidth + "px";
+    tradeVolumeChartContainer.style.height = tradeVolumeChartHeight + "px";
+
+
+    drowGuideLine(guideLineLengthX, guideLineLengthY, priceChartLayoutCtx, priceChartHeight);
+    drowGuideLine(guideLineLengthX, guideLineLengthY, tradeVolumeChartLayoutCtx, tradeVolumeChartHeight);
+});
+
 // 컴포넌트 크기 설정(html 크기 속성이랑 css 크기 속성이 다르게 먹어서 둘다 설정)
 
 
-graphLayoutwidth = mainWidth;
-graphLayout.width = graphLayoutwidth;
-graphLayout.height = mainHeight + 10;
+graphLayout.width = mainWidth;
+graphLayout.height = mainHeight + 40;
+
+graphLayout.style.width = mainWidth + "px";
+graphLayout.style.height = mainHeight + 40 + "px";
 
 
-graphDisplay.width = graphLayout.width;
+graphDisplay.width = mainWidth;
 graphDisplay.height = graphLayout.height + 10;
 
-graphDisplay.style.width = graphLayout.width + "px";
-graphDisplay.style.height = graphLayout.height +  10 + "px";
+graphDisplay.style.width = mainWidth + "px";
+graphDisplay.style.height = graphLayout.height + 10 + "px";
 
 graphScale.height = graphLayout.height;
-graphScale.width = 30;
 
-graphScale.style.width = 30 + "px";
+graphScale.style.width = 40 + "px";
 graphScale.style.height = graphLayout.style.height + "px";
 
 
@@ -81,9 +138,6 @@ tradeVolumeChartWriter.height = tradeVolumeChartHeight;
 tradeVolumeChartContainer.width = mainWidth;
 tradeVolumeChartContainer.height = tradeVolumeChartHeight;
 
-graphLayout.style.width = window.innerWidth * 0.65 + "px";
-graphLayout.style.height = mainHeight + 10 + "px";
-
 priceChartLayout.style.width = mainWidth + "px";
 priceChartLayout.style.height = priceChartHeight + "px";
 priceChartWriter.style.width = mainWidth + "px";
@@ -100,7 +154,7 @@ tradeVolumeChartContainer.style.height = tradeVolumeChartHeight + "px";
 
 
 // 기본 봉 개수
-let graphComp = 10;
+let graphComp = 20;
 
 let stickRefX = mainWidth;
 let stickRefY = tradeVolumeChartHeight;
@@ -111,7 +165,7 @@ let candleRefY = priceChartHeight / 2;
 const guideLineLengthY = 8;
 let guideLineLengthX = graphComp / 3;
 
-const valueStickWidth = 10;
+const valueStickWidth = 15;
 
 // 그래프의 각 틱 시간정보
 let relTime30Sec;
@@ -203,6 +257,7 @@ function onloadBody() {
     certificationToken()
         .then(data => {
             nickname.innerText = data.nickname;
+            document.getElementById("totalScore").innerText = data.totalScore;
             cash.innerText = data.cash;
         });
 
@@ -413,13 +468,11 @@ function chartSocketHandler() {
     chartSocket = new WebSocket("/ws/chart");
 
     chartSocket.onopen = function (event) {
-        console.log("연결 성공");
         chartSocket.send(localStorage.getItem("jwt-token"));
     };
     chartSocket.onmessage = function (event) {
         let stockDataArray = event.data.split("||");
         let DataHead = stockDataArray[0];
-
         let stockData;
         try {
             stockData = JSON.parse(stockDataArray[1]);
@@ -770,18 +823,27 @@ function chartSocketHandler() {
             for (let i = 1; i <= 10; i++) {
                 document.getElementById("buy" + i).innerText = value["askp_rsqn" + i];
                 document.getElementById("buyPrice" + i).innerText = value["askp" + i];
-                document.getElementById("buyAll").innerText = value.total_askp_rsqn_icdc;
-
+                const buy1Dif = document.getElementById("buyAll");
+                buy1Dif.innerText = buy1Dif.innerText - value["askp_rsqn" + 1];
                 document.getElementById("sell" + i).innerText = value["bidp" + i];
                 document.getElementById("sellPrice" + i).innerText = value["bidp_rsqn" + i];
-                document.getElementById("sellAll").innerText = value.total_bidp_rsqn_icdc;
+                const sell1Dif = document.getElementById("sellAll");
+                sell1Dif.innerText = sell1Dif.innerText - value["bidp_rsqn" + 1];
             }
         } else if (DataHead === "numberOfParticipation") {
             document.getElementById("numberOfParticipation").innerText = stockData + "명";
         } else if (DataHead === "timeLeft") {
             showTimeLeft(stockData);
         } else if (DataHead === "playerStatus") {
-            //console.log("입력 받은 플레이어스테이터스: " + JSON.stringify(stockData));
+            console.log("입력 받은 플레이어스테이터스: " + JSON.stringify(stockData));
+
+            //공지 띄우기
+            const feedback = document.getElementById("orderFeedback");
+            feedback.style.display = "block";
+            setTimeout(() => {
+                    feedback.style.display = "none";
+            }, 3000);
+
             // 플레이어 스테이터스가 업데이트 됐을 때의 데이터를 처리해야 함
             document.getElementById("stocksHolding").innerText = stockData.stocksHolding;
             document.getElementById("cash").innerText = stockData.earnedCash;
@@ -856,6 +918,7 @@ function updatePromiseTable(stockData) {
         cancelButton.addEventListener("click", () => {
             requestCancelOrder(row.id);
         });
+        cancelButton.className = "btn";
         cancelButton.innerText = "주문취소";
         const td = document.createElement('td');
         td.appendChild(cancelButton);
@@ -1042,7 +1105,7 @@ function volumeScaleDrow(maxVolume, refY) {
     child.style.justifyContent = "center";
     child.style.alignItems = "center";
     child.style.fontSize = 10 + "px";
-    child.style.bottom = tradeVolumeChartHeight * 0.4 + "px";
+    child.style.bottom = tradeVolumeChartHeight * 0.4 + 30 + "px";
     child.innerText = Math.round(newVolumeScale / 2);
     graphScale.appendChild(child);
 
@@ -1056,7 +1119,7 @@ function volumeScaleDrow(maxVolume, refY) {
     child2.style.justifyContent = "center";
     child2.style.alignItems = "center";
     child2.style.fontSize = 10 + "px";
-    child2.style.bottom = tradeVolumeChartHeight * 0.8 + "px";
+    child2.style.bottom = tradeVolumeChartHeight * 0.8 + 40 + "px";
     child2.innerText = newVolumeScale;
     graphScale.appendChild(child2);
 }
