@@ -868,6 +868,7 @@ function chartSocketHandler() {
         } else if (DataHead === "error") {
             //공지 띄우기
             const warning = document.getElementById("orderWarning");
+            warning.innerHTML = "⚠️: 미체결 거래를 삭제 해주세요.";
             warning.style.display = "block";
             setTimeout(() => {
                 warning.style.display = "none";

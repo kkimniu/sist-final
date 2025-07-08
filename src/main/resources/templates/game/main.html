@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="/css/game.css">
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
-<div id="orderWarning" class="info">⚠️: 미체결 거래를 삭제 해주세요.</div>
+<div id="orderWarning" class="info"></div>
 <div id="orderFeedback" class="info">📢: 거래가 완료 되었습니다.</div>
 <div id="gameProgressDisplay">
     <div id=gameInfoLayout class="component-box">
@@ -161,10 +161,25 @@
                     <div id="chatLog"></div>
                 </div>
                 <div id="chatInputContainer">
-                    <label for="chatInput"></label><input type="text" id="chatInput" placeholder="메세지 입력"/>
+                    <div id ="chatInput" contenteditable="true">
+                    </div>
                     <input type="button" id="chatSend" class="btn" value="보내기"/>
+                    <p id="emojiButton" onclick="showEmojiContainer();">&#128570;</p>
+                    <div id="emojiContainer">
+                    <div id="emojiHeader">
+                        <span class="close" onclick="hideEmojiContainer();">&times;</span>
+                    </div>
+                        <div id="emojiBox">
+                            <img src="/images/emoji/PennyWise.png" id="pennyWise" class="emojiGuide" onclick="insertEmoji(this);"/>
+                            <img src="/images/emoji/GigaPennyze.png" id="gigaPennyze" class="emojiGuide" onclick="insertEmoji(this);"/>
+                            <img src="/images/emoji/AngryYujiro.png" id="angryYujiro" class="emojiGuide" onclick="insertEmoji(this);"/>
+                            <img src="/images/emoji/HeBoughtBitCoinlatino.png" id="heBoughtBitCoinlatino" class="emojiGuide" onclick="insertEmoji(this);"/>
+                            <img src="/images/emoji/JoJinse.png" id="joJinse" class="emojiGuide" onclick="insertEmoji(this);"/>
+                        </div>
+                    </div>
                 </div>
             </div>
+
             <div id="orderPanelLayout" class="orderPanel">
                 <div id="tabLayout" class="tab-container">
                     <div id="sellTab" class="tab2" onclick="showSellPanel();">매도</div>

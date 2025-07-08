@@ -9,30 +9,51 @@ const stockPrice = document.getElementById("stockPrice");
 const holdingStocks = document.getElementById("stocksHolding");
 const chatInputContainer = document.getElementById("chatInputContainer");
 
+const emojiGuides = document.querySelectorAll(".emojiGuide");
+
 let userInput = false;
 let chatSocket;
 let chatAutoScroll = true;
 
 chatSend.addEventListener("click", function (event) {
-    if (chatInput.value === "") {
-        showModal("공백은 입력할 수 없습니다.");
+    if (chatInput.innerHTML === "") {
+        //공지 띄우기
+        const warning = document.getElementById("orderWarning");
+        warning.innerHTML = "⚠️: 채팅창에 공백이 입력되었습니다.";
+        warning.style.display = "block";
+        setTimeout(() => {
+            warning.style.display = "none";
+        }, 3000);
         return;
     }
-    if (chatInput.value.length > 100) {
-        showModal("100자 이상의 채팅은 전송할 수 없습니다.");
-        chatInput.value = "";
+    if (chatInput.innerText.length > 100) {
+        const warning = document.getElementById("orderWarning");
+        warning.innerHTML = "⚠️: 100자 이상의 채팅은 전송할 수 없습니다.";
+        warning.style.display = "block";
+        setTimeout(() => {
+            warning.style.display = "none";
+        }, 3000);
+        chatInput.innerHTML = "";
         return;
     }
+    // 내가 지정한 이모티콘 이외의 HTML은 제거
+    for (let emoji of emojiGuides){
+        emoji.classList.remove("emojiGuide");
+        emoji.classList.add("emoji");
+        chatInput.innerHTML = chatInput.innerHTML.replaceAll(emoji.outerHTML, "/"+emoji.id);
+        emoji.classList.remove("emoji");
+        emoji.classList.add("emojiGuide");
+    }
+    chatInput.innerHTML = stripHTML(chatInput.innerHTML);
         chatSocket.send(
             JSON.stringify(
                 {
                     "type": "chat",
                     "Authorization": localStorage.getItem("jwt-token"),
-                    "message": chatInput.value,
+                    "message": chatInput.innerText,
                 })
         )
-        chatInput.value = "";
-
+    chatInput.innerHTML = "";
 });
 
 function chatSocketHandler() {
@@ -48,7 +69,15 @@ function chatSocketHandler() {
 
     chatSocket.onmessage = function (event) {
         let msgJson = JSON.parse(event.data);
-        chatLog.innerText = chatLog.innerText + "\n" + msgJson.memberNickname + ": " + msgJson.msg;
+        // 지정된 예약id는 HTML로 변환
+        for (let emoji of emojiGuides){
+            emoji.classList.remove("emojiGuide");
+            emoji.classList.add("emoji");
+            msgJson.msg = msgJson.msg.replaceAll("/"+emoji.id, emoji.outerHTML);
+            emoji.classList.remove("emoji");
+            emoji.classList.add("emojiGuide");
+        }
+        chatLog.innerHTML = chatLog.innerHTML + "<br>" + msgJson.memberNickname + ": " + msgJson.msg;
         if (chatAutoScroll) {
             chatLayout.scrollTop = chatLayout.scrollHeight;
         }
@@ -60,6 +89,30 @@ function chatSocketHandler() {
     chatSocket.onerror = function (event) {
         alert("채팅 연결 오류!");
     };
+}
+function showEmojiContainer() {
+    document.getElementById("emojiContainer").style.display = "block";
+}
+function hideEmojiContainer() {
+    document.getElementById("emojiContainer").style.display = "none";
+}
+function insertEmoji(img) {
+    img.classList.remove("emojiGuide");
+    img.classList.add("emoji");
+    chatInput.innerHTML = chatInput.innerHTML + img.outerHTML;
+    img.classList.remove("emoji");
+    img.classList.add("emojiGuide");
+    chatInput.focus();
+}
+chatInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+    }
+});
+function stripHTML(inputHTML) {
+    const temp = document.createElement("div");
+    temp.innerHTML = inputHTML;
+    return temp.textContent || "";  // 평문만 반환
 }
 
 chatLayout.addEventListener("mousedown", function (event) {
@@ -89,6 +142,7 @@ chatLayout.addEventListener("wheel", function (event) {
 
 document.addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
+        event.preventDefault();
        if (document.activeElement === chatInput) {
            chatSend.click();
        } else {
@@ -96,3 +150,4 @@ document.addEventListener("keydown", function (event) {
        }
     }
 });
+
