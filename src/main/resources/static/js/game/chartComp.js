@@ -986,7 +986,7 @@ function showTimeLeft(stockData) {
     const serverNow = new Date(stockData[1]);
     const now = new Date();
     const timeDif = serverNow.getTime() - now.getTime();
-    const endedAt = startedAt.getTime() + 1000 * 60 * 1;
+    const endedAt = startedAt.getTime() + 1000 * 60 * 30;
     // 인터발 실행 시간 때문에 먼저 1회 실행후 로딩
 
     const timeLeft = Math.floor((endedAt - now.getTime() - timeDif) / 1000);

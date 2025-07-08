@@ -1,11 +1,11 @@
-const sellTab = document.getElementById("sellTab");
-const buyTab = document.getElementById("buyTab");
-const promiseTab = document.getElementById("promiseTab");
-const tradeLogTab = document.getElementById("tradeLogTab");
+const orderPanel = document.getElementById("orderPanelLayout");
 const panelLayout = document.getElementById("panelLayout");
-
 const promisePanel = document.getElementById("promisePanel");
 const tradeLogPanel = document.getElementById("tradeLogPanel");
+const orderTabLayout = document.getElementById("tabLayout");
+let orderOffsetX;
+let orderOffsetY;
+let orderPanelIsDragging = false;
 
 const regex = /^(\s*|-?\d+(\.\d+)?\s*)$/;
 
