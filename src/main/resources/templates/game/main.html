@@ -14,16 +14,16 @@
 <link rel="stylesheet" href="/css/game.css">
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
-<div id="orderFeedback" class="info-guide">📢: 거래가 완료 되었습니다.</div>
+<div id="orderFeedback" class="info">📢: 거래가 완료 되었습니다.</div>
 <div id="gameProgressDisplay">
     <div id=gameInfoLayout class="component-box">
         <div id="nicknameLayout"><label id=nickname></label><br><label id="totalScore"></label></div>
-        <label class="info-guide">보유 현금: </label><label id="cash" class="info"></label><br>
-        <label class="info-guide">주가: </label><label id="stockPrice" class="info"></label><br>
-        <label class="info-guide">보유 주식: </label><label id="stocksHolding" class="info"></label><label id="returnRate"
-                                                                                                       class="info"></label><br>
-        <label class="info-guide">게임참여 인원: </label><label id="numberOfParticipation" class="info"></label><br>
-        <label class="info-guide">남은 세션 시간: </label><label id="timeLeft" class="info"></label>
+        <label class="info-guide">보유 현금: </label><label id="cash" class="info-guide"></label><br>
+        <label class="info-guide">주가: </label><label id="stockPrice" class="info-guide"></label><br>
+        <label class="info-guide">보유 주식: </label><label id="stocksHolding" class="info-guide"></label><label id="returnRate"
+                                                                                                       class="info-guide"></label><br>
+        <label class="info-guide">게임참여 인원: </label><label id="numberOfParticipation" class="info-guide"></label><br>
+        <label class="info-guide">남은 세션 시간: </label><label id="timeLeft" class="info-guide"></label>
     </div>
     <div id="graphType" class="tab-container">
         <div id="graph30Sec" class="tab" onclick="show30SecChart();">30초</div>
@@ -243,6 +243,7 @@
 <div id="loadingDisplay" style="display: none">
     <H1>결과 화면 로딩중...</H1>
 </div>
+<script src="/js/header.js"></script>
 <script src="/js/game/chatComp.js"></script>
 <script src="/js/game/ajax.js"></script>
 <script src="/js/game/orderBookComp.js"></script>

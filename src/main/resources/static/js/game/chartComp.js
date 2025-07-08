@@ -31,7 +31,7 @@ let onCode = false;
 
 // 화면 크기 비율로 설정할 필요 있음
 let mainWidth = window.innerWidth * 0.7;
-let mainHeight = 600;
+let mainHeight = 400;
 
 let priceChartHeight = mainHeight * 0.65;
 let tradeVolumeChartHeight = mainHeight * 0.35;
@@ -863,7 +863,7 @@ function chartSocketHandler() {
         }
     };
     chartSocket.onerror = function (event) {
-        alert("에러 발생", event);
+        //alert("에러 발생", event);
     };
     chartSocket.onclose = function (event) {
         console.log("연결이 끊겼습니다.");
@@ -981,7 +981,7 @@ function showTimeLeft(stockData) {
     const serverNow = new Date(stockData[1]);
     const now = new Date();
     const timeDif = serverNow.getTime() - now.getTime();
-    const endedAt = startedAt.getTime() + 1000 * 60 * 30;
+    const endedAt = startedAt.getTime() + 1000 * 60 * 1;
     // 인터발 실행 시간 때문에 먼저 1회 실행후 로딩
 
     const timeLeft = Math.floor((endedAt - now.getTime() - timeDif) / 1000);
