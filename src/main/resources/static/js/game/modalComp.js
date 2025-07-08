@@ -18,7 +18,7 @@ modalHeader.addEventListener("mousedown", (e) => {
     offsetY = e.clientY - modal.offsetTop;
     });
 
-orderTabLayout.addEventListener("mousedown", (e) => {
+orderPanel.addEventListener("mousedown", (e) => {
     orderPanelIsDragging = true;
     orderOffsetX = e.clientX - orderPanel.offsetLeft;
     orderOffsetY = e.clientY - orderPanel.offsetTop;
