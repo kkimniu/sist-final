@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>trader.io 커뮤니티</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+    <!-- 구형 브라우저 호환용 ICO -->
+    <link rel="shortcut icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/post/main.css">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="page-container">
+    <div class="content-card">
+        <h2>글쓰기</h2>
+        <form id="post-form">
+            <textarea id="post-content" placeholder="무슨 생각을 하고 있나요?" required></textarea>
+            <button type="submit">게시</button>
+        </form>
+    </div>
+
+    <div class="content-card">
+        <h2>피드</h2>
+        <div id="post-container">
+        </div>
+    </div>
+</div>
+
+<script src="js/post/main.js"></script>
+<script src="/js/header.js"></script>
+</body>
+</html>
