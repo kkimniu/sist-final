@@ -17,6 +17,25 @@
     transition: opacity 0.6s ease;
 }
 
+#orderWarning {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #FFD6D6;
+    color: black;
+    padding: 10px 20px;
+    border-radius: 0 0 8px 8px;
+    font-weight: bold;
+    font-family: 'Pretendard', sans-serif;
+    display: none;
+    z-index: 9999;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+
+    opacity: 1;
+    transition: opacity 0.6s ease;
+}
+
 #gameInfoLayout {
     font-family: 'Pretendard', sans-serif;
 }
@@ -26,7 +45,7 @@
 .info {
     font-family: 'Pretendard', sans-serif;
     margin-left: 10px;
-    font-size: 25px;
+    font-size: 20px;
 }
 #nicknameLayout {
     font-size: 25px;
@@ -67,6 +86,15 @@
     height: 20vh;
     overflow-y: auto;
 }
+#chatContainer {
+    clear: right;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    width: 70%;
+    height: 100%;
+}
 #chatLog {
     height: 100%;
     width: 100%;
@@ -74,7 +102,6 @@
 #chatInputContainer {
     position: sticky;
     width: 80%;
-    bottom: 20px;
     left: 10px;
 }
 #chatInput {
@@ -176,14 +203,6 @@
 .btnRed:active {
     transform: scale(0.98);
     background-color: #D94A4A;
-}
-#chatContainer {
-    clear: right;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    width: 70%;
-    height: 100%;
 }
 #graphContainer {
     overflow-x: auto;

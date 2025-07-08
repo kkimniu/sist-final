@@ -835,7 +835,7 @@ function chartSocketHandler() {
         } else if (DataHead === "timeLeft") {
             showTimeLeft(stockData);
         } else if (DataHead === "playerStatus") {
-            console.log("입력 받은 플레이어스테이터스: " + JSON.stringify(stockData));
+            //console.log("입력 받은 플레이어스테이터스: " + JSON.stringify(stockData));
 
             //공지 띄우기
             const feedback = document.getElementById("orderFeedback");
@@ -846,7 +846,7 @@ function chartSocketHandler() {
 
             // 플레이어 스테이터스가 업데이트 됐을 때의 데이터를 처리해야 함
             document.getElementById("stocksHolding").innerText = stockData.stocksHolding;
-            document.getElementById("cash").innerText = stockData.earnedCash;
+            document.getElementById("cash").innerText = stockData.earnedCash.toLocaleString();
             updatePromiseTable(stockData);
             updateTradeLogTable(stockData);
             let sum = 0;
@@ -857,7 +857,12 @@ function chartSocketHandler() {
         } else if (DataHead === "isProsseced") {
             showGameEndDisplay();
         } else if (DataHead === "error") {
-            alert("에러 발생: " + stockData.message);
+            //공지 띄우기
+            const warning = document.getElementById("orderWarning");
+            warning.style.display = "block";
+            setTimeout(() => {
+                warning.style.display = "none";
+            }, 3000);
         } else {
             alert("에러 발생: 정제 되지 않은 데이터 수신!!", JSON.stringify(stockData));
         }

@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="/css/game.css">
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
+<div id="orderWarning" class="info">⚠️: 미체결 거래를 삭제 해주세요.</div>
 <div id="orderFeedback" class="info">📢: 거래가 완료 되었습니다.</div>
 <div id="gameProgressDisplay">
     <div id=gameInfoLayout class="component-box">
@@ -234,10 +235,10 @@
 <div id="gameEndDisplay" style="display: none">
     <div class="component-box">
         <H1 class="info">게임 결과</H1>
-        <label class="info">순위:</label><label id="gameEndDisplayGameRank" class="info"></label><br>
-        <label class="info">수익률:</label><label id="gameEndDisplayReturnRate" class="info"></label><br>
-        <label class="info">획득점수:</label><label id="gameEndDisplayEarnedScore" class="info"></label><br>
-        <label class="info">획득자산:</label><label id="gameEndDisplayEarnedCash" class="info"></label><br>
+        <label class="info"></label><label id="gameEndDisplayGameRank" class="info"></label><br>
+        <label class="info"></label><label id="gameEndDisplayReturnRate" class="info"></label><br>
+        <label class="info"></label><label id="gameEndDisplayEarnedScore" class="info"></label><br>
+        <label class="info"></label><label id="gameEndDisplayEarnedCash" class="info"></label><br>
     </div>
 </div>
 <div id="loadingDisplay" style="display: none">
