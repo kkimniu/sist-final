@@ -27,13 +27,13 @@ public class OrderServiceImpl implements OrderService {
                 throw new ApiException(ErrorCode.TOO_MANY_ORDERS);
             }
 
-            int totalQuantity = orderTableDto.getQuantity();
+            /*int totalQuantity = orderTableDto.getQuantity();
             for (OrderTableDto dto : orders) {
                 if (dto.getPrice() < 0) {
                     totalQuantity += dto.getQuantity();
                 }
             }
-            orderTableDto.setQuantity(totalQuantity);
+            orderTableDto.setQuantity(totalQuantity);*/
 
             if (gameDto.getPlayerStatusDtos().get(targetId).getStocksHolding() <
                     orderTableDto.getQuantity()) {
@@ -54,13 +54,13 @@ public class OrderServiceImpl implements OrderService {
             if(orders.size() >= 10) {
                 throw new ApiException(ErrorCode.TOO_MANY_ORDERS);
             }
-            int totalQuantity = orderTableDto.getQuantity();
+            /*int totalQuantity = orderTableDto.getQuantity();
             for (OrderTableDto dto : orders) {
                 if (dto.getPrice() > 0) {
                     totalQuantity += dto.getQuantity();
                 }
             }
-            orderTableDto.setQuantity(totalQuantity);
+            orderTableDto.setQuantity(totalQuantity);*/
 
             if (gameDto.getPlayerStatusDtos().get(targetId).getEarnedCash() < (long) orderTableDto.getQuantity() * orderTableDto.getPrice()) {
                 throw new ApiException(ErrorCode.NOT_ENOUGH_BALANCE);

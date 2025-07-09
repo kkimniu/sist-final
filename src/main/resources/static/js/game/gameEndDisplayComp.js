@@ -2,18 +2,14 @@ function showGameEndDisplay() {
 
     requestEndedGameInfo()
         .then(data => {
-            console.log("종료 결과 요청: "+JSON.stringify(data));
             let returnRate = data.returnRate;
-            console.log(returnRate);
             if (returnRate === 0) {
                 document.getElementById("gameEndDisplayReturnRate").style.color = "black";
             } else {
                returnRate = Math.round(((data.returnRate - 1) * 10000)) / 100;
                 if (returnRate > 0) {
-                    console.log(1-1);
                     document.getElementById("gameEndDisplayReturnRate").style.color = "red";
                 } else if (returnRate < 0) {
-                    console.log(1-2);
                     document.getElementById("gameEndDisplayReturnRate").style.color = "blue";
                 }
             }

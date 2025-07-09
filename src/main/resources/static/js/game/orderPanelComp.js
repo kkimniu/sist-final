@@ -1,11 +1,11 @@
-const sellTab = document.getElementById("sellTab");
-const buyTab = document.getElementById("buyTab");
-const promiseTab = document.getElementById("promiseTab");
-const tradeLogTab = document.getElementById("tradeLogTab");
+const orderPanel = document.getElementById("orderPanelLayout");
 const panelLayout = document.getElementById("panelLayout");
-
 const promisePanel = document.getElementById("promisePanel");
 const tradeLogPanel = document.getElementById("tradeLogPanel");
+const orderTabLayout = document.getElementById("tabLayout");
+let orderOffsetX;
+let orderOffsetY;
+let orderPanelIsDragging = false;
 
 const regex = /^(\s*|-?\d+(\.\d+)?\s*)$/;
 
@@ -69,7 +69,7 @@ function callBackRequestSellOrder() {
 
     requestSellOrder()
         .then(data => {
-            console.log(data);
+            //console.log(data);
         });
 }
 function callBackRequestMarketSellOrder() {
@@ -80,7 +80,7 @@ function callBackRequestMarketSellOrder() {
     }
     requestMarketSellOrder()
         .then(data => {
-            console.log(data);
+            //console.log(data);
         });
 }
 
@@ -99,7 +99,7 @@ function callBackRequestBuyOrder() {
 
     requestBuyOrder()
         .then(data => {
-            console.log(data);
+            //console.log(data);
         });
 }
 
@@ -111,7 +111,7 @@ function callBackRequestMarketBuyOrder() {
     }
     requestMarketBuyOrder()
         .then(data => {
-            console.log(data);
+            //console.log(data);
         });
 }
 
@@ -121,5 +121,38 @@ tabs.forEach(tab => {
         tabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
     });
+});
+
+const buyPrice = document.getElementById("buyOrderPrice");
+const buyQuantity = document.getElementById("buyOrderQuantity");
+const sellQuantity = document.getElementById("sellOrderQuantity");
+const sellPrice = document.getElementById("sellOrderPrice");
+
+buyPrice.addEventListener("keypress", function (e) {
+    const char = String.fromCharCode(e.which);
+    if (!/[0-9]/.test(char)) {
+        e.preventDefault();
+    }
+});
+
+buyQuantity.addEventListener("keypress", function (e) {
+    const char = String.fromCharCode(e.which);
+    if (!/[0-9]/.test(char)) {
+        e.preventDefault();
+    }
+});
+
+sellPrice.addEventListener("keypress", function (e) {
+    const char = String.fromCharCode(e.which);
+    if (!/[0-9]/.test(char)) {
+        e.preventDefault();
+    }
+});
+
+sellQuantity.addEventListener("keypress", function (e) {
+    const char = String.fromCharCode(e.which);
+    if (!/[0-9]/.test(char)) {
+        e.preventDefault();
+    }
 });
 

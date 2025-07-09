@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 offset += posts.length;
             } else {
                 // 더 이상 불러올 게시물이 없으면 스크롤 이벤트 리스너를 제거할 수도 있습니다.
-                console.log("더 이상 게시물이 없습니다.");
+                //console.log("더 이상 게시물이 없습니다.");
             }
 
         } catch (error) {

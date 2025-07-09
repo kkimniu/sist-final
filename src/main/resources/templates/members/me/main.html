@@ -21,7 +21,7 @@
         <div class="member-container">
             <!--닉네임 등급 자산조회 등등-->
             <strong>닉네임</strong> <span id="nickname"></span>
-            <strong>등급</strong> <span id="total-score"></span><br>
+            <strong>등급</strong> <span id="total-score" style="margin-bottom: 0;"></span><br>
             <input type="button" value="닉네임변경" onclick="location.href= window.location.pathname + '/nickname'"/>
             <input type="button" value="비밀번호변경"
                    onclick="location.href= window.location.pathname + '/password'"/><br>
@@ -68,7 +68,15 @@
             const member = responseBody.data;
             document.getElementById('nickname').innerText = member.nickname;
             document.getElementById('cash').innerText = member.cash;
-            document.getElementById('total-score').innerText = member.totalScore;
+            let tierImg;
+            if (member.totalScore >= 0 && member.totalScore < 1500) {
+                tierImg = '<img src="/images/tier/bronze.png" width="30" height="30" style="margin-bottom:0;" alt="브론즈 휘장"/>';
+            } else if(member.totalScore >= 1500 && member.totalScore < 3500) {
+                tierImg = '<img src="/images/tier/silver.png" width="30" height="30" style="margin-bottom:0;" alt="실버 휘장"/>';
+            }else if(member.totalScore >= 3500 && member.totalScore < 5000) {
+                tierImg = '<img src="/images/tier/gold.png" width="30" height="30" style="margin-bottom:0;" alt="골드 휘장"/>';
+            }
+            document.getElementById('total-score').innerHTML = tierImg;
 
             //총 갯수 먼저 받기
             const countRes = await fetch(`/api/members/me/game-participations/count`, {

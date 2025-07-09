@@ -31,7 +31,7 @@ let onCode = false;
 
 // 화면 크기 비율로 설정할 필요 있음
 let mainWidth = window.innerWidth * 0.7;
-let mainHeight = 600;
+let mainHeight = 400;
 
 let priceChartHeight = mainHeight * 0.65;
 let tradeVolumeChartHeight = mainHeight * 0.35;
@@ -257,12 +257,22 @@ function onloadBody() {
     certificationToken()
         .then(data => {
             nickname.innerText = data.nickname;
-            document.getElementById("totalScore").innerText = data.totalScore;
+            let tierImg;
+            if (data.totalScore >= 0 && data.totalScore < 1500) {
+                tierImg = '<img src="/images/tier/bronze.png" width="70" height="70" alt="브론즈 휘장"/>';
+            } else if(data.totalScore >= 1500 && data.totalScore < 3500) {
+                tierImg = '<img src="/images/tier/silver.png" width="70" height="70" alt="실버 휘장"/>';
+            }else if(data.totalScore >= 3500 && data.totalScore < 5000) {
+                tierImg = '<img src="/images/tier/gold.png" width="70" height="70" alt="골드 휘장"/>';
+            }
+
+            document.getElementById("totalScore").innerHTML = tierImg;
             cash.innerText = data.cash;
+            chartSocketHandler();
+            chatSocketHandler();
         });
 
-    chartSocketHandler();
-    chatSocketHandler();
+
 
 
     document.getElementById("stocksHolding").innerText = 0;
@@ -835,7 +845,7 @@ function chartSocketHandler() {
         } else if (DataHead === "timeLeft") {
             showTimeLeft(stockData);
         } else if (DataHead === "playerStatus") {
-            console.log("입력 받은 플레이어스테이터스: " + JSON.stringify(stockData));
+            //console.log("입력 받은 플레이어스테이터스: " + JSON.stringify(stockData));
 
             //공지 띄우기
             const feedback = document.getElementById("orderFeedback");
@@ -846,7 +856,7 @@ function chartSocketHandler() {
 
             // 플레이어 스테이터스가 업데이트 됐을 때의 데이터를 처리해야 함
             document.getElementById("stocksHolding").innerText = stockData.stocksHolding;
-            document.getElementById("cash").innerText = stockData.earnedCash;
+            document.getElementById("cash").innerText = stockData.earnedCash.toLocaleString();
             updatePromiseTable(stockData);
             updateTradeLogTable(stockData);
             let sum = 0;
@@ -857,16 +867,28 @@ function chartSocketHandler() {
         } else if (DataHead === "isProsseced") {
             showGameEndDisplay();
         } else if (DataHead === "error") {
-            alert("에러 발생: " + stockData.message);
+            //공지 띄우기
+            const warning = document.getElementById("orderWarning");
+            warning.innerHTML = "⚠️: 미체결 거래를 삭제 해주세요.";
+            warning.style.display = "block";
+            setTimeout(() => {
+                warning.style.display = "none";
+            }, 3000);
         } else {
             alert("에러 발생: 정제 되지 않은 데이터 수신!!", JSON.stringify(stockData));
         }
     };
     chartSocket.onerror = function (event) {
-        alert("에러 발생", event);
+        //alert("에러 발생", event);
     };
     chartSocket.onclose = function (event) {
-        console.log("연결이 끊겼습니다.");
+        //공지 띄우기
+        const warning = document.getElementById("orderWarning");
+        warning.innerHTML = "⚠️: 서버와 통신이 끊겼습니다.";
+        warning.style.display = "block";
+        setTimeout(() => {
+            warning.style.display = "none";
+        }, 3000);
     };
 }
 
@@ -1063,7 +1085,6 @@ function show3MinChart() {
 }
 
 function show5MinChart() {
-    console.log("5분봉으로 변경");
     selectDataIndex = 0;
     priceChartWriterCtx.clearRect(0, 0, priceChartWriter.width, priceChartWriter.height);
     tradeVolumeChartWriterCtx.clearRect(0, 0, tradeVolumeChartWriter.width, tradeVolumeChartWriter.height);

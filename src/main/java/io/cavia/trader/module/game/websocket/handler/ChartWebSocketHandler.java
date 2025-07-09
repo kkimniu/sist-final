@@ -22,6 +22,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
@@ -152,6 +153,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                                 if (!Deals.isEmpty() || quantityOfMarketSell != 0 || quantityOfMarketBuy != 0 || playerStatusDto.isUpdated()) {
 
+                                    AtomicBoolean isTraded = new AtomicBoolean(false);
                                     if (!Deals.isEmpty()) {
                                         // 매수, 매도 음수 양수로 구분하여 체결가와 주문가 비교하여 거래 발생시키기(미체결 거래가 한 테이블에 모여있어야 해서 수정함)
                                         Deals.forEach(((orderTableDto) -> {
@@ -202,6 +204,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                                                         // 매도 거래 삭제
                                                         Deals.remove(orderTableDto);
+                                                        isTraded.set(true);
                                                     }
                                                 }
                                             } else {
@@ -247,6 +250,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
 
                                                         // 매수 거래 삭제
                                                         Deals.remove(orderTableDto);
+                                                        isTraded.set(true);
                                                     }
                                                 }
                                             }
@@ -301,6 +305,7 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                             .createdAt(LocalDateTime.now())
                                                             .build()
                                             );
+                                            isTraded.set(true);
                                         }
                                     }
 
@@ -342,10 +347,11 @@ public class ChartWebSocketHandler implements WebSocketHandler {
                                                             .createdAt(LocalDateTime.now())
                                                             .build()
                                             );
+                                            isTraded.set(true);
                                         }
                                     }
-                                    // 거래가 발생했으니 새로고침 된 데이터를 전송
-                                    if (playerStatusDto.isUpdated()) {
+                                    // 거래가 발생했으면 새로고침 된 데이터를 전송
+                                    if (playerStatusDto.isUpdated() && isTraded.get()) {
                                         try {
                                             String playerStatusJson = objectMapper.writeValueAsString(playerStatusDto);
                                             synchronized (orderSession) {

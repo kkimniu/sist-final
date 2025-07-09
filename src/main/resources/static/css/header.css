@@ -22,7 +22,7 @@
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   width: 100%;
-  max-width: 890px;
+  min-width: 890px;
   margin: 0 auto 0 150px;
 }
 
