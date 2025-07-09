@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * 공지사항 저장하는 컨트롤러 만듬 예외처리는 컨트롤러에서햇음
  * 이유는 이전에 선생님도 컨트롤러에서 예외처리했어서 따라함
- * 따로 java에서 자장한 이유는 컬럼에 자동으로 저장하지않기 때문에
+ * 따로 java에서 자장한 이유는 컬럼에 자동으로 저장하지않기 때문에 
  */
 @RestController
 @RequestMapping("api/notices")
