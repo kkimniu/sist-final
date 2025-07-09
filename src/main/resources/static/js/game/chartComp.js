@@ -882,7 +882,13 @@ function chartSocketHandler() {
         //alert("에러 발생", event);
     };
     chartSocket.onclose = function (event) {
-        console.log("연결이 끊겼습니다.");
+        //공지 띄우기
+        const warning = document.getElementById("orderWarning");
+        warning.innerHTML = "⚠️: 서버와 통신이 끊겼습니다.";
+        warning.style.display = "block";
+        setTimeout(() => {
+            warning.style.display = "none";
+        }, 3000);
     };
 }
 
@@ -1079,7 +1085,6 @@ function show3MinChart() {
 }
 
 function show5MinChart() {
-    console.log("5분봉으로 변경");
     selectDataIndex = 0;
     priceChartWriterCtx.clearRect(0, 0, priceChartWriter.width, priceChartWriter.height);
     tradeVolumeChartWriterCtx.clearRect(0, 0, tradeVolumeChartWriter.width, tradeVolumeChartWriter.height);

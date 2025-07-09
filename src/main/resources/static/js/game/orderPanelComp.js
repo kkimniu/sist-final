@@ -69,7 +69,7 @@ function callBackRequestSellOrder() {
 
     requestSellOrder()
         .then(data => {
-            console.log(data);
+            //console.log(data);
         });
 }
 function callBackRequestMarketSellOrder() {
@@ -80,7 +80,7 @@ function callBackRequestMarketSellOrder() {
     }
     requestMarketSellOrder()
         .then(data => {
-            console.log(data);
+            //console.log(data);
         });
 }
 
@@ -99,7 +99,7 @@ function callBackRequestBuyOrder() {
 
     requestBuyOrder()
         .then(data => {
-            console.log(data);
+            //console.log(data);
         });
 }
 
@@ -111,7 +111,7 @@ function callBackRequestMarketBuyOrder() {
     }
     requestMarketBuyOrder()
         .then(data => {
-            console.log(data);
+            //console.log(data);
         });
 }
 

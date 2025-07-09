@@ -82,7 +82,7 @@ function chatSocketHandler() {
         chatInputContainer.style.bottom = "10px";
     }
     chatSocket.onclose = function (event) {
-        console.log("채팅 연결 종료!");
+        //console.log("채팅 연결 종료!");
     };
     chatSocket.onerror = function (event) {
         alert("채팅 연결 오류!");
