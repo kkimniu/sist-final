@@ -64,7 +64,7 @@ function showMessage(elementId, message, isError = true) {
 
 // reCAPTCHA 성공 시 실행될 콜백 함수
 function onRecaptchaSuccess(token) {
-    console.log("reCAPTCHA 성공, 토큰:", token);
+    //console.log("reCAPTCHA 성공, 토큰:", token);
     recaptchaToken = token;
     showMessage('email-error', ''); // 성공했으니 에러 메시지는 지웁니다.
 }

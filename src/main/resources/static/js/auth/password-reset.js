@@ -26,7 +26,7 @@ let recaptchaToken;
 
 // --- 추가: reCAPTCHA 성공 시 실행될 콜백 함수 ---
 function onRecaptchaSuccess(token) {
-    console.log("reCAPTCHA 성공, 토큰 저장");
+    //console.log("reCAPTCHA 성공, 토큰 저장");
     recaptchaToken = token;
     step1Message.textContent = ''; // 성공 시 에러 메시지 제거
 }
@@ -74,7 +74,7 @@ formStep1.addEventListener('submit', (e) => {
                 throw new Error(body.message || '알 수 없는 오류로 이메일 발송에 실패했습니다.');
             });
         }
-        console.log('이메일 발송 요청이 서버에 성공적으로 접수되었습니다.');
+        //console.log('이메일 발송 요청이 서버에 성공적으로 접수되었습니다.');
     })
     .catch(error => {
         console.error('Error:', error);

@@ -37,8 +37,6 @@
             const userInfo = body.data;
             // API 호출 성공 시: 로그인 상태 UI를 표시합니다.
             // 서버로부터 받은 최신 닉네임 정보를 사용합니다.
-            console.log(userInfo);
-            console.log(userInfo.nickname);
             document.getElementById('header-nickname').textContent = userInfo.nickname;
 
             anonymousHeader.style.display = 'none';
