@@ -268,10 +268,11 @@ function onloadBody() {
 
             document.getElementById("totalScore").innerHTML = tierImg;
             cash.innerText = data.cash;
+            chartSocketHandler();
+            chatSocketHandler();
         });
 
-    chartSocketHandler();
-    chatSocketHandler();
+
 
 
     document.getElementById("stocksHolding").innerText = 0;

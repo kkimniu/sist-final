@@ -8,8 +8,16 @@ const cash = document.getElementById("cash");
 const stockPrice = document.getElementById("stockPrice");
 const holdingStocks = document.getElementById("stocksHolding");
 const chatInputContainer = document.getElementById("chatInputContainer");
-
 const emojiGuides = document.querySelectorAll(".emojiGuide");
+let emojis = Array();
+for (let emojiGuide of emojiGuides) {
+    const emoji = document.createElement("img");
+    emoji.id = emojiGuide.id.replace("Guide", "");
+    emoji.src = emojiGuide.src;
+    emoji.classList.add("emoji");
+    emojis.push(emoji);
+}
+
 
 let userInput = false;
 let chatSocket;
@@ -37,12 +45,8 @@ chatSend.addEventListener("click", function (event) {
         return;
     }
     // 내가 지정한 이모티콘 이외의 HTML은 제거
-    for (let emoji of emojiGuides){
-        emoji.classList.remove("emojiGuide");
-        emoji.classList.add("emoji");
-        chatInput.innerHTML = chatInput.innerHTML.replaceAll(emoji.outerHTML, "/"+emoji.id);
-        emoji.classList.remove("emoji");
-        emoji.classList.add("emojiGuide");
+    for (let emojiGuide of emojiGuides){
+        chatInput.innerHTML = chatInput.innerHTML.replaceAll(emojiGuide.outerHTML, "|"+emojiGuide.id.replace("Guide", ""));
     }
     chatInput.innerHTML = stripHTML(chatInput.innerHTML);
         chatSocket.send(
@@ -69,15 +73,9 @@ function chatSocketHandler() {
 
     chatSocket.onmessage = function (event) {
         let msgJson = JSON.parse(event.data);
-        // 지정된 예약id는 HTML로 변환
-        for (let emoji of emojiGuides){
-            emoji.classList.remove("emojiGuide");
-            emoji.classList.add("emoji");
-            msgJson.msg = msgJson.msg.replaceAll("/"+emoji.id, emoji.outerHTML);
-            emoji.classList.remove("emoji");
-            emoji.classList.add("emojiGuide");
-        }
-        chatLog.innerHTML = chatLog.innerHTML + "<br>" + msgJson.memberNickname + ": " + msgJson.msg;
+    // 지정된 예약어는 Dom에 올라가있는 이미지 객체로 대체
+        //chatLog.innerHTML = chatLog.innerHTML + "<br>" + msgJson.memberNickname + ": " + msgJson.msg;
+        renderMessageWithEmojis(chatLog.innerHTML + "<br>" + msgJson.memberNickname + ": " + msgJson.msg);
         if (chatAutoScroll) {
             chatLayout.scrollTop = chatLayout.scrollHeight;
         }
@@ -97,11 +95,7 @@ function hideEmojiContainer() {
     document.getElementById("emojiContainer").style.display = "none";
 }
 function insertEmoji(img) {
-    img.classList.remove("emojiGuide");
-    img.classList.add("emoji");
     chatInput.innerHTML = chatInput.innerHTML + img.outerHTML;
-    img.classList.remove("emoji");
-    img.classList.add("emojiGuide");
     chatInput.focus();
 }
 chatInput.addEventListener('keydown', function (e) {
@@ -150,4 +144,31 @@ document.addEventListener("keydown", function (event) {
        }
     }
 });
+
+function renderMessageWithEmojis(message) {
+    // 메시지를 공백/이모지 토큰 기준으로 나눔
+    const tokens = message.split(/(\|[a-zA-Z0-9_]+)/);
+
+    tokens.forEach(token => {
+        if (token.startsWith("|")) {
+            // 이모지 아이디 매칭
+            const emojiId = token.slice(1);
+            const match = [...emojis].find(e => e.id.replace("Guide") === emojiId);
+
+            if (match) {
+                // dom 객체 복사 후 이미지 삽입
+                const emojiNode = match.cloneNode(true);
+                chatLog.appendChild(emojiNode);
+            } else {
+                // 해당 이모지가 없으면 그냥 텍스트 삽입
+                chatLog.innerHTML = chatLog.innerHTML + token;
+                //appendChild(document.createTextNode(token));
+            }
+        } else {
+            // 일반 텍스트 처리
+            chatLog.innerHTML = chatLog.innerHTML + token;
+            //chatLog.appendChild(document.createTextNode(token));
+        }
+    });
+}
 
