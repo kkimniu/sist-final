@@ -34,19 +34,21 @@ chatSend.addEventListener("click", function (event) {
         }, 3000);
         return;
     }
-    if (chatInput.innerText.length > 100) {
+    // 내가 지정한 이모티콘 이외의 HTML은 제거
+    for (let emojiGuide of emojiGuides){
+        chatInput.innerHTML = chatInput.innerHTML.replaceAll(emojiGuide.outerHTML, "|"+emojiGuide.id.replace("Guide", ""));
+    }
+    const howManyEmoji = chatInput.innerText.split("|");
+
+    if (chatInput.innerText.length > 100 || howManyEmoji.length-1 > 5) {
         const warning = document.getElementById("orderWarning");
-        warning.innerHTML = "⚠️: 100자 이상의 채팅은 전송할 수 없습니다.";
+        warning.innerHTML = "⚠️: 한 번에 너무 많은 채팅을 보내고 있습니다.<br>글자 제한: 100자 이모티콘 제한: 5개";
         warning.style.display = "block";
         setTimeout(() => {
             warning.style.display = "none";
         }, 3000);
         chatInput.innerHTML = "";
         return;
-    }
-    // 내가 지정한 이모티콘 이외의 HTML은 제거
-    for (let emojiGuide of emojiGuides){
-        chatInput.innerHTML = chatInput.innerHTML.replaceAll(emojiGuide.outerHTML, "|"+emojiGuide.id.replace("Guide", ""));
     }
     chatInput.innerHTML = stripHTML(chatInput.innerHTML);
         chatSocket.send(
