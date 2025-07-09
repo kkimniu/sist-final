@@ -1,0 +1,139 @@
+/*컨테이너를 연한 파랑색으로 감싸는 웨퍼*/
+.notice-wrapper{
+  background-color: #eef4fb;
+  min-height: 100vh;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  max-width: 950px;
+  margin: 40px auto;
+}
+
+/*공지사항에 감싸는 컨테이너*/
+.notice-container {
+  background-color: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  max-width: 900px;
+  margin: 30px auto;
+}
+
+/*제목*/
+.notice-container h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #333;
+}
+
+/*공지사항 글 목록*/
+.notice-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+/*공지사항 제목과 글 색깔과 여백*/
+.notice-table th,
+.notice-table td {
+  padding: 14px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/*작성일 우측으로 이동*/
+.date {
+  text-align: right;
+  padding-left: 60px;
+  width: 150px;
+}
+
+/*제목 클릭시 강조*/
+.notice-table a {
+  color: #000000;
+  text-decoration: none;
+}
+.notice-table a:hover {
+  text-decoration: underline;
+}
+
+/*작성일 오른쪽 정렬*/
+.notice-table td:last-child {
+  text-align: right;
+  color: #666;
+}
+
+/*페이징 우측 정렬*/
+.paging{
+  text-align: right;
+  margin: 10px;
+}
+
+/*페이징 버튼*/
+.paging a {
+  display: inline-block;
+  padding: 6px 12px;
+  margin: 0 1px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  color: #333;
+  text-decoration: none;
+}
+.paging a:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+/*해당 페이지면 색깔 고정*/
+.paging a.active {
+  background-color: #4285f4;
+  color: white;
+  font-weight: bold;
+  border-radius: 4px;
+}
+
+/*상세페이지에 작성일*/
+.created-at {
+  text-align: left;
+  color: #e0e0e0;
+  font-size: 15px;
+}
+
+/*상세페이지에 제목*/
+.title {
+  text-align: left;
+  font-size: 30px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/*상세페이제에 본문*/
+.content {
+  text-align: left;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/*상세페이지에 목록버튼 오른쪽 이동*/
+.notice-back-btn {
+    text-align: right;
+}
+
+/*목록 버튼 및 클릭 시 색깔 강조*/
+.notice-back-btn button {
+  padding: 10px 20px;
+  margin: 0 1px;
+  border: 1px solid #ddd;
+  background-color: #f1f3f5;
+  color: #343a40;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+}
+.notice-back-btn button:hover {
+  background-color: #007bff;
+  color: white;
+}

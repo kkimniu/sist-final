@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layouts"
+      layout:decorate="layouts/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 기본 파비콘 -->
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+    <!-- 구형 브라우저 호환용 ICO -->
+    <link rel="shortcut icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/notices.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="notice-wrapper">
+    <div class="notice-container">
+        <h2>공 지 사 항</h2>
+        <table class="notice-table">
+            <thead>
+            <tr>
+                <th>제목</th>
+                <th class="date">작성일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${lists == null or lists.isEmpty()}">
+                <td colspan="30" align="center">
+                    등록된 공지사항이 없습니다.
+                </td>
+            </tr>
+            <tr th:each="dto:${lists}">
+                <td>
+                    <a th:text="${dto.title}" th:href="@{/notices/{id}(id=${dto.id}, cp=${paging.cp})}"></a>
+                </td>
+                <td th:text="${#temporals.format(dto.createdAt, 'yyyy-MM-dd')}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="paging">
+            <a th:if="${paging.hasPrev}" th:href="@{/notices(cp=${paging.firstPage})}">&laquo;</a>
+            <a th:if="${paging.hasPrev}" th:href="@{/notices(cp=${paging.prevPage})}">&lt;</a>
+            <a th:each="list:${paging.pageList}" th:href="@{/notices(cp=${list})}" th:text="${list}"
+               th:classappend="${list} == ${paging.cp} ? 'active' : ''">1</a>
+            <a th:if="${paging.hasNext}" th:href="@{/notices(cp=${paging.nextPage})}">&gt;</a>
+            <a th:if="${paging.hasNext}" th:href="@{/notices(cp=${paging.totalPage})}">&raquo;</a>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="/js/header.js"></script>
+</body>
+</html>

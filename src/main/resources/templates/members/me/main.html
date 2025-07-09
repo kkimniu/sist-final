@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 기본 파비콘 -->
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+    <!-- 구형 브라우저 호환용 ICO -->
+    <link rel="shortcut icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/members.css">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="member-wrapper">
+    <h1>마이 페이지</h1>
+    <div class="container">
+        <div class="member-container">
+            <!--닉네임 등급 자산조회 등등-->
+            <strong>닉네임</strong> <span id="nickname"></span>
+            <strong>등급</strong> <span id="total-score" style="margin-bottom: 0;"></span><br>
+            <input type="button" value="닉네임변경" onclick="location.href= window.location.pathname + '/nickname'"/>
+            <input type="button" value="비밀번호변경"
+                   onclick="location.href= window.location.pathname + '/password'"/><br>
+            <h3>자산조회</h3> <span id="cash"></span> <input type="button" value="자산초기화" onclick="cashReset()"><br>
+        </div>
+        <div class="game-container">
+            <!-- 게임기록-->
+            <h2>게임기록</h2>
+            <div id="gameDTO-list"></div>
+            <button id="load-more" onclick="loadMoreGameParticipation()">더 보기</button>
+        </div>
+    </div>
+</div>
+<div class="button-wrapper">
+    <div class="withdraw">
+        <input type="button" value="회원탈퇴" onclick="location.href = window.location.pathname + '/withdraw'"><br>
+    </div>
+    <div class="logout">
+        <a href="#" id="logout-link" class="nav-button logout-button">로그아웃</a>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="/js/header.js"></script>
+<script>
+    const limit = 5;
+    let offset = 0;
+    let totalCount = 0;
+    window.onload = async function () {
+        const token = localStorage.getItem('jwt-token');
+        if (!token) {
+            document.getElementById('load-more').style.display = 'none';
+            document.getElementById('message').innerText = '로컬 스토리지에 토큰이 없습니다. 먼저 로그인을 해주세요.';
+            return;
+        }
+        try {
+            const res1 = await fetch(`/api/members/me`,{
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            });
+            if(!res1.ok) throw new Error('회원 정보를 불러오지 못했습니다');
+            setupLogout();
+            const responseBody = await res1.json();
+            const member = responseBody.data;
+            document.getElementById('nickname').innerText = member.nickname;
+            document.getElementById('cash').innerText = member.cash;
+            let tierImg;
+            if (member.totalScore >= 0 && member.totalScore < 1500) {
+                tierImg = '<img src="/images/tier/bronze.png" width="30" height="30" style="margin-bottom:0;" alt="브론즈 휘장"/>';
+            } else if(member.totalScore >= 1500 && member.totalScore < 3500) {
+                tierImg = '<img src="/images/tier/silver.png" width="30" height="30" style="margin-bottom:0;" alt="실버 휘장"/>';
+            }else if(member.totalScore >= 3500 && member.totalScore < 5000) {
+                tierImg = '<img src="/images/tier/gold.png" width="30" height="30" style="margin-bottom:0;" alt="골드 휘장"/>';
+            }
+            document.getElementById('total-score').innerHTML = tierImg;
+
+            //총 갯수 먼저 받기
+            const countRes = await fetch(`/api/members/me/game-participations/count`, {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            });
+            const countResBody = await countRes.json();
+            totalCount = countResBody.data;
+
+            await loadMoreGameParticipation();
+        }catch(err) {
+
+        }
+    }
+</script>
+<script>
+    async function loadMoreGameParticipation() {
+        const token = localStorage.getItem('jwt-token');
+        try{
+            const res2 = await fetch(`/api/members/me/game-participations/paged?limit=${limit}&offset=${offset}`, {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                    }
+            });
+            if (res2.status === 404 && offset === 0) {
+                const list = document.getElementById('gameDTO-list');
+                list.innerHTML = '<p>참여한 게임이 없습니다.</p>';
+                document.getElementById('load-more').style.display = 'none';
+                return;
+            }
+            const res2Body = await res2.json();
+            if(!res2.ok) {
+                throw new Error(res2Body.message || '게임 기록을 불러오지 못했습니다');
+            }
+            const gameParticipation = res2Body.data;
+            const list = document.getElementById('gameDTO-list');
+            if(gameParticipation.length === 0 && offset === 0 ) {
+                list.innerHTML = '<li>참여한 게임이 없습니다.</li>'
+                document.getElementById('load-more').style.display = 'none';
+            }else{
+                gameParticipation.forEach(gameDTO => {
+                   const div = document.createElement('div');
+                   div.className = 'game-card';
+                   const date = new Date(gameDTO.enteredAt);
+                   const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                   const returnRate = Math.round(((gameDTO.returnRate - 1) * 10000)) / 100;
+                   let rateClass = 'neutral';
+                   if (returnRate > 0) rateClass = 'positive';
+                   else if (returnRate < 0) rateClass = 'negative';
+                   const rateDisplay = `<p><strong>수익률:</strong> <span class="${rateClass}">${returnRate > 0 ? '+' : ''}${returnRate}%</span></p>`;
+                   div.innerHTML =
+                   `<div class="card-header">
+                        <span class="game-rank"> ${gameDTO.gameRank}위</span>
+                        <span class="game-date"> ${formatted}</span>
+                    </div>
+                    <div class="card-body">
+                        ${rateDisplay}
+                        <p><strong>점수:</strong> ${gameDTO.postScore-gameDTO.earnedScore} → ${gameDTO.postScore}</p>
+                        <p><strong>자산:</strong> ${gameDTO.postCash-gameDTO.earnedCash} → ${gameDTO.postCash}</p>
+                    </div>`;
+                    list.appendChild(div);
+                });
+                offset += limit;
+                if (offset >= totalCount) {
+                    document.getElementById('load-more').style.display = 'none';
+                }
+            }
+        }catch (err) {
+            console.error("❌ 게임 기록 로딩 실패:", err);
+            document.getElementById('load-more').style.display = 'none';
+        }
+    }
+</script>
+<script>
+    async function cashReset() {
+        const token = localStorage.getItem('jwt-token');
+        if (!token) {
+            document.getElementById('message').innerText = '로컬 스토리지에 토큰이 없습니다. 먼저 로그인을 해주세요.';
+            return;
+        }
+        try {
+            const res = await fetch(`/api/members/me/cash/reset`,{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            });
+            if(!res.ok){
+                throw new Error('자산 초기화 실패');
+            }
+            alert('자산 초기화 성공');
+            location.href = '/members/me';
+        }catch (error){
+            alert(error.message);
+        }
+    }
+        // 로그아웃 기능 설정 함수
+    function setupLogout() {
+        const logoutLink = document.getElementById('logout-link');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', function(event) {
+                event.preventDefault();
+                localStorage.removeItem('jwt-token');
+                alert('로그아웃 되었습니다.');
+                window.location.href = '/';
+            });
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+/*signup*/
+/*로그인 전체 컨테이너*/
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/*로그인 입력폼 이메일 비밀번호 로그인 회원등록 비밀번호 찾기*/
+/* 입력 필드 */
+#login-form {
+  width: 30%;
+}
+/*login-form에 자식 div 태그들*/
+#login-form > div {
+  width: 100%;
+  margin-bottom: 14px;
+}
+/*이메일이랑 비밀번호*/
+#login-form input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* 버튼들 */
+#login-form button,
+#login-form a {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 10px;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+/*로그인버튼*/
+#login-form button {
+  background-color: #a8cfff;
+  border: none;
+  color: white;
+}
+#login-form button:hover {
+  background-color: #007bff;
+  color: white;
+}
+/*1번째 a태그 회원등록하기*/
+#login-form a:nth-of-type(1) {
+  background-color: #bdbdbd;
+  color: #fff;
+}
+#login-form a:nth-of-type(1):hover {
+  background-color: #007bff;
+  color: white;
+}
+/*2번째 a태그 비밀번호 찾기*/
+#login-form a:nth-of-type(2) {
+  background-color: #cfcfcf;
+  color: #fff;
+}
+#login-form a:nth-of-type(2):hover {
+  background-color: #007bff;
+  color: white;
+}
+/*오류났을때 보여주는 메세지*/
+.error-message {
+  height: 22px;
+  font-size: 15px;
+  margin-top: 6px;
+  display: block;
+}
+

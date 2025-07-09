@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+    <!-- 기본 파비콘 -->
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+    <!-- 구형 브라우저 호환용 ICO -->
+    <link rel="shortcut icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="/css/auth/signup.css">
+</head>
+<body>
+
+<div class="container">
+
+    <div class="logo-area">
+        <a href="/"><img src="/images/logo.png" alt="서비스 로고"></a>
+    </div>
+
+    <div id="page-terms" class="page">
+        <h2>약관 동의</h2>
+        <div class="terms-group">
+            <h4>서비스 이용약관</h4>
+            <div id="terms-content" class="terms-display-box"></div>
+            <div>
+                <input type="checkbox" id="termsOfServiceAgreed">
+                <label for="termsOfServiceAgreed">이용약관에 동의합니다. (필수)</label>
+            </div>
+        </div>
+        <div class="terms-group">
+            <h4>개인정보 처리방침</h4>
+            <div id="privacy-content" class="terms-display-box"></div>
+            <div>
+                <input type="checkbox" id="privacyPolicyAgreed">
+                <label for="privacyPolicyAgreed">개인정보 처리방침에 동의합니다. (필수)</label>
+            </div>
+        </div>
+        <div id="terms-error" class="error-message"></div>
+
+        <div class="nav-links">
+            <button id="btn-terms-next" class="next-btn">계속</button>
+        </div>
+    </div>
+
+    <div id="page-email" class="page" style="display: none;">
+        <h2>이메일 인증</h2>
+        <p>본인의 이메일 주소를 입력해주세요. 인증 메일이 발송됩니다.</p>
+        <div class="input-group">
+            <input type="email" id="email" placeholder="yourname@example.com">
+        </div>
+        <div id="email-error" class="error-message"></div>
+
+        <div class="recaptcha-container">
+            <div class="g-recaptcha"
+                 data-sitekey="6Ldk7XkrAAAAAAxuqQEO1tipReB8mCJcEx515UmD"
+                 data-callback="onRecaptchaSuccess"
+                 data-expired-callback="onRecaptchaExpired">
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <button id="btn-email-next" class="next-btn">계속</button>
+            <a href="#" class="prev-link" data-page="page-terms">돌아가기</a>
+        </div>
+    </div>
+
+    <div id="page-verify" class="page" style="display: none;">
+        <h2>이메일 인증</h2>
+        <p><b><span id="verify-email-display"></span></b>(으)로 받으신 인증번호를 입력해주세요.</p>
+        <p class="info-text">인증번호는 1시간 동안만 유효합니다.</p>
+        <div class="input-group">
+            <input type="text" id="authKey" placeholder="인증 코드 6자리" maxlength="6">
+        </div>
+        <div id="verify-error" class="error-message"></div>
+        <div class="nav-links">
+            <button id="btn-verify-next" class="next-btn">계속</button>
+            <a href="#" class="prev-link" data-page="page-email">돌아가기</a>
+        </div>
+    </div>
+
+    <div id="page-nickname" class="page" style="display: none;">
+        <h2>닉네임 설정</h2>
+        <p>사용하실 닉네임을 입력해주세요. 닉네임은 2자 이상 16자 이하입니다.</p>
+        <div class="input-group">
+            <input type="text" id="nickname" placeholder="닉네임을 입력하세요" maxlength="16">
+        </div>
+        <div id="nickname-error" class="error-message"></div>
+        <div class="nav-links">
+            <button id="btn-nickname-next" class="next-btn">계속</button>
+        </div>
+    </div>
+
+    <div id="page-password" class="page" style="display: none;">
+        <h2>비밀번호 설정</h2>
+        <p>사용하실 비밀번호를 입력해주세요. 비밀번호는 8자 이상 64자 이하입니다.</p>
+        <div class="input-group-col">
+            <input type="password" id="password" placeholder="비밀번호" maxlength="64">
+            <input type="password" id="passwordConfirm" placeholder="비밀번호 확인" maxlength="64">
+        </div>
+        <div id="password-error" class="error-message"></div>
+        <div class="nav-links">
+            <button id="btn-signup-submit" class="next-btn">가입 완료</button>
+            <a href="#" class="prev-link" data-page="page-nickname">돌아가기</a>
+        </div>
+    </div>
+
+    <div id="page-welcome" class="page" style="display: none;">
+        <h2>회원가입을 축하합니다!</h2>
+        <p>로그인 후 모든 서비스를 이용하실 수 있습니다.</p>
+        <a href="/login" class="next-btn">로그인 페이지로 이동</a>
+    </div>
+
+</div>
+
+<script src="/js/auth/signup.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</body>
+</html>

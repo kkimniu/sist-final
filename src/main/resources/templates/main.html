@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>메인 | TRADER</title>
+    <!-- 기본 파비콘 -->
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+    <!-- 구형 브라우저 호환용 ICO -->
+    <link rel="shortcut icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="main-wrapper">
+    <div class="main-container">
+        <div id="message"></div>
+
+        <div class="rankings-wrapper">
+            <div class="ranking-container">
+                <h3>총 자산 순위</h3>
+                <div class="ranking-header">
+                    <span class="col-rank">순위</span>
+                    <span class="col-nickname">닉네임</span>
+                    <span class="col-cash">자산</span>
+                </div>
+                <div id="cashRankingList" class="ranking-list"></div>
+            </div>
+            <div class="ranking-container">
+                <h3>점수 순위</h3>
+                <div class="ranking-header">
+                    <span class="col-rank">순위</span>
+                    <span class="col-nickname">닉네임</span>
+                    <span class="col-score">점수</span>
+                </div>
+                <div id="scoreRankingList" class="ranking-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-btn">
+        <input type="button" value="주식게임" onclick="location.href = '/game'">
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+    // 페이지가 로드되면 두 랭킹을 모두 불러옵니다.
+    window.onload = async function () {
+        const messageDiv = document.getElementById('message');
+        try {
+            // Promise.all을 사용해 두 API를 동시에 요청합니다.
+            const [cashRes, scoreRes] = await Promise.all([
+                fetch('/api/rankings/cash'),
+                fetch('/api/rankings/total-score')
+            ]);
+
+            // 두 응답 모두 에러가 있는지 먼저 확인합니다.
+            if (!cashRes.ok || !scoreRes.ok) {
+                // 실패한 응답의 에러 메시지를 사용합니다.
+                const errorJson = !cashRes.ok ? await cashRes.json() : await scoreRes.json();
+                throw new Error(errorJson.message || '랭킹 정보를 불러오지 못했습니다.');
+            }
+
+            // 각 응답을 JSON으로 파싱합니다.
+            const cashApiResponse = await cashRes.json();
+            const scoreApiResponse = await scoreRes.json();
+
+            // 랭킹 배열이 담긴 .data 프로퍼티를 렌더링 함수에 전달합니다.
+            renderRanking('cashRankingList', cashApiResponse.data, 'cash');
+            renderRanking('scoreRankingList', scoreApiResponse.data, 'score');
+
+        } catch (err) {
+            messageDiv.innerText = '에러 발생: ' + err.message;
+        }
+    };
+
+    // 랭킹 데이터를 받아서 HTML 요소를 만들어주는 함수
+    function renderRanking(elementId, rankings, type) {
+        const listElement = document.getElementById(elementId);
+        listElement.innerHTML = ''; // 기존 내용을 비웁니다.
+
+        // rankings 변수는 이제 ApiResponse.data에 해당하는 배열입니다.
+        if (!rankings || rankings.length === 0) {
+            listElement.innerHTML = '<div>랭킹 데이터가 없습니다.</div>';
+            return;
+        }
+
+        rankings.forEach((user, i) => {
+            const div = document.createElement('div');
+            div.classList.add('ranking-row');
+
+            if (type === 'cash') {
+                div.innerHTML = `
+                  <span class="col-rank">${i + 1}위</span>
+                  <span class="col-nickname">${user.nickname}</span>
+                  <span class="col-cash">${Number(user.cash).toLocaleString()}원</span>`;
+            } else {
+                div.innerHTML = `
+                  <span class="col-rank">${i + 1}위</span>
+                  <span class="col-nickname">${user.nickname}</span>
+                  <span class="col-score">${user.totalScore}</span>`;
+            }
+            listElement.appendChild(div);
+        });
+    }
+</script>
+</body>
+<script src="/js/header.js"></script>
+</html>

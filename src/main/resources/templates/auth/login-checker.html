@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인 정보 확인</title>
+</head>
+<body>
+
+<div class="container">
+    <h1>로그인 정보 확인 페이지</h1>
+    <p>로그인 후 발급받은 JWT를 이용해, 서버로부터 나의 모든 회원 정보를 조회합니다.</p>
+    <button id="check-info-btn">내 모든 정보 조회하기</button>
+
+    <div id="result-area" class="result-box" style="display: none;">
+        <h3>JWT (Local Storage에 저장된 값)</h3>
+        <pre id="jwt-display"></pre>
+
+        <h3>서버로부터 받은 내 정보 (JSON)</h3>
+        <pre id="member-info-display"></pre>
+    </div>
+
+    <div id="error-area" class="result-box" style="display: none; color: red;">
+        <h3>에러 발생</h3>
+        <p id="error-message"></p>
+    </div>
+</div>
+
+<script>
+    document.getElementById('check-info-btn').addEventListener('click', function() {
+        const token = localStorage.getItem('jwt-token');
+
+        document.getElementById('result-area').style.display = 'none';
+        document.getElementById('error-area').style.display = 'none';
+
+        if (!token) {
+            document.getElementById('error-message').innerText = '로컬 스토리지에 토큰이 없습니다. 먼저 로그인을 해주세요.';
+            document.getElementById('error-area').style.display = 'block';
+            return;
+        }
+
+        document.getElementById('jwt-display').innerText = token;
+        document.getElementById('result-area').style.display = 'block';
+
+        fetch('/api/auth/login-checker', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(body => {
+                throw new Error(body.message || "api 응답이 실패했습니다.");
+                });
+            }
+            return response.json();
+        })
+        .then(memberInfo => {
+            // 성공적으로 받아온 회원 정보를 JSON 형식으로 예쁘게 출력합니다.
+            document.getElementById('member-info-display').innerText = JSON.stringify(memberInfo, null, 2);
+        })
+        .catch(error => {
+            console.error('정보 조회 중 에러:', error);
+            document.getElementById('error-message').innerText = error.message;
+            document.getElementById('error-area').style.display = 'block';
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.cavia.trader.module.post.repository.PostMapper">
+
+    <select id="findPosts" resultType="io.cavia.trader.module.post.dto.PostResponseDto">
+        SELECT
+        p.id,
+        p.content,
+        p.member_id,
+        p.created_at,
+        p.updated_at,
+        m.nickname
+        FROM
+        posts p
+        INNER JOIN
+        members m ON p.member_id = m.id
+        ORDER BY
+        p.created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="findPostResponseDtoById" resultType="io.cavia.trader.module.post.dto.PostResponseDto">
+        SELECT
+        p.id,
+        p.content,
+        p.member_id,
+        p.created_at,
+        p.updated_at,
+        m.nickname
+        FROM
+        posts p
+        INNER JOIN
+        members m ON p.member_id = m.id
+        WHERE p.id = #{id}
+    </select>
+
+    <insert id="save" parameterType="io.cavia.trader.module.post.entity.Post" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO posts (content, member_id, created_at, updated_at)
+        VALUES (#{content}, #{memberId}, #{createdAt}, #{updatedAt})
+    </insert>
+
+</mapper>

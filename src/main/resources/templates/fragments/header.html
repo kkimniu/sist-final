@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Header Example</title>
+</head>
+<body>
+
+<header class="site-header">
+    <div class="header-logo-container">
+        <a href="/">
+            <img src="/images/logo.png" alt="서비스 로고">
+        </a>
+    </div>
+
+    <nav class="nav-container">
+        <a href="/notices" class="nav-button">공지사항</a>
+        <a href="/posts" class="nav-button">게시판</a>
+
+        <div id="header-anonymous">
+            <a href="/login" class="nav-button">로그인</a>
+        </div>
+
+        <div id="header-authenticated" style="display: none; align-items: center;">
+                <span class="welcome-message">
+                    <span id="header-nickname"></span>님, 환영합니다!
+                </span>
+            <a href="/members/me" class="nav-button">마이페이지</a>
+        </div>
+    </nav>
+</header>
+</body>
+</html>

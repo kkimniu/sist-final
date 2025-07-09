@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.cavia.trader.module.member.repository.GameParticipationMapper">
+    <select id="findByMemberId" resultType="io.cavia.trader.module.member.entity.GameParticipation">
+        SELECT
+        id,
+        member_id as memberId,
+        game_id as gameId,
+        return_rate as returnRate,
+        game_rank as gameRank,
+        earned_score as earnedScore,
+        post_score as postScore,
+        earned_cash as earnedCash,
+        post_cash as postCash,
+        entered_at as enteredAt
+        FROM game_participations
+        WHERE member_id = #{memberId}
+        ORDER by entered_at DESC
+    </select>
+    <!--
+       회원이 참여한 게임 기록을 페이징해서 가져오는 쿼리 입니다.
+    -->
+    <select id="findByMemberIdWithPaging" resultType="io.cavia.trader.module.member.entity.GameParticipation">
+        SELECT
+        id,
+        member_id as memberId,
+        game_id as gameId,
+        return_rate as returnRate,
+        game_rank as gameRank,
+        earned_score as earnedScore,
+        post_score as postScore,
+        earned_cash as earnedCash,
+        post_cash as postCash,
+        entered_at as enteredAt
+        FROM game_participations
+        WHERE member_id = #{memberId}
+        ORDER by entered_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    <!--
+       회원이 참여한 게임 전체 기록에 개수를 가져오는 쿼리 입니다.
+    -->
+    <select id="countByMemberId" resultType="Long">
+        SELECT count(*)
+        FROM game_participations
+        WHERE member_id = #{memberId}
+    </select>
+</mapper>
